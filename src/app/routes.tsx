@@ -45,6 +45,31 @@ import Stories from "../pages/community/stories";
 import StoriesDetail from "../pages/community/stories/StoriesDetail";
 import TopicDetail from "../pages/community/topic";
 
+// Session routes
+import Sessions from "../pages/sessions";
+import SessionDetail from "../pages/sessions/SessionDetail";
+import SessionRegister from "../pages/sessions/SessionRegister";
+import SessionCheckout from "../pages/sessions/SessionCheckout";
+import SessionRegisterConfirmation from "../pages/sessions/SessionRegisterConfirmation";
+
+const TOP_ROUTES = [
+  { path: "/", element: <Home /> },
+  { path: "/about", element: <About /> },
+  { path: "/contact", element: <Contact /> },
+  { path: "/terms", element: <Terms /> },
+  { path: "/privacy", element: <Privacy /> },
+  { path: "*", element: <NotFound /> },
+];
+
+const PUBLIC_ROUTES = [
+  {
+    path: "/auth",
+    element: <Auth />,
+  },
+  { path: "/community", element: <Community /> },
+  { path: "/academy", element: <Academy /> },
+];
+
 const AUTH_ROUTES = [
   { path: "/auth", element: <Navigate to="/auth/signup" replace /> },
   { path: "/auth/signup", element: <Signup /> },
@@ -56,6 +81,7 @@ const AUTH_ROUTES = [
 ];
 
 const ACADEMY_ROUTES = [
+  // Articles
   { path: "/academy/articles", element: <AcademyArticles /> },
   { path: "/academy/articles/:slug", element: <ArticlesDetail /> },
 
@@ -100,22 +126,15 @@ const COMMUNITY_ROUTES = [
   { path: "/community/author/:username", element: <AuthorProfile /> },
 ];
 
-const TOP_ROUTES = [
-  { path: "/", element: <Home /> },
-  { path: "/about", element: <About /> },
-  { path: "/contact", element: <Contact /> },
-  { path: "/terms", element: <Terms /> },
-  { path: "/privacy", element: <Privacy /> },
-  { path: "/academy", element: <Academy /> },
-  { path: "*", element: <NotFound /> },
-];
-
-const PUBLIC_ROUTES = [
+const SESSION_ROUTES = [
+  { path: "/sessions", element: <Sessions /> },
+  { path: "/sessions/:slug", element: <SessionDetail /> },
+  { path: "/sessions/:slug/register", element: <SessionRegister /> },
+  { path: "/sessions/:slug/checkout", element: <SessionCheckout /> },
   {
-    path: "/auth",
-    element: <Auth />,
+    path: "/sessions/:slug/confirmation",
+    element: <SessionRegisterConfirmation />,
   },
-  { path: "/community", element: <Community /> },
 ];
 
 const PRIVATE_ROUTES = [
@@ -135,9 +154,10 @@ const routes = createBrowserRouter([
       ...TOP_ROUTES,
       ...PUBLIC_ROUTES,
       ...AUTH_ROUTES,
-      ...PRIVATE_ROUTES,
-      ...COMMUNITY_ROUTES,
       ...ACADEMY_ROUTES,
+      ...COMMUNITY_ROUTES,
+      ...SESSION_ROUTES,
+      ...PRIVATE_ROUTES,
     ],
   },
 ]);
