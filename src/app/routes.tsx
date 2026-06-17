@@ -11,9 +11,12 @@ import Terms from "../pages/terms";
 
 // Auth Routes
 import Auth from "../pages/auth";
-import Login from "../pages/login";
+import ForgotPassword from "../pages/auth/ForgotPassword";
+import Login from "../pages/auth/Login";
+import ResetPassword from "../pages/auth/ResetPassword";
+import Signup from "../pages/auth/Signup";
+import VerifyEmail from "../pages/auth/VerifyEmail";
 import NotFound from "../pages/not-found";
-import Signup from "../pages/signup";
 import PrivateRoutes from "./PrivateRoutes";
 
 // Academy routes
@@ -21,11 +24,12 @@ import Academy from "../pages/academy";
 import AcademyArticles from "../pages/academy/articles/AcademyArticles";
 import ArticlesDetail from "../pages/academy/articles/ArticlesDetail";
 import AcademyCourses from "../pages/academy/courses/AcademyCourses";
+import CourseCertificate from "../pages/academy/courses/CourseCertificate";
 import CourseLearn from "../pages/academy/courses/CourseLearn";
 import CourseLessonDetail from "../pages/academy/courses/CourseLessonDetail";
 import CourseQuiz from "../pages/academy/courses/CourseQuiz";
 import CoursesDetail from "../pages/academy/courses/CoursesDetail";
-import CourseCertificate from "../pages/academy/courses/CourseCertificate";
+import Onboarding from "../pages/auth/Onboarding";
 
 const ACADEMY_CHILDREN = [
   {
@@ -48,6 +52,16 @@ const ACADEMY_CHILDREN = [
   },
 ];
 
+const AUTH_CHILDREN = [
+  { index: true, element: <Navigate to="/auth/signup" replace /> },
+  { path: "signup", element: <Signup /> },
+  { path: "login", element: <Login /> },
+  { path: "verify-email", element: <VerifyEmail /> },
+  { path: "forgot-password", element: <ForgotPassword /> },
+  { path: "reset-password", element: <ResetPassword /> },
+  { path: "onboarding", element: <Onboarding /> },
+];
+
 const TOP_ROUTES = [
   { path: "/", element: <Home /> },
   { path: "/about", element: <About /> },
@@ -62,11 +76,7 @@ const PUBLIC_ROUTES = [
   {
     path: "/auth",
     element: <Auth />,
-    children: [
-      { index: true, element: <Navigate to="/auth/login" replace /> },
-      { path: "signup", element: <Signup /> },
-      { path: "login", element: <Login /> },
-    ],
+    children: AUTH_CHILDREN,
   },
 ];
 
