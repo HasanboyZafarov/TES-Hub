@@ -1,9 +1,12 @@
-import React from 'react'
+import { Outlet } from "react-router-dom";
 
 const Auth = () => {
   return (
-    <div>Auth</div>
-  )
-}
+    <div>
+      <h1>Auth layout</h1>
+      <Outlet />
+    </div>
+  );
+};
 
-export default Auth
+export default Auth;

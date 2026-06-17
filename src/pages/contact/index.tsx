@@ -1,9 +1,9 @@
 import React from 'react'
 
-const Community = () => {
+const Contact = () => {
   return (
     <div>index</div>
   )
 }
 
-export default Community
+export default Contact

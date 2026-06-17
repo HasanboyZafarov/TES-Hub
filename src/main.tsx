@@ -1,7 +1,14 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import App from "./app/App";
+import { RouterProvider } from "react-router-dom";
+import routes from "./app/routes.tsx";
 import "./index.css";
+
+const auth = () => {
+  const token = localStorage.getItem("TesHub_access");
+  if (token) return true;
+  else return false;
+};
 
 async function enableMocking() {
   if (process.env.NODE_ENV !== "development") {
@@ -18,7 +25,7 @@ async function enableMocking() {
 enableMocking().then(() => {
   ReactDOM.createRoot(document.getElementById("root")!).render(
     <React.StrictMode>
-      <App />
+      <RouterProvider router={routes} />
     </React.StrictMode>,
   );
 });
