@@ -1,5 +1,8 @@
 import { createBrowserRouter, Navigate } from "react-router-dom";
 
+// Layout
+import Layout from "../components/layout/Layout";
+
 // Top routes
 import About from "../pages/about";
 import Contact from "../pages/contact";
@@ -31,35 +34,70 @@ import CourseQuiz from "../pages/academy/courses/CourseQuiz";
 import CoursesDetail from "../pages/academy/courses/CoursesDetail";
 import Onboarding from "../pages/auth/Onboarding";
 
-const ACADEMY_CHILDREN = [
+// Community routes
+import Community from "../pages/community";
+import AuthorProfile from "../pages/community/author";
+import Photos from "../pages/community/photos";
+import Questions from "../pages/community/questions";
+import QuestionDetail from "../pages/community/questions/QuestionDetail";
+import RegionalFeed from "../pages/community/region";
+import Stories from "../pages/community/stories";
+import StoriesDetail from "../pages/community/stories/StoriesDetail";
+import TopicDetail from "../pages/community/topic";
+
+const AUTH_ROUTES = [
+  { path: "/auth", element: <Navigate to="/auth/signup" replace /> },
+  { path: "/auth/signup", element: <Signup /> },
+  { path: "/auth/login", element: <Login /> },
+  { path: "/auth/verify-email", element: <VerifyEmail /> },
+  { path: "/auth/forgot-password", element: <ForgotPassword /> },
+  { path: "/auth/reset-password", element: <ResetPassword /> },
+  { path: "/auth/onboarding", element: <Onboarding /> },
+];
+
+const ACADEMY_ROUTES = [
+  { path: "/academy/articles", element: <AcademyArticles /> },
+  { path: "/academy/articles/:slug", element: <ArticlesDetail /> },
+
+  // Courses
+
+  { path: "/academy/courses", element: <AcademyCourses /> },
+  { path: "/academy/courses/:slug", element: <CoursesDetail /> },
+  { path: "/academy/courses/:slug/learn", element: <CourseLearn /> },
   {
-    path: "articles",
-    children: [
-      { index: true, element: <AcademyArticles /> },
-      { path: ":slug", element: <ArticlesDetail /> },
-    ],
+    path: "/academy/courses/:slug/learn/:lessonId",
+    element: <CourseLessonDetail />,
   },
+  { path: "/academy/courses/:slug/quiz/:quizId", element: <CourseQuiz /> },
   {
-    path: "courses",
-    children: [
-      { index: true, element: <AcademyCourses /> },
-      { path: ":slug", element: <CoursesDetail /> },
-      { path: ":slug/learn", element: <CourseLearn /> },
-      { path: ":slug/learn/:lessonId", element: <CourseLessonDetail /> },
-      { path: ":slug/quiz/:quizId", element: <CourseQuiz /> },
-      { path: ":slug/certificate", element: <CourseCertificate /> },
-    ],
+    path: "/academy/courses/:slug/certificate",
+    element: <CourseCertificate />,
   },
 ];
 
-const AUTH_CHILDREN = [
-  { index: true, element: <Navigate to="/auth/signup" replace /> },
-  { path: "signup", element: <Signup /> },
-  { path: "login", element: <Login /> },
-  { path: "verify-email", element: <VerifyEmail /> },
-  { path: "forgot-password", element: <ForgotPassword /> },
-  { path: "reset-password", element: <ResetPassword /> },
-  { path: "onboarding", element: <Onboarding /> },
+const COMMUNITY_ROUTES = [
+  // Stories
+  {
+    path: "/community/stories",
+    element: <Stories />,
+  },
+  { path: "/community/stories/:slug", element: <StoriesDetail /> },
+
+  // Questions
+  { path: "/community/questions", element: <Questions /> },
+  { path: "/community/questions/:slug", element: <QuestionDetail /> },
+
+  // Photos
+  { path: "/community/photos", element: <Photos /> },
+
+  // Topic
+  { path: "/community/topic/:topicSlug", element: <TopicDetail /> },
+
+  // Regional feed
+  { path: "/community/region/:regionSlug", element: <RegionalFeed /> },
+
+  // Public author profile
+  { path: "/community/author/:username", element: <AuthorProfile /> },
 ];
 
 const TOP_ROUTES = [
@@ -68,7 +106,7 @@ const TOP_ROUTES = [
   { path: "/contact", element: <Contact /> },
   { path: "/terms", element: <Terms /> },
   { path: "/privacy", element: <Privacy /> },
-  { path: "/academy", element: <Academy />, children: ACADEMY_CHILDREN },
+  { path: "/academy", element: <Academy /> },
   { path: "*", element: <NotFound /> },
 ];
 
@@ -76,8 +114,8 @@ const PUBLIC_ROUTES = [
   {
     path: "/auth",
     element: <Auth />,
-    children: AUTH_CHILDREN,
   },
+  { path: "/community", element: <Community /> },
 ];
 
 const PRIVATE_ROUTES = [
@@ -91,9 +129,17 @@ const PRIVATE_ROUTES = [
 ];
 
 const routes = createBrowserRouter([
-  ...TOP_ROUTES,
-  ...PUBLIC_ROUTES,
-  ...PRIVATE_ROUTES,
+  {
+    element: <Layout />,
+    children: [
+      ...TOP_ROUTES,
+      ...PUBLIC_ROUTES,
+      ...AUTH_ROUTES,
+      ...PRIVATE_ROUTES,
+      ...COMMUNITY_ROUTES,
+      ...ACADEMY_ROUTES,
+    ],
+  },
 ]);
 
 export default routes;

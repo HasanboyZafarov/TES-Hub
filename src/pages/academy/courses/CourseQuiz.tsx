@@ -1,5 +1,8 @@
+import { useParams } from "react-router-dom";
+
 const CourseQuiz = () => {
-  return <div>CourseQuiz</div>;
+  const { slug } = useParams();
+  return <div>CourseQuiz: {slug}</div>;
 };
 
 export default CourseQuiz;
