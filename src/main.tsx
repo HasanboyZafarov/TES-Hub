@@ -4,12 +4,6 @@ import { RouterProvider } from "react-router-dom";
 import routes from "./app/routes.tsx";
 import "./index.css";
 
-const auth = () => {
-  const token = localStorage.getItem("TesHub_access");
-  if (token) return true;
-  else return false;
-};
-
 async function enableMocking() {
   if (process.env.NODE_ENV !== "development") {
     return;
