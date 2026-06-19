@@ -1,4 +1,4 @@
-import { createBrowserRouter, Navigate } from "react-router-dom";
+import { createBrowserRouter } from "react-router-dom";
 
 // Layout
 import Layout from "../components/layout/Layout";
@@ -15,9 +15,7 @@ import Terms from "../pages/terms";
 // Auth Routes
 import Auth from "../pages/auth";
 import ForgotPassword from "../pages/auth/ForgotPassword";
-import Login from "../pages/auth/Login";
 import ResetPassword from "../pages/auth/ResetPassword";
-import Signup from "../pages/auth/Signup";
 import VerifyEmail from "../pages/auth/VerifyEmail";
 import NotFound from "../pages/not-found";
 import PrivateRoutes from "./PrivateRoutes";
@@ -47,9 +45,9 @@ import TopicDetail from "../pages/community/topic";
 
 // Session routes
 import Sessions from "../pages/sessions";
+import SessionCheckout from "../pages/sessions/SessionCheckout";
 import SessionDetail from "../pages/sessions/SessionDetail";
 import SessionRegister from "../pages/sessions/SessionRegister";
-import SessionCheckout from "../pages/sessions/SessionCheckout";
 import SessionRegisterConfirmation from "../pages/sessions/SessionRegisterConfirmation";
 
 const TOP_ROUTES = [
@@ -62,18 +60,12 @@ const TOP_ROUTES = [
 ];
 
 const PUBLIC_ROUTES = [
-  {
-    path: "/auth",
-    element: <Auth />,
-  },
   { path: "/community", element: <Community /> },
   { path: "/academy", element: <Academy /> },
 ];
 
 const AUTH_ROUTES = [
-  { path: "/auth", element: <Navigate to="/auth/signup" replace /> },
-  { path: "/auth/signup", element: <Signup /> },
-  { path: "/auth/login", element: <Login /> },
+  { path: "/auth", element: <Auth /> },
   { path: "/auth/verify-email", element: <VerifyEmail /> },
   { path: "/auth/forgot-password", element: <ForgotPassword /> },
   { path: "/auth/reset-password", element: <ResetPassword /> },
@@ -153,13 +145,14 @@ const routes = createBrowserRouter([
     children: [
       ...TOP_ROUTES,
       ...PUBLIC_ROUTES,
-      ...AUTH_ROUTES,
+
       ...ACADEMY_ROUTES,
       ...COMMUNITY_ROUTES,
       ...SESSION_ROUTES,
       ...PRIVATE_ROUTES,
     ],
   },
+  ...AUTH_ROUTES,
 ]);
 
 export default routes;

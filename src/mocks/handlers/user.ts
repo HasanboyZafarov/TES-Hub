@@ -1,5 +1,6 @@
-import { http, HttpResponse } from "msw";
 import { faker } from "@faker-js/faker";
+import { http, HttpResponse } from "msw";
+import { endPoint } from "../../settings.json";
 
 const data = Array.from({ length: 10 }, () => ({
   id: faker.string.uuid(),
@@ -8,7 +9,7 @@ const data = Array.from({ length: 10 }, () => ({
 }));
 
 export const handlers = [
-  http.get("/api/users", () => {
+  http.get(endPoint + "/api/users", () => {
     return HttpResponse.json(data);
   }),
 ];

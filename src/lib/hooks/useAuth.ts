@@ -1,8 +1,18 @@
-const useAuth = () => {
-  const token = localStorage.getItem("TesHub_access");
+import { useEffect, useState } from "react";
+import axiosInstance from "../api/apiClient";
+import type User from "../../types/user";
 
-  if (!token) return false;
-  return true;
+const useAuth = () => {
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    axiosInstance
+      .get<User>("/profile/me")
+      .then((res) => setUser(res.data))
+      .catch(console.error);
+  }, []);
+
+  return user;
 };
 
 export default useAuth;
