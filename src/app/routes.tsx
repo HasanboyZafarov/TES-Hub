@@ -41,7 +41,7 @@ import QuestionDetail from "../pages/community/questions/QuestionDetail";
 import RegionalFeed from "../pages/community/region";
 import Stories from "../pages/community/stories";
 import StoriesDetail from "../pages/community/stories/StoriesDetail";
-import TopicDetail from "../pages/community/topic";
+import Topics from "../pages/community/topic";
 
 // Session routes
 import Sessions from "../pages/sessions";
@@ -49,13 +49,17 @@ import SessionCheckout from "../pages/sessions/SessionCheckout";
 import SessionDetail from "../pages/sessions/SessionDetail";
 import SessionRegister from "../pages/sessions/SessionRegister";
 import SessionRegisterConfirmation from "../pages/sessions/SessionRegisterConfirmation";
+import TopicDetail from "../pages/community/topic/TopicDetail";
+import Profile from "../pages/profile";
 
 const TOP_ROUTES = [
   { path: "/", element: <Home /> },
   { path: "/about", element: <About /> },
   { path: "/contact", element: <Contact /> },
-  { path: "/terms", element: <Terms /> },
-  { path: "/privacy", element: <Privacy /> },
+  { path: "/terms-of-use", element: <Terms /> },
+  { path: "/privacy-policy", element: <Privacy /> },
+  { path: "/profile/:id", element: <Profile /> },
+  { path: "/profile/", element: <Profile /> },
   { path: "*", element: <NotFound /> },
 ];
 
@@ -74,6 +78,7 @@ const AUTH_ROUTES = [
 
 const ACADEMY_ROUTES = [
   // Articles
+  { path: "/academy", element: <Academy /> },
   { path: "/academy/articles", element: <AcademyArticles /> },
   { path: "/academy/articles/:slug", element: <ArticlesDetail /> },
 
@@ -109,7 +114,8 @@ const COMMUNITY_ROUTES = [
   { path: "/community/photos", element: <Photos /> },
 
   // Topic
-  { path: "/community/topic/:topicSlug", element: <TopicDetail /> },
+  { path: "/community/topics", element: <Topics /> },
+  { path: "/community/topics/:topicSlug", element: <TopicDetail /> },
 
   // Regional feed
   { path: "/community/region/:regionSlug", element: <RegionalFeed /> },
@@ -145,7 +151,6 @@ const routes = createBrowserRouter([
     children: [
       ...TOP_ROUTES,
       ...PUBLIC_ROUTES,
-
       ...ACADEMY_ROUTES,
       ...COMMUNITY_ROUTES,
       ...SESSION_ROUTES,

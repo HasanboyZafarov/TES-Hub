@@ -4,9 +4,12 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import useAuth from "../../lib/hooks/useAuth";
 import Button from "../ui/button";
 import StyledContainer from "./StyledContainer";
+import { useAuthStore } from "../../store/authStore";
 
 const Header = () => {
   const user = useAuth();
+  const { clearAuth } = useAuthStore();
+
   const [isOpen, setOpen] = useState(false);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
@@ -32,15 +35,15 @@ const Header = () => {
 
   const { pathname } = useLocation();
 
-  const baseStyles = "text-[#414844] font-semibold text-sm";
+  const baseStyles = "text-[#414844] font-semibold text-sm cursor-pointer";
 
   const sidebarStyles =
-    "fixed top-19 right-0 flex flex-col w-[60%] md:w-[50%] pt-8 h-screen gap-5 bg-[#F8FAF8] pl-10 transition-transform duration-300 z-50 border";
+    "fixed top-[90px] right-0 flex flex-col w-[60%] md:w-[50%] pt-8 h-screen gap-5 bg-[#F8FAF8] pl-10 transition-transform duration-300 z-999 border";
 
   return (
-    <div className="fixed top-0 left-0 w-screen bg-[#F8FAF8] p-5 border-b">
+    <div className="fixed top-0 left-0 w-screen border-b bg-[#F8FAF8] z-999">
       <StyledContainer>
-        <div className="flex justify-between items-center">
+        <div className="flex justify-between items-center h-22.5">
           <Link to={"/"} className="text-2xl font-bold text-[#012D1D]">
             TES Hub
           </Link>
@@ -79,10 +82,21 @@ const Header = () => {
                   {label}
                 </Link>
               ))}
+              {user && (
+                <li
+                  onClick={() => {
+                    clearAuth();
+                    setOpen(false);
+                  }}
+                  className={`${baseStyles}`}
+                >
+                  Log out
+                </li>
+              )}
             </nav>
           )}
 
-          <div className="flex items-center justify-center gap-3 z-[999]">
+          <div className="flex items-center justify-center gap-3 z-999">
             <Link to={"/notifications"}>
               <Bell />
             </Link>
@@ -95,11 +109,13 @@ const Header = () => {
                   src={user.avatar}
                   alt=""
                   className="w-9 rounded-full shadow-2xl shadow-black outline-2 cursor-pointer object-fill"
-                  onClick={() => navigate("/profile/me")}
+                  onClick={() => navigate(`/profile/me`)}
                 />
               </div>
             ) : (
-              <Button>Sign up</Button>
+              <Button className="p-2" onClick={() => navigate("/auth")}>
+                Sign up
+              </Button>
             )}
 
             {isOpen ? (

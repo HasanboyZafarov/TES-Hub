@@ -1,8 +1,5 @@
-import { useParams } from "react-router-dom";
-
-const TopicDetail = () => {
-  const { topicSlug } = useParams();
-  return <div>TopicDetail: {topicSlug}</div>;
+const Topics = () => {
+  return <div>Topics list will be shown here...</div>;
 };
 
-export default TopicDetail;
+export default Topics;
