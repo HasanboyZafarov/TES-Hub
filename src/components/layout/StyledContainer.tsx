@@ -10,7 +10,7 @@ const StyledContainer = ({ children, className }: Props) => {
     margin: 0 auto;
     max-width: 1440px;
     height: auto;
-    padding: 0 10px;
+    padding: 0 1rem;
   `;
 
   return <Container className={className}>{children}</Container>;

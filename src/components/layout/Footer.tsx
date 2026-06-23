@@ -1,77 +1,120 @@
 import { Link } from "react-router-dom";
-import StyledContainer from "./StyledContainer";
 
-const Footer = () => {
-  const academy = [
-    { id: 1, label: "Academy", url: "/academy" },
-    { id: 2, label: "Articles", url: "/academy/articles" },
-    { id: 3, label: "Courses", url: "/academy/courses" },
-  ];
+interface FooterLink {
+  name: string;
+  url: string;
+}
 
-  const community = [
-    { id: 1, label: "Community", url: "/community" },
-    { id: 2, label: "Questions", url: "/community/questions" },
-    { id: 3, label: "Topics", url: "/community/topics" },
-    { id: 4, label: "Photos", url: "/community/photos" },
-  ];
+interface FooterSection {
+  title: string;
+  links: FooterLink[];
+}
 
-  const legal_support = [
-    { id: 2, label: "Privacy Policy", url: "/privacy-policy" },
-    { id: 3, label: "Terms of use", url: "/terms-of-use" },
-  ];
+interface FooterLogo {
+  url: string;
+  src: string;
+  alt: string;
+  title: string;
+}
+
+interface FooterBasicProps {
+  logo?: FooterLogo;
+  description?: string;
+  sections?: FooterSection[];
+  copyright?: string;
+  legalLinks?: FooterLink[];
+  className?: string;
+}
+
+interface Footer2Props extends FooterBasicProps {
+  logoClassName?: string;
+}
+type Props = Partial<Footer2Props>;
+
+const defaultProps: Footer2Props = {
+  description:
+    "© 2024 TES Knowledge Hub. Empowering Kyrgyz agriculture through traditional wisdom and modern science.",
+  sections: [
+    {
+      title: "Academy",
+      links: [
+        { name: "Articles", url: "/academy/articles" },
+        { name: "Courses", url: "/academy/courses" },
+      ],
+    },
+    {
+      title: "Coommunity",
+      links: [
+        { name: "Stories", url: "/community/stories" },
+        { name: "Questions", url: "/community/questions" },
+        { name: "Photos", url: "/community/photos" },
+      ],
+    },
+    {
+      title: "Support",
+      links: [
+        { name: "Contact", url: "/contact" },
+        { name: "Terms of use", url: "/terms-of-use" },
+        { name: "Privacy Policy", url: "/privacy-policy" },
+      ],
+    },
+    {
+      title: "Resources",
+      links: [
+        { name: "Sessions", url: "/sessions" },
+        { name: "Templates", url: "#" },
+        { name: "Sales", url: "#" },
+        { name: "Advertise", url: "#" },
+      ],
+    },
+  ],
+  copyright: "Made with ❤️ by David",
+};
+
+const MAX_SECTIONS = 4;
+
+const Footer = (props: Props) => {
+  const { description, sections, copyright, className } = {
+    ...defaultProps,
+    ...props,
+  };
+
+  const visibleSections = (sections ?? []).slice(0, MAX_SECTIONS);
 
   return (
-    <div className="absolute left-0 bottom-0 w-full py-10 border-t border-b bg-[#F8FAF8] z-100">
-      <StyledContainer>
-        <div className="flex justify-between w-full mt-2">
-          <div>
-            <Link to={"/"} className="text-2xl font-bold text-[#012D1D]">
-              TES Hub
-            </Link>
-            <p className="text-sm text-[#414844]">
-              © 2024 TES Knowledge Hub. Empowering Kyrgyz agriculture through
-              traditional wisdom and modern science.
+    <footer className={`border-t border-b bg-[#F8FAF8] py-5 ${className}`}>
+      <div className="container mx-auto px-4">
+        <div className="grid grid-cols-2 gap-8 lg:grid-cols-6">
+          <div className="col-span-2 mb-8 lg:mb-0">
+            <div className="flex items-center lg:justify-start">
+              <Link to={"/"} className="text-2xl font-bold text-[#012D1D]">
+                TES Hub
+              </Link>
+            </div>
+            <p className="mt-4 text-sm font-medium text-muted-foreground">
+              {description}
             </p>
           </div>
-
-          <div className="flex items-start justify-between gap-10">
-            <ul className="flex flex-col gap-2">
-              {academy.map(({ id, label, url }) => (
-                <Link
-                  key={id}
-                  to={url}
-                  className={`${id == 1 ? "text-[#012D1D] font-semibold text-sm" : "text-sm text-[#414844] hover:underline"}`}
-                >
-                  {label}
-                </Link>
-              ))}
-            </ul>
-            <ul className="flex flex-col gap-2">
-              {community.map(({ id, label, url }) => (
-                <Link
-                  key={id}
-                  to={url}
-                  className={`${id == 1 ? "text-[#012D1D] font-semibold text-sm" : "text-sm text-[#414844] hover:underline"}`}
-                >
-                  {label}
-                </Link>
-              ))}
-            </ul>
-            <ul className="flex flex-col gap-2">
-              {legal_support.map(({ id, label, url }) => (
-                <Link
-                  key={id}
-                  to={url}
-                  className={`${id == 1 ? "text-[#012D1D] font-semibold text-sm" : "text-sm text-[#414844] hover:underline"}`}
-                >
-                  {label}
-                </Link>
-              ))}
-            </ul>
-          </div>
+          {visibleSections.map((section, sectionIdx) => (
+            <div key={sectionIdx}>
+              <h3 className="mb-4 text-sm font-semibold tracking-tight">
+                {section.title}
+              </h3>
+              <ul className="space-y-4 text-sm text-muted-foreground">
+                {section.links.map((link, linkIdx) => (
+                  <li key={linkIdx} className="font-medium hover:text-primary">
+                    <Link to={link.url}>{link.name}</Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
         </div>
-      </StyledContainer>
-    </div>
+        <div className="mt-8 flex flex-col justify-between gap-4 pt-8 text-xs font-medium text-muted-foreground md:flex-row md:items-center">
+          <p>{copyright}</p>
+        </div>
+      </div>
+    </footer>
   );
 };
 

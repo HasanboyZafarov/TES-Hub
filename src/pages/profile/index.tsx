@@ -1,4 +1,5 @@
 import { useParams } from "react-router-dom";
+import Alert from "../../components/ui/alert";
 import { useUser } from "../../lib/hooks/useUser";
 
 const Profile = () => {
@@ -11,7 +12,8 @@ const Profile = () => {
 
   return (
     <div className="flex flex-col">
-      <div></div>
+      <div>{user.isBanned && <Alert />}</div>
+
       <div className="flex">
         <div></div>
         <div></div>
