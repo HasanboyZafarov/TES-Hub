@@ -58,20 +58,11 @@ const defaultProps: Footer2Props = {
         { name: "Privacy Policy", url: "/privacy-policy" },
       ],
     },
-    {
-      title: "Resources",
-      links: [
-        { name: "Sessions", url: "/sessions" },
-        { name: "Templates", url: "#" },
-        { name: "Sales", url: "#" },
-        { name: "Advertise", url: "#" },
-      ],
-    },
   ],
   copyright: "Made with ❤️ by David",
 };
 
-const MAX_SECTIONS = 4;
+const MAX_SECTIONS = 3;
 
 const Footer = (props: Props) => {
   const { description, sections, copyright, className } = {
@@ -84,7 +75,7 @@ const Footer = (props: Props) => {
   return (
     <footer className={`border-t border-b bg-[#F8FAF8] py-5 ${className}`}>
       <div className="container mx-auto px-4">
-        <div className="grid grid-cols-2 gap-8 lg:grid-cols-6">
+        <div className="grid grid-cols-2 gap-8 lg:grid-cols-5">
           <div className="col-span-2 mb-8 lg:mb-0">
             <div className="flex items-center lg:justify-start">
               <Link to={"/"} className="text-2xl font-bold text-[#012D1D]">

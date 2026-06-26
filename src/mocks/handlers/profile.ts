@@ -2,6 +2,23 @@ import { faker } from "@faker-js/faker";
 import { http, HttpResponse } from "msw";
 import type User from "../../types/user";
 import { endPoint } from "../../settings.json";
+import userInterests from "../../lib/utils/interests";
+
+export const roles = [
+  "guest",
+  "member",
+  "verified_farmer",
+  "spac_consultant",
+  "tes_author",
+  "tes_admin",
+];
+
+const postTypes = ["comment", "post"];
+
+const i = Math.floor(Math.random() * roles.length);
+
+const j = Math.floor(Math.random() * postTypes.length);
+
 export const profile_handlers = [
   http.patch(`${endPoint}/profile/me`, async ({ request }) => {
     const body = (await request.json()) as Partial<User>;
@@ -12,18 +29,40 @@ export const profile_handlers = [
       username: body.username ?? faker.internet.username(),
       displayName: body.displayName ?? faker.person.fullName(),
       avatar: faker.image.avatar(),
-      role: "member",
+      role: roles[i],
       bio: body.bio ?? "",
-      region: body.region,
+      region: { oblast: "Andijhan" },
       languages: (body.languages as User["languages"]) ?? ["en"],
-      interests: body.interests ?? ["hello", "test"],
+      interests: userInterests,
       createdAt: new Date().toISOString(),
       isEmailVerified: true,
       isBanned: false,
       stats: {
-        postsPublished: 0,
-        coursesCompleted: 0,
-        certificatesEarned: 0,
+        postsPublished: [
+          {
+            id: faker.number.int(),
+            date: faker.date.anytime(),
+            title: faker.lorem.sentence(2),
+            message: faker.string.alpha(3),
+            type: postTypes[j],
+          },
+        ],
+        coursesCompleted: [
+          {
+            id: faker.number.int(),
+            date: "today",
+            title: faker.lorem.sentence(2),
+            url: faker.internet.url(),
+          },
+        ],
+        certificatesEarned: [
+          {
+            id: faker.number.int(),
+            title: faker.word.words(3),
+            date: faker.date.anytime(),
+            url: faker.internet.url(),
+          },
+        ],
         followers: 0,
         following: 0,
       },
@@ -37,18 +76,41 @@ export const profile_handlers = [
       email: faker.internet.email(),
       username: faker.internet.username(),
       displayName: faker.internet.displayName(),
-      bio: faker.person.bio(),
+      bio: faker.lorem.paragraph({ min: 2, max: 3 }),
+      region: { oblast: faker.location.city() },
       avatar: faker.image.avatar(),
-      role: "tes_admin",
+      role: roles[i],
       languages: ["en", "ru", "ky"],
-      interests: ["hello", "test"],
+      interests: userInterests,
       createdAt: "today",
       isEmailVerified: true,
       isBanned: faker.datatype.boolean(),
       stats: {
-        postsPublished: faker.number.int(),
-        coursesCompleted: faker.number.int(),
-        certificatesEarned: faker.number.int(),
+        postsPublished: [
+          {
+            id: faker.number.int(),
+            date: faker.date.anytime(),
+            title: faker.lorem.sentence(2),
+            message: faker.lorem.sentence(3),
+            type: "post",
+          },
+        ],
+        coursesCompleted: [
+          {
+            id: faker.number.int(),
+            date: "today",
+            title: faker.lorem.sentence(2),
+            url: faker.internet.url(),
+          },
+        ],
+        certificatesEarned: [
+          {
+            id: faker.number.int(),
+            title: faker.word.words(3),
+            date: faker.date.anytime(),
+            url: faker.internet.url(),
+          },
+        ],
         followers: faker.number.int(),
         following: faker.number.int(),
       },

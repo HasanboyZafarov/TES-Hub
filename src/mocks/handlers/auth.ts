@@ -2,26 +2,52 @@ import { faker } from "@faker-js/faker";
 import { http, HttpResponse } from "msw";
 import type User from "../../types/user";
 import { endPoint } from "../../settings.json";
+import { roles } from "./profile";
+import userInterests from "../../lib/utils/interests";
 
+const i = Math.floor(Math.random() * roles.length);
 const mockUser = (): User => ({
   id: faker.string.uuid(),
   email: faker.internet.email(),
   username: faker.internet.username(),
   displayName: faker.person.fullName(),
   avatar: faker.image.avatar(),
-  role: "member",
+  role: roles[i],
   bio: faker.lorem.sentence(),
+  region: { oblast: "Andijhan" },
   languages: ["en"],
-  interests: [],
+  interests: userInterests,
   createdAt: new Date().toISOString(),
   isEmailVerified: true,
   isBanned: faker.datatype.boolean({ probability: 0.5 }),
   stats: {
-    postsPublished: 0,
-    coursesCompleted: 0,
-    certificatesEarned: 0,
-    followers: 0,
-    following: 0,
+    postsPublished: [
+      {
+        id: faker.number.int(),
+        date: faker.date.anytime(),
+        title: faker.lorem.sentence(2),
+        message: faker.lorem.sentence(3),
+        type: "comment",
+      },
+    ],
+    coursesCompleted: [
+      {
+        id: faker.number.int(),
+        date: "today",
+        title: faker.lorem.sentence(2),
+        url: faker.internet.url(),
+      },
+    ],
+    certificatesEarned: [
+      {
+        id: faker.number.int(),
+        title: faker.word.words(3),
+        date: faker.date.anytime(),
+        url: faker.internet.url(),
+      },
+    ],
+    followers: faker.number.int(),
+    following: faker.number.int(),
   },
 });
 
@@ -92,6 +118,4 @@ export const auth_handlers = [
     }
     return new HttpResponse(null, { status: 200 });
   }),
-
-
 ];
