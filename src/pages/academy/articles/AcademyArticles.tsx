@@ -1,5 +1,5 @@
 const AcademyArticles = () => {
-  return <div>AcademyArticles</div>;
+  return <div>Articles will be shown here...</div>;
 };
 
 export default AcademyArticles;

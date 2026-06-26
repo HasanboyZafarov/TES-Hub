@@ -1,8 +1,5 @@
-const useAuth = () => {
-  const token = localStorage.getItem("TesHub_access");
+import { useAuthStore } from "../../store/authStore";
 
-  if (!token) return false;
-  return true;
-};
+const useAuth = () => useAuthStore((state) => state.user);
 
 export default useAuth;
