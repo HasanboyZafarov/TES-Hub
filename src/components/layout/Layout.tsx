@@ -1,14 +1,15 @@
 import { Outlet } from "react-router-dom";
+import Footer from "./Footer";
 import Header from "./Header";
 
 const Layout = () => {
   return (
-    <div>
+    <div className="flex min-h-screen flex-col bg-[#F8FAF8]">
       <Header />
-      <main className="pt-20">
+      <main className="flex-1 pt-25 pb-60 container mx-auto px-4 ">
         <Outlet />
       </main>
-      <footer>Footer</footer>
+      <Footer />
     </div>
   );
 };

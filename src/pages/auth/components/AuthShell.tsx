@@ -1,0 +1,33 @@
+import type { ReactNode } from "react";
+import { useNavigate } from "react-router-dom";
+import background_img from "/img/login/section-right-bg.png";
+
+interface Props {
+  children: ReactNode;
+}
+
+const AuthShell = ({ children }: Props) => {
+  const navigate = useNavigate();
+
+  return (
+    <div className="flex min-h-screen">
+      <div className="w-[50%] p-10 bg-[#F8FAF8] flex flex-col">
+        <h1
+          className="text-[#012D1D] font-bold text-2xl cursor-pointer w-fit"
+          onClick={() => navigate("/")}
+        >
+          TES Hub
+        </h1>
+        <div className="flex items-center justify-center flex-1">
+          <div className="w-full max-w-md">{children}</div>
+        </div>
+      </div>
+      <div
+        style={{ backgroundImage: `url('${background_img}')` }}
+        className="h-screen w-[50%] bg-no-repeat bg-top-right bg-cover sticky top-0"
+      />
+    </div>
+  );
+};
+
+export default AuthShell;

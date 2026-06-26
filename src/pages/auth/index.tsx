@@ -1,7 +1,80 @@
+import { LogIn, SendHorizonal } from "lucide-react";
+import { useState } from "react";
+import Button from "../../components/ui/button";
+import background_img from "/img/login/section-right-bg.png";
+
+import LoginForm from "./components/login-form";
+import SignupForm from "./components/signup-form";
+
 const Auth = () => {
+  const [tab, setTab] = useState("login");
+
   return (
-    <div>
-      <h1>Auth layout</h1>
+    <div className="flex">
+      <div className="w-[50%] p-10 bg-[#F8FAF8]">
+        <h1 className="text-[#012D1D] font-bold text-2xl">TES Hub</h1>
+        <div className="flex items-center justify-center h-full">
+          <div>
+            <h2 className="text-[#012D1D] font-bold text-5xl">Welcome Back</h2>
+            <p className="text-[#414844] font-size text-lg mt-3">
+              Access expert agricultural resources and join our community.
+            </p>
+
+            <div>
+              <div className="text-[#012D1D] font-semibold w-full flex justify-between items-center mt-10 border-b">
+                <span
+                  className={`border-b-3 border-[#012D1D] ${tab == "login" ? " border-[#012D1D]" : "border-transparent text-[#717973]"} p-2 w-[50%] text-center cursor-pointer`}
+                  onClick={() => setTab("login")}
+                >
+                  Log In
+                </span>
+                <span
+                  className={`border-b-3 border-[#012D1D] ${tab == "signup" ? " border-[#012D1D]" : "border-transparent text-[#717973]"} p-2 w-[50%] text-center cursor-pointer`}
+                  onClick={() => setTab("signup")}
+                >
+                  Sign Up
+                </span>
+              </div>
+
+              {tab == "login" && <LoginForm />}
+
+              {tab === "signup" && <SignupForm />}
+
+              <div className="flex w-full justify-center items-center gap-3 my-7">
+                <span className="w-[35%] h-0.5 bg-[#C1C8C2]"></span>
+                <span className="text-[#414844] text-xs">OR CONTINUE WITH</span>
+                <span className="w-[35%] h-0.5 bg-[#C1C8C2]"></span>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <Button
+                  variant="outline"
+                  Icon={LogIn}
+                  iconStyles=""
+                  className="w-[45%] gap-1"
+                >
+                  Google
+                </Button>
+                <Button
+                  variant="outline"
+                  Icon={SendHorizonal}
+                  iconStyles="text-[#229ED9]"
+                  className="w-[45%] gap-1"
+                >
+                  Telegram
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div
+        style={{
+          backgroundImage: `url('${background_img}')`,
+        }}
+        className={`h-screen w-[50%] bg-no-repeat bg-top-right bg-cover`}
+      ></div>
     </div>
   );
 };
