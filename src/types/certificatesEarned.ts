@@ -1,6 +1,6 @@
 export default interface certificatesEarned {
   id: number;
   title: string;
-  date: Date;
+  date: string;
   url: string;
 }

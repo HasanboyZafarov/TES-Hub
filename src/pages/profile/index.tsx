@@ -1,18 +1,25 @@
+import { MapPin, Pencil, Share2, CirclePlus } from "lucide-react";
 import { useParams } from "react-router-dom";
 import Alert from "../../components/ui/alert";
-import { useUser } from "../../lib/hooks/useUser";
-import ProfileBadge from "../../components/ui/profileBadge";
-import { MapPin, Pencil, Share2 } from "lucide-react";
 import Button from "../../components/ui/button";
 import PostsPublished from "../../components/ui/postsPublished";
+import ProfileBadge from "../../components/ui/profileBadge";
+import { useUser } from "../../lib/hooks/useUser";
+import SkillsInterest from "./../../components/ui/skills-interest";
+import Certificate from "./../../components/ui/certificate";
+import Modal, { type ModalVariant } from "@/components/ui/modal";
+import { useState } from "react";
 
 const Profile = () => {
   const { id } = useParams();
   const { user, loading } = useUser(id || "me");
+  const [variant, setVariant] = useState<ModalVariant | null>(null);
 
   if (!user) return <div>User not found</div>;
 
   if (loading) return <div>Loading...</div>;
+
+  const closeModal = () => setVariant(null);
 
   return (
     <div>
@@ -39,26 +46,75 @@ const Profile = () => {
         </div>
         <div className="flex flex-col gap-2">
           {id == "me" && (
-            <Button className="gap-3" Icon={Pencil}>
+            <Button
+              className="gap-3"
+              Icon={Pencil}
+              onClick={() => setVariant("edit_profile")}
+            >
               Edit Profile
             </Button>
           )}
-          <Button variant="outline" className="gap-3" Icon={Share2}>
+          <Button
+            variant="outline"
+            className="gap-3"
+            Icon={Share2}
+            onClick={() => setVariant("share_profile")}
+          >
             Share Profile
           </Button>
         </div>
       </div>
 
-      <div className="flex mt-10">
-        <div className="outline-1 p-10 py-7 rounded-lg w-[75%] outline-[#E2E8F0] bg-[#FFFFFF]">
-          <h1 className="text-2xl mb-5 font-semibold text-[#012D1D]">
-            {id == "me" ? "My Activities" : `${user.displayName} Activities`}
-          </h1>
-          {user.stats.postsPublished.map((post) => (
-            <PostsPublished key={post.id} {...post} />
-          ))}
+      <div className="grid grid-cols-[70%_30%] mt-10 gap-5 content-start">
+        <div className="w-full">
+          <div className="outline-1 p-8 h-fit py-7 rounded-lg w-full outline-[#E2E8F0] bg-[#FFFFFF]">
+            <h1 className="text-2xl font-semibold text-[#012D1D]">
+              {id == "me" ? "My Activities" : `${user.displayName} Activities`}
+            </h1>
+            {user.stats.postsPublished.map((post) => (
+              <PostsPublished key={post.id} {...post} />
+            ))}
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-5">
+          <div className="outline-1 p-8 h-fit py-7 rounded-lg outline-[#E2E8F0] bg-[#FFFFFF]">
+            <h1 className="text-2xl mb-5 font-semibold text-[#012D1D]">
+              Skills & Interests
+            </h1>
+            <div className="flex gap-3">
+              {user.interests.map((int, idx) => (
+                <SkillsInterest key={idx} children={int} />
+              ))}
+            </div>
+          </div>
+
+          <div className="outline-1 p-8 h-fit py-7 rounded-lg outline-[#E2E8F0] bg-[#FFFFFF]">
+            <h1 className="text-2xl flex items-center justify-between mb-5 font-semibold text-[#012D1D]">
+              Certificates
+              <span className="text-[#1F6D1A] text-sm">
+                {user.stats.certificatesEarned.length} Earned
+              </span>
+            </h1>
+            <div className="flex gap-3">
+              {user.stats.certificatesEarned.map((cer) => (
+                <Certificate key={cer.id} {...cer} />
+              ))}
+            </div>
+            {id === "me" && (
+              <Button
+                Icon={CirclePlus}
+                variant="outline"
+                className="mt-5 gap-3 w-full border-dashed hover:border-solid border-[#717973] hover:border-[#012D1D] transition duration-100 active:scale-90"
+                onClick={() => setVariant("add_credentials")}
+              >
+                Add Credentials
+              </Button>
+            )}
+          </div>
         </div>
       </div>
+      <Modal variant={variant} user={user} onClose={closeModal} />
     </div>
   );
 };

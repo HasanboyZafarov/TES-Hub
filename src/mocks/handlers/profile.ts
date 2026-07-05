@@ -13,7 +13,7 @@ export const roles = [
   "tes_admin",
 ];
 
-const postTypes = ["comment", "post"];
+const postTypes = ["comment", "post"] as const;
 
 const i = Math.floor(Math.random() * roles.length);
 
@@ -59,12 +59,12 @@ export const profile_handlers = [
           {
             id: faker.number.int(),
             title: faker.word.words(3),
-            date: faker.date.anytime(),
+            date: faker.date.anytime().toISOString(),
             url: faker.internet.url(),
           },
         ],
-        followers: 0,
-        following: 0,
+        followers: faker.number.int(),
+        following: faker.number.int(),
       },
     });
   }),
@@ -107,8 +107,8 @@ export const profile_handlers = [
           {
             id: faker.number.int(),
             title: faker.word.words(3),
-            date: faker.date.anytime(),
-            url: faker.internet.url(),
+            date: faker.date.anytime().toISOString(),
+            url: faker.image.url(),
           },
         ],
         followers: faker.number.int(),
