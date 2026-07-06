@@ -3,15 +3,9 @@ import { http, HttpResponse } from "msw";
 import type User from "../../types/user";
 import { endPoint } from "../../settings.json";
 import userInterests from "../../lib/utils/interests";
+import { ROLES } from "../../types/role";
 
-export const roles = [
-  "guest",
-  "member",
-  "verified_farmer",
-  "spac_consultant",
-  "tes_author",
-  "tes_admin",
-];
+export const roles = ROLES;
 
 const postTypes = ["comment", "post"] as const;
 

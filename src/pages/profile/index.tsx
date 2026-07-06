@@ -25,26 +25,26 @@ const Profile = () => {
     <div>
       <div className="mb-5">{user.isBanned && <Alert />}</div>
 
-      <div className="items-center justify-between grid grid-cols-[0.5fr_2.5fr_0.5fr] gap-5">
+      <div className="flex flex-col items-center text-center gap-5 md:grid md:grid-cols-[auto_1fr_auto] md:items-center md:text-left md:justify-between">
         <img
           src={user.avatar}
-          className="w-40 h-40 rounded-lg border-5 shadow-lg -shadow-lg border-white"
+          className="w-28 h-28 md:w-40 md:h-40 rounded-lg border-5 shadow-lg -shadow-lg border-white"
           alt=""
         />
-        <div className="flex flex-col gap-3">
-          <div className="flex gap-5 items-center">
-            <h1 className="text-3xl text-[#012D1D] font-semibold">
+        <div className="flex flex-col items-center md:items-start gap-3">
+          <div className="flex flex-wrap justify-center md:justify-start gap-5 items-center">
+            <h1 className="text-2xl md:text-3xl text-[#012D1D] font-semibold">
               {user.displayName}
             </h1>
             <ProfileBadge role={user.role} />
           </div>
-          <div className="text-[#414844] flex gap-2">
+          <div className="text-[#414844] flex gap-2 items-center">
             <MapPin />
             {user.region?.oblast}
           </div>
           <p className="break-all">{user.bio}</p>
         </div>
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2 w-full md:w-auto">
           {id == "me" && (
             <Button
               className="gap-3"
@@ -65,10 +65,10 @@ const Profile = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-[70%_30%] mt-10 gap-5 content-start">
+      <div className="grid grid-cols-1 lg:grid-cols-[70%_30%] mt-10 gap-5 content-start">
         <div className="w-full">
-          <div className="outline-1 p-8 h-fit py-7 rounded-lg w-full outline-[#E2E8F0] bg-[#FFFFFF]">
-            <h1 className="text-2xl font-semibold text-[#012D1D]">
+          <div className="outline-1 p-5 md:p-8 h-fit py-5 md:py-7 rounded-lg w-full outline-[#E2E8F0] bg-[#FFFFFF]">
+            <h1 className="text-xl md:text-2xl font-semibold text-[#012D1D]">
               {id == "me" ? "My Activities" : `${user.displayName} Activities`}
             </h1>
             {user.stats.postsPublished.map((post) => (
@@ -78,25 +78,25 @@ const Profile = () => {
         </div>
 
         <div className="flex flex-col gap-5">
-          <div className="outline-1 p-8 h-fit py-7 rounded-lg outline-[#E2E8F0] bg-[#FFFFFF]">
-            <h1 className="text-2xl mb-5 font-semibold text-[#012D1D]">
+          <div className="outline-1 p-5 md:p-8 h-fit py-5 md:py-7 rounded-lg outline-[#E2E8F0] bg-[#FFFFFF]">
+            <h1 className="text-xl md:text-2xl mb-5 font-semibold text-[#012D1D]">
               Skills & Interests
             </h1>
-            <div className="flex gap-3">
+            <div className="flex flex-wrap gap-3">
               {user.interests.map((int, idx) => (
                 <SkillsInterest key={idx} children={int} />
               ))}
             </div>
           </div>
 
-          <div className="outline-1 p-8 h-fit py-7 rounded-lg outline-[#E2E8F0] bg-[#FFFFFF]">
-            <h1 className="text-2xl flex items-center justify-between mb-5 font-semibold text-[#012D1D]">
+          <div className="outline-1 p-5 md:p-8 h-fit py-5 md:py-7 rounded-lg outline-[#E2E8F0] bg-[#FFFFFF]">
+            <h1 className="text-xl md:text-2xl flex items-center justify-between mb-5 font-semibold text-[#012D1D]">
               Certificates
               <span className="text-[#1F6D1A] text-sm">
                 {user.stats.certificatesEarned.length} Earned
               </span>
             </h1>
-            <div className="flex gap-3">
+            <div className="flex flex-wrap gap-3">
               {user.stats.certificatesEarned.map((cer) => (
                 <Certificate key={cer.id} {...cer} />
               ))}
