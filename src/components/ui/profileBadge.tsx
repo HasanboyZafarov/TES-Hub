@@ -5,8 +5,6 @@ interface Props {
 }
 
 const ProfileBadge = ({ role }: Props) => {
-  console.log(role);
-
   const baseClasses =
     "flex gap-2 p-1 px-2 rounded-xl font-semibold text-sm justify-center items-center";
   return (

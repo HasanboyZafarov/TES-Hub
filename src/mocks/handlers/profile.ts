@@ -3,17 +3,11 @@ import { http, HttpResponse } from "msw";
 import type User from "../../types/user";
 import { endPoint } from "../../settings.json";
 import userInterests from "../../lib/utils/interests";
+import { ROLES } from "../../types/role";
 
-export const roles = [
-  "guest",
-  "member",
-  "verified_farmer",
-  "spac_consultant",
-  "tes_author",
-  "tes_admin",
-];
+export const roles = ROLES;
 
-const postTypes = ["comment", "post"];
+const postTypes = ["comment", "post"] as const;
 
 const i = Math.floor(Math.random() * roles.length);
 
@@ -59,12 +53,12 @@ export const profile_handlers = [
           {
             id: faker.number.int(),
             title: faker.word.words(3),
-            date: faker.date.anytime(),
+            date: faker.date.anytime().toISOString(),
             url: faker.internet.url(),
           },
         ],
-        followers: 0,
-        following: 0,
+        followers: faker.number.int(),
+        following: faker.number.int(),
       },
     });
   }),
@@ -107,8 +101,8 @@ export const profile_handlers = [
           {
             id: faker.number.int(),
             title: faker.word.words(3),
-            date: faker.date.anytime(),
-            url: faker.internet.url(),
+            date: faker.date.anytime().toISOString(),
+            url: faker.image.url(),
           },
         ],
         followers: faker.number.int(),
