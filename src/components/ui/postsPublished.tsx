@@ -5,7 +5,7 @@ import moment from "moment";
 const PostsPublished = ({ date, title, message, type }: postsPublished) => {
   if (type === "comment") {
     return (
-      <div className="border-l-5 border-[#1F6D1A] p-2 pl-5 rounded-md flex gap-7.5">
+      <div className="border-l-5 mt-5 border-[#1F6D1A] p-2 pl-5 rounded-md flex gap-7.5">
         <MessagesSquare color="#1F6D1A" size={30} />
         <div>
           <h3 className="text-[#012D1D] text-base font-semibold">
@@ -20,7 +20,7 @@ const PostsPublished = ({ date, title, message, type }: postsPublished) => {
     );
   } else {
     return (
-      <div className="border-l-5 border-[#3E1E00] p-2 pl-5 rounded-md flex gap-5">
+      <div className="border-l-5 mt-5 border-[#3E1E00] p-2 pl-5 rounded-md flex gap-5">
         <Lightbulb />
         <div>
           <h3 className="text-[#012D1D] text-base font-semibold">

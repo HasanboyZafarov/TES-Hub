@@ -24,7 +24,7 @@ const Button = ({
 
   return (
     <button
-      className={`font-semibold flex items-center justify-center py-3 px-7 rounded-sm text-base cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed ${styles} ${className}`}
+      className={`font-semibold flex items-center justify-center py-3 px-7 rounded-sm text-base cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed transition duration-100 active:scale-90 ${styles} ${className}`}
       {...rest}
     >
       {Icon ? <Icon className={iconStyles} /> : ""}
