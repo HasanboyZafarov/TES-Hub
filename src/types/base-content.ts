@@ -7,7 +7,7 @@ export default interface BaseContent {
   title: string;
   authorId: string;
   status: "draft" | "pending_review" | "published" | "rejected" | "archived";
-  visibility: "public" | "unlisted" | "private";
+  visibility: "public" | "unlisted" | "private" | "hidden";
   language: "ru" | "ky" | "en";
   topicTags: string[];
   region?: Region;

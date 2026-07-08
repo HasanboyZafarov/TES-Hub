@@ -20,11 +20,11 @@ const Button = ({
   const styles =
     variant === "filled"
       ? "bg-[#012D1D] text-white"
-      : "text-[#191C1B] bg-white border-2 border-[#C1C8C2]";
+      : "text-[#191C1B] bg-transparent border-2 border-[#012D1D]";
 
   return (
     <button
-      className={`font-semibold flex items-center justify-center py-3 px-7 rounded-sm text-base cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed transition duration-100 active:scale-90 ${styles} ${className}`}
+      className={`font-semibold flex items-center justify-center py-3 px-7 rounded-xl text-base cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed transition duration-100 active:scale-90 ${styles} ${className}`}
       {...rest}
     >
       {Icon ? <Icon className={iconStyles} /> : ""}
