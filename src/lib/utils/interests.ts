@@ -1,5 +1,3 @@
-import { faker } from "@faker-js/faker";
-
 const interestPool = [
   "Technology",
   "Photography",
@@ -14,9 +12,7 @@ const interestPool = [
   "Sports",
 ];
 
-const userInterests = faker.helpers.arrayElements(interestPool, {
-  min: 1,
-  max: 4,
-});
+const userInterests = ["Gardening", "Technology", "Reading"];
 
+export { interestPool };
 export default userInterests;

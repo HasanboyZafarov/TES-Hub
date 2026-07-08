@@ -65,7 +65,7 @@ const Profile = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-[70%_30%] mt-10 gap-5 content-start">
+      <div className="grid grid-cols-1 lg:grid-cols-[7fr_3fr] mt-10 gap-5 content-start">
         <div className="w-full">
           <div className="outline-1 p-5 md:p-8 h-fit py-5 md:py-7 rounded-lg w-full outline-[#E2E8F0] bg-[#FFFFFF]">
             <h1 className="text-xl md:text-2xl font-semibold text-[#012D1D]">

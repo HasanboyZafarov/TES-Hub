@@ -1,6 +1,12 @@
 import { setupWorker } from "msw/browser";
 import { auth_handlers } from "./handlers/auth";
 import { profile_handlers } from "./handlers/profile";
+import { content_handlers } from "./handlers/content";
 import { handlers } from "./handlers/user";
 
-export const worker = setupWorker(...handlers, ...auth_handlers, ...profile_handlers);
+export const worker = setupWorker(
+  ...handlers,
+  ...auth_handlers,
+  ...profile_handlers,
+  ...content_handlers,
+);

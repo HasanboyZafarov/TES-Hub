@@ -10,12 +10,16 @@ const Auth = () => {
   const [tab, setTab] = useState("login");
 
   return (
-    <div className="flex">
-      <div className="w-[50%] p-10 bg-[#F8FAF8]">
-        <h1 className="text-[#012D1D] font-bold text-2xl">TES Hub</h1>
-        <div className="flex items-center justify-center h-full">
-          <div>
-            <h2 className="text-[#012D1D] font-bold text-5xl">Welcome Back</h2>
+    <div className="flex min-h-screen">
+      <div className="w-full lg:w-[50%] p-6 lg:p-10 bg-[#F8FAF8]">
+        <h1 className="text-[#012D1D] font-bold text-xl lg:text-2xl">
+          TES Hub
+        </h1>
+        <div className="flex items-center justify-center h-full py-8">
+          <div className="w-full max-w-md">
+            <h2 className="text-[#012D1D] font-bold text-3xl lg:text-5xl">
+              Welcome Back
+            </h2>
             <p className="text-[#414844] font-size text-lg mt-3">
               Access expert agricultural resources and join our community.
             </p>
@@ -73,7 +77,7 @@ const Auth = () => {
         style={{
           backgroundImage: `url('${background_img}')`,
         }}
-        className={`h-screen w-[50%] bg-no-repeat bg-top-right bg-cover`}
+        className="hidden lg:block h-screen w-[50%] bg-no-repeat bg-top-right bg-cover sticky top-0"
       ></div>
     </div>
   );

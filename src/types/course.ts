@@ -4,6 +4,7 @@ import type Pricing from "./pricing";
 
 export default interface Course extends BaseContent {
   type: "course";
+  visibility: "public" | "unlisted" | "hidden";
   shortDescription: string;
   longDescription: string;
   level: "beginner" | "intermediate" | "advanced";

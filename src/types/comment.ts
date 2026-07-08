@@ -3,9 +3,8 @@ export default interface Comment {
   contentId: string;
   authorId: string;
   body: string;
-  parentId?: string; // for replies
   createdAt: string;
-  likes: number;
+  likes: number; // anonymous — liking just notifies the comment author
   isHidden: boolean;
   isAcceptedAnswer?: boolean; // for Q&A
   isExpertAnswer?: boolean;
