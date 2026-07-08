@@ -74,7 +74,7 @@ const Footer = (props: Props) => {
 
   return (
     <footer
-      className={`border-t border-b bg-[#F8FAF8] py-5 pt-10 ${className}`}
+      className={`border-t border-b bg-[#ECEEEC] py-5 pt-10 ${className}`}
     >
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-2 gap-8 lg:grid-cols-5">

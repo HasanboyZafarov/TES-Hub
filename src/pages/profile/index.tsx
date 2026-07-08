@@ -5,7 +5,7 @@ import Button from "../../components/ui/button";
 import PostsPublished from "../../components/ui/postsPublished";
 import ProfileBadge from "../../components/ui/profileBadge";
 import { useUser } from "../../lib/hooks/useUser";
-import SkillsInterest from "./../../components/ui/skills-interest";
+import SkillsInterest from "../../components/ui/skillsInterest";
 import Certificate from "./../../components/ui/certificate";
 import Modal, { type ModalVariant } from "@/components/ui/modal";
 import { useState } from "react";

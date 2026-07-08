@@ -73,7 +73,8 @@ const stories: Story[] = [
     topicTags: ["organic-farming"],
     createdAt: "2026-06-18T10:00:00.000Z",
     updatedAt: "2026-06-19T09:00:00.000Z",
-    rejectionReason: "Reads as promotional spam with unverifiable claims and an external sales link.",
+    rejectionReason:
+      "Reads as promotional spam with unverifiable claims and an external sales link.",
     stats: { views: 40, likes: 0, comments: 1, saves: 0 },
     body: "Removed promotional content linking to a third-party fertilizer shop.",
     excerpt: "Rejected: promotional spam.",

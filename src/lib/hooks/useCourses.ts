@@ -24,7 +24,7 @@ const useCourses = () => {
           console.log("Network error");
           setError(err.message);
         } else {
-          setError("An unexpected error occured.");
+          setError("An unexpected error occurred.");
         }
       })
       .finally(() => setLoading(false));

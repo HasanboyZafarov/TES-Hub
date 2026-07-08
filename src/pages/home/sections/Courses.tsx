@@ -10,7 +10,7 @@ const Courses = () => {
 
   return (
     <div className="bg-white">
-      <div className="container mx-auto py-20 px-10  w-full">
+      <div className="container mx-auto py-15 px-10 w-full">
         <header>
           <h3 className="text-[#191C1B]">Featured Courses</h3>
           <div className="flex items-center gap-2 justify-between mt-3">
@@ -28,9 +28,11 @@ const Courses = () => {
         {error ? (
           <p className="text-[#C1292E] mt-10">Couldn't load courses: {error}</p>
         ) : (
-          <div className="grid grid-cols-3 gap-5 mt-10">
+          <div className="grid grid-cols-3 gap-10 mt-10">
             {isLoading
-              ? Array.from({ length: 3 }).map((_, i) => <CardSkeleton key={i} />)
+              ? Array.from({ length: 3 }).map((_, i) => (
+                  <CardSkeleton key={i} />
+                ))
               : published
                   ?.slice(0, 3)
                   .map((c) => <CourseCard key={c.id} course={c} />)}
