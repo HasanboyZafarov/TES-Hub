@@ -11,20 +11,20 @@ const AuthShell = ({ children }: Props) => {
 
   return (
     <div className="flex min-h-screen">
-      <div className="w-[50%] p-10 bg-[#F8FAF8] flex flex-col">
+      <div className="w-full lg:w-[50%] p-6 lg:p-10 bg-[#F8FAF8] flex flex-col">
         <h1
-          className="text-[#012D1D] font-bold text-2xl cursor-pointer w-fit"
+          className="text-[#012D1D] font-bold text-xl lg:text-2xl cursor-pointer w-fit"
           onClick={() => navigate("/")}
         >
           TES Hub
         </h1>
-        <div className="flex items-center justify-center flex-1">
+        <div className="flex items-center justify-center flex-1 py-8">
           <div className="w-full max-w-md">{children}</div>
         </div>
       </div>
       <div
         style={{ backgroundImage: `url('${background_img}')` }}
-        className="h-screen w-[50%] bg-no-repeat bg-top-right bg-cover sticky top-0"
+        className="hidden lg:block h-screen w-[50%] bg-no-repeat bg-top-right bg-cover sticky top-0"
       />
     </div>
   );

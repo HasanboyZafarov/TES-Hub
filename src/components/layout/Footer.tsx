@@ -73,7 +73,9 @@ const Footer = (props: Props) => {
   const visibleSections = (sections ?? []).slice(0, MAX_SECTIONS);
 
   return (
-    <footer className={`border-t border-b bg-[#F8FAF8] py-5 ${className}`}>
+    <footer
+      className={`border-t border-b bg-[#F8FAF8] py-5 pt-10 ${className}`}
+    >
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-2 gap-8 lg:grid-cols-5">
           <div className="col-span-2 mb-8 lg:mb-0">

@@ -1,55 +1,10 @@
-import { faker } from "@faker-js/faker";
 import { http, HttpResponse } from "msw";
-import type User from "../../types/user";
 import { endPoint } from "../../settings.json";
-import { roles } from "./profile";
-import userInterests from "../../lib/utils/interests";
+import users from "../data/users";
 
-const i = Math.floor(Math.random() * roles.length);
-const mockUser = (): User => ({
-  id: faker.string.uuid(),
-  email: faker.internet.email(),
-  username: faker.internet.username(),
-  displayName: faker.person.fullName(),
-  avatar: faker.image.avatar(),
-  role: roles[i],
-  bio: faker.lorem.sentence(),
-  region: { oblast: "Andijhan" },
-  languages: ["en"],
-  interests: userInterests,
-  createdAt: new Date().toISOString(),
-  isEmailVerified: true,
-  isBanned: faker.datatype.boolean({ probability: 0.5 }),
-  stats: {
-    postsPublished: [
-      {
-        id: faker.number.int(),
-        date: faker.date.anytime(),
-        title: faker.lorem.sentence(2),
-        message: faker.lorem.sentence(3),
-        type: "comment",
-      },
-    ],
-    coursesCompleted: [
-      {
-        id: faker.number.int(),
-        date: "today",
-        title: faker.lorem.sentence(2),
-        url: faker.internet.url(),
-      },
-    ],
-    certificatesEarned: [
-      {
-        id: faker.number.int(),
-        title: faker.word.words(3),
-        date: faker.date.anytime(),
-        url: faker.internet.url(),
-      },
-    ],
-    followers: faker.number.int(),
-    following: faker.number.int(),
-  },
-});
+const randomToken = () => crypto.randomUUID().replace(/-/g, "");
+
+const randomUser = () => users[Math.floor(Math.random() * users.length)];
 
 export const auth_handlers = [
   http.post(`${endPoint}/auth/login`, async ({ request }) => {
@@ -61,8 +16,8 @@ export const auth_handlers = [
       );
     }
     return HttpResponse.json({
-      token: faker.string.alphanumeric(64),
-      user: mockUser(),
+      token: randomToken(),
+      user: users.find((u) => u.email === body.email) ?? randomUser(),
     });
   }),
 
@@ -80,8 +35,8 @@ export const auth_handlers = [
       );
     }
     return HttpResponse.json({
-      token: faker.string.alphanumeric(64),
-      user: mockUser(),
+      token: randomToken(),
+      user: randomUser(),
     });
   }),
 

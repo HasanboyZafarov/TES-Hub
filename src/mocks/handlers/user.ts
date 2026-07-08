@@ -1,12 +1,11 @@
-import { faker } from "@faker-js/faker";
 import { http, HttpResponse } from "msw";
 import { endPoint } from "../../settings.json";
+import users from "../data/users";
 
-const data = Array.from({ length: 10 }, () => ({
-  id: faker.string.uuid(),
-  name: faker.person.firstName(),
-  lastName: faker.person.lastName(),
-}));
+const data = users.map((u) => {
+  const [name, ...rest] = u.displayName.split(" ");
+  return { id: u.id, name, lastName: rest.join(" ") };
+});
 
 export const handlers = [
   http.get(endPoint + "/api/users", () => {
