@@ -1,4 +1,4 @@
-import CardSkeleton from "@/components/ui/CardSkeleton";
+import CardSkeleton from "@/components/ui/cardSkeleton";
 import StoryCard from "@/components/ui/storyCard";
 import useStories from "@/lib/hooks/useStories";
 import { ArrowRight } from "lucide-react";

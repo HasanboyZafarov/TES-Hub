@@ -1,5 +1,5 @@
-import CardSkeleton from "@/components/ui/CardSkeleton";
-import CourseCard from "@/components/ui/CourseCard";
+import CardSkeleton from "@/components/ui/cardSkeleton";
+import CourseCard from "@/components/ui/courseCard";
 import useCourses from "@/lib/hooks/useCourses";
 import { ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
