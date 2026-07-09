@@ -1,9 +1,11 @@
+import CardSkeleton from "@/components/ui/CardSkeleton";
+import StoryCard from "@/components/ui/storyCard";
 import useStories from "@/lib/hooks/useStories";
 import { ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const Stories = () => {
-  useStories();
+  const { published, error, isLoading } = useStories();
   const navigate = useNavigate();
   return (
     <div className="bg-[#F2F4F2]">
@@ -22,7 +24,20 @@ const Stories = () => {
             </p>
           </div>
         </header>
-        
+
+        {error ? (
+          <p className="text-[#C1292E] mt-10">Couldn't load courses: {error}</p>
+        ) : (
+          <div className="grid grid-cols-3 gap-10 mt-10">
+            {isLoading
+              ? Array.from({ length: 3 }).map((_, i) => (
+                  <CardSkeleton key={i} />
+                ))
+              : published
+                  ?.slice(0, 3)
+                  .map((s) => <StoryCard key={s.id} story={s} />)}
+          </div>
+        )}
       </div>
     </div>
   );

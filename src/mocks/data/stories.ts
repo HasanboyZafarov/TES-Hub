@@ -1,4 +1,14 @@
 import type Story from "../../types/story";
+import { findUserById } from "./users";
+
+const authorFor = (authorId: string): Story["author"] => {
+  const user = findUserById(authorId);
+  return {
+    name: user?.displayName ?? "Unknown",
+    avatar: user?.avatar,
+    isVerified: user?.role === "verified_farmer",
+  };
+};
 
 // 5 stories — one per BaseContent status, static (no faker).
 const stories: Story[] = [
@@ -20,6 +30,8 @@ const stories: Story[] = [
     excerpt: "Still drafting our frost recovery notes.",
     surface: "community",
     isVerifiedByTES: false,
+    isPremium: false,
+    author: authorFor("user-verified-farmer-1"),
   },
   {
     id: "story-drip-irrigation-water-bill",
@@ -39,6 +51,8 @@ const stories: Story[] = [
     excerpt: "Two hectares, 40% less water, one season.",
     surface: "community",
     isVerifiedByTES: false,
+    isPremium: false,
+    author: authorFor("user-verified-farmer-1"),
   },
   {
     id: "story-apple-orchard-frost-recovery",
@@ -60,6 +74,8 @@ const stories: Story[] = [
     excerpt: "A late frost threatened our whole bloom — here's what saved it.",
     surface: "community",
     isVerifiedByTES: true,
+    isPremium: true,
+    author: authorFor("user-verified-farmer-1"),
   },
   {
     id: "story-miracle-fertilizer-spam",
@@ -80,6 +96,8 @@ const stories: Story[] = [
     excerpt: "Rejected: promotional spam.",
     surface: "community",
     isVerifiedByTES: false,
+    isPremium: false,
+    author: authorFor("user-member-1"),
   },
   {
     id: "story-walnut-harvest-2022",
@@ -100,6 +118,8 @@ const stories: Story[] = [
     excerpt: "An older harvest story, kept for the archive.",
     surface: "community",
     isVerifiedByTES: true,
+    isPremium: true,
+    author: authorFor("user-verified-farmer-1"),
   },
 ];
 
