@@ -17,7 +17,7 @@ const useCourses = () => {
     axiosInstance
       .get<Course[]>("/courses")
       .then((res) => {
-        setCourses(res.data);
+        setCourses(Array.isArray(res.data) ? res.data : []);
       })
       .catch((err: unknown) => {
         if (err instanceof Error) {

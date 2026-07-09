@@ -7,17 +7,11 @@ const useStories = () => {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setLoading] = useState(true);
 
-  const archived = stories?.filter((s) => s.status === "archived");
-  const draft = stories?.filter((s) => s.status === "draft");
-  const pending_review = stories?.filter((s) => s.status === "pending_review");
-  const published = stories?.filter((s) => s.status === "published");
-  const rejected = stories?.filter((s) => s.status === "rejected");
-
   useEffect(() => {
     axiosInstance
       .get<Story[]>("/stories")
       .then((res) => {
-        setStories(res.data);
+        setStories(Array.isArray(res.data) ? res.data : []);
       })
       .catch((err: unknown) => {
         if (err instanceof Error) {
@@ -29,6 +23,12 @@ const useStories = () => {
       })
       .finally(() => setLoading(false));
   }, []);
+
+  const archived = stories?.filter((s) => s.status === "archived");
+  const draft = stories?.filter((s) => s.status === "draft");
+  const pending_review = stories?.filter((s) => s.status === "pending_review");
+  const published = stories?.filter((s) => s.status === "published");
+  const rejected = stories?.filter((s) => s.status === "rejected");
 
   return {
     stories,
