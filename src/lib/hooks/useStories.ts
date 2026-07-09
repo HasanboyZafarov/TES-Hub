@@ -1,28 +1,8 @@
-import { useEffect, useState } from "react";
-import axiosInstance from "../api/apiClient";
 import type Story from "./../../types/story";
+import useData from "./useData";
 
 const useStories = () => {
-  const [stories, setStories] = useState<Story[] | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [isLoading, setLoading] = useState(true);
-
-  useEffect(() => {
-    axiosInstance
-      .get<Story[]>("/stories")
-      .then((res) => {
-        setStories(Array.isArray(res.data) ? res.data : []);
-      })
-      .catch((err: unknown) => {
-        if (err instanceof Error) {
-          console.log("Network error");
-          setError(err.message);
-        } else {
-          setError("An unexpected error occurred.");
-        }
-      })
-      .finally(() => setLoading(false));
-  }, []);
+  const { data: stories, error, isLoading } = useData<Story>("/stories");
 
   const archived = stories?.filter((s) => s.status === "archived");
   const draft = stories?.filter((s) => s.status === "draft");
