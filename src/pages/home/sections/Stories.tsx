@@ -1,30 +1,30 @@
 import CardSkeleton from "@/components/ui/cardSkeleton";
-import CourseCard from "@/components/ui/courseCard";
-import useCourses from "@/lib/hooks/useCourses";
+import StoryCard from "@/components/ui/storyCard";
+import useStories from "@/lib/hooks/useStories";
 import { ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
-const Courses = () => {
+const Stories = () => {
+  const { published, error, isLoading } = useStories();
   const navigate = useNavigate();
-  const { error, isLoading, published } = useCourses();
-
   return (
-    <div className="bg-white">
-      <div className="container mx-auto py-15 px-10 w-full">
+    <div className="bg-[#F2F4F2]">
+      <div className="container mx-auto px-10 py-15">
         <header>
-          <h3 className="text-[#191C1B]">Featured Courses</h3>
+          <h3 className="text-[#191C1B]">Community Stories</h3>
           <div className="flex items-center gap-2 justify-between mt-3">
             <p className="text-[#414844]">
-              Top-rated agricultural training from TES experts.
+              Real experiences from farmers across the country.
             </p>
             <p
               className="text-[#012D1D] flex gap-1 items-center cursor-pointer"
               onClick={() => navigate("/academy/courses")}
             >
-              View All <ArrowRight size={18} />
+              Join Discussion <ArrowRight size={18} />
             </p>
           </div>
         </header>
+
         {error ? (
           <p className="text-[#C1292E] mt-10">Couldn't load courses: {error}</p>
         ) : (
@@ -35,7 +35,7 @@ const Courses = () => {
                 ))
               : published
                   ?.slice(0, 3)
-                  .map((c) => <CourseCard key={c.id} course={c} />)}
+                  .map((s) => <StoryCard key={s.id} story={s} />)}
           </div>
         )}
       </div>
@@ -43,4 +43,4 @@ const Courses = () => {
   );
 };
 
-export default Courses;
+export default Stories;

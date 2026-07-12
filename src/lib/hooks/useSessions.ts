@@ -1,9 +1,9 @@
-import type Course from "./../../types/course";
+import type Session from "@/types/session";
 import useData from "./useData";
 
-const useCourses = () => {
+const useSessions = () => {
   const {
-    data: courses,
+    data: sessions,
     error,
     isLoading,
     published,
@@ -11,10 +11,10 @@ const useCourses = () => {
     draft,
     pending_review,
     rejected,
-  } = useData<Course>("/courses");
+  } = useData<Session>("/sessions");
 
   return {
-    courses,
+    sessions,
     error,
     isLoading,
     published,
@@ -25,4 +25,4 @@ const useCourses = () => {
   };
 };
 
-export default useCourses;
+export default useSessions;

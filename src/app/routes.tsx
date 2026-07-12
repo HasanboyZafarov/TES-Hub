@@ -19,6 +19,7 @@ import ResetPassword from "../pages/auth/ResetPassword";
 import VerifyEmail from "../pages/auth/VerifyEmail";
 import NotFound from "../pages/not-found";
 import PrivateRoutes from "./PrivateRoutes";
+import RouteError from "../components/layout/RouteError";
 
 // Academy routes
 import Academy from "../pages/academy";
@@ -148,6 +149,7 @@ const PRIVATE_ROUTES = [
 const routes = createBrowserRouter([
   {
     element: <Layout />,
+    errorElement: <RouteError />,
     children: [
       ...TOP_ROUTES,
       ...PUBLIC_ROUTES,
@@ -157,7 +159,7 @@ const routes = createBrowserRouter([
       ...PRIVATE_ROUTES,
     ],
   },
-  ...AUTH_ROUTES,
+  ...AUTH_ROUTES.map((route) => ({ ...route, errorElement: <RouteError /> })),
 ]);
 
 export default routes;
