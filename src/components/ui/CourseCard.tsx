@@ -11,7 +11,7 @@ const CourseCard = ({ course: c }: Props) => {
 
   return (
     <div
-      className="rounded-lg border border-[#C1C8C2] cursor-pointer hover:shadow-lg"
+      className="rounded-lg border border-[#C1C8C2] cursor-pointer hover:shadow-lg transition-all delay-0 duration-200"
       onClick={() => navigate(`/academy/courses/${c.id}`)}
     >
       <header

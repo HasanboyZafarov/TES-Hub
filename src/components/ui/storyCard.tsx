@@ -13,7 +13,7 @@ const StoryCard = ({ story: s }: Props) => {
 
   return (
     <div
-      className="rounded-lg border border-[#C1C8C2] cursor-pointer hover:shadow-lg p-6 flex flex-col gap-4 bg-white"
+      className="rounded-lg border border-[#C1C8C2] cursor-pointer hover:shadow-lg p-6 flex flex-col gap-4 bg-white transition-all delay-0 duration-200"
       onClick={() => navigate(`/community/stories/${s.slug}`)}
     >
       <div className="flex items-center justify-between">
