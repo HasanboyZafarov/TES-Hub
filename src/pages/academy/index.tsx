@@ -1,7 +1,13 @@
 const Academy = () => {
   return (
-    <div>
-      <h1>Academy</h1>
+    <div className="container mx-auto px-10 pt-10">
+      <header>
+        <h1 className="text-[#012D1D] text-5xl font-bold">Academy Library</h1>
+        <p className="text-[#414844] text-lg mt-3">
+          Explore our comprehensive collection of courses and articles bridging
+          traditional wisdom with modern agricultural science.
+        </p>
+      </header>
     </div>
   );
 };

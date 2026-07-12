@@ -1,27 +1,26 @@
 import CardSkeleton from "@/components/ui/cardSkeleton";
-import CourseCard from "@/components/ui/courseCard";
-import useCourses from "@/lib/hooks/useCourses";
+import SessionCard from "@/components/ui/sessionCard";
+import useSessions from "@/lib/hooks/useSessions";
 import { ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
-const Courses = () => {
+const Sessions = () => {
   const navigate = useNavigate();
-  const { error, isLoading, published } = useCourses();
-
+  const { published, error, isLoading } = useSessions();
   return (
-    <div className="bg-white">
-      <div className="container mx-auto py-15 px-10 w-full">
+    <div className="bg-[#FFFFFF]">
+      <div className="container mx-auto px-10 py-15">
         <header>
-          <h3 className="text-[#191C1B]">Featured Courses</h3>
+          <h3 className="text-[#191C1B]">Upcoming Sessions</h3>
           <div className="flex items-center gap-2 justify-between mt-3">
             <p className="text-[#414844]">
-              Top-rated agricultural training from TES experts.
+              Live training and interactive workshops.
             </p>
             <p
               className="text-[#012D1D] flex gap-1 items-center cursor-pointer"
               onClick={() => navigate("/academy/courses")}
             >
-              View All <ArrowRight size={18} />
+              See All Sessions <ArrowRight size={18} />
             </p>
           </div>
         </header>
@@ -35,7 +34,7 @@ const Courses = () => {
                 ))
               : published
                   ?.slice(0, 3)
-                  .map((c) => <CourseCard key={c.id} course={c} />)}
+                  .map((s) => <SessionCard sessions={s} key={s.id} />)}
           </div>
         )}
       </div>
@@ -43,4 +42,4 @@ const Courses = () => {
   );
 };
 
-export default Courses;
+export default Sessions;

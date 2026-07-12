@@ -1,9 +1,9 @@
-import type Course from "./../../types/course";
+import type Story from "./../../types/story";
 import useData from "./useData";
 
-const useCourses = () => {
+const useStories = () => {
   const {
-    data: courses,
+    data: stories,
     error,
     isLoading,
     published,
@@ -11,10 +11,10 @@ const useCourses = () => {
     draft,
     pending_review,
     rejected,
-  } = useData<Course>("/courses");
+  } = useData<Story>("/stories");
 
   return {
-    courses,
+    stories,
     error,
     isLoading,
     published,
@@ -25,4 +25,4 @@ const useCourses = () => {
   };
 };
 
-export default useCourses;
+export default useStories;
