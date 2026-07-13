@@ -10,7 +10,6 @@ const authorFor = (authorId: string): Story["author"] => {
   };
 };
 
-// 5 stories — one per BaseContent status, static (no faker).
 const stories: Story[] = [
   {
     id: "story-orchard-frost-recovery-draft",

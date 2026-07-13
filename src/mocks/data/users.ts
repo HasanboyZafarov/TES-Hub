@@ -1,6 +1,5 @@
 import type User from "../../types/user";
 
-// One user per role. Static, deterministic — no faker.
 const users: User[] = [
   {
     id: "user-guest-1",

@@ -1,11 +1,10 @@
 import type Article from "../../types/article";
 
-// 5 Academy articles — one per BaseContent status, static (no faker).
-// Articles are always TES-verified (isVerifiedByTES: true) and authored by tes_author / tes_admin.
 const articles: Article[] = [
   {
     id: "article-cover-crops-draft",
     type: "article",
+    category: "Soil Health",
     slug: "cover-crops-for-erosion-control-draft",
     title: "Cover Crops for Erosion Control",
     authorId: "user-tes-author-1",
@@ -26,6 +25,7 @@ const articles: Article[] = [
   {
     id: "article-ipm-orchards-pending",
     type: "article",
+    category: "Pest Management",
     slug: "integrated-pest-management-orchards",
     title: "Integrated Pest Management for Orchards",
     authorId: "user-tes-author-1",
@@ -46,6 +46,7 @@ const articles: Article[] = [
   {
     id: "article-ipm-orchards-published",
     type: "article",
+    category: "Pest Management",
     slug: "ipm-orchards-published",
     title: "Integrated Pest Management for Orchards: The Complete Guide",
     authorId: "user-tes-author-1",
@@ -68,6 +69,7 @@ const articles: Article[] = [
   {
     id: "article-unverified-yield-claims-rejected",
     type: "article",
+    category: "Organic Farming",
     slug: "unverified-yield-booster-claims",
     title: "This Additive Triples Your Yield",
     authorId: "user-tes-author-1",
@@ -89,6 +91,7 @@ const articles: Article[] = [
   {
     id: "article-legacy-fertilizer-guide-2021",
     type: "article",
+    category: "Soil Health",
     slug: "legacy-fertilizer-guide-2021",
     title: "NPK Fertilizer Guide (2021 Edition)",
     authorId: "user-tes-admin-1",

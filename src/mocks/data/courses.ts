@@ -1,10 +1,10 @@
 import type Course from "../../types/course";
 
-// 5 courses — one per BaseContent status, static (no faker).
 const courses: Course[] = [
   {
     id: "course-drip-irrigation-basics",
     type: "course",
+    category: "Irrigation",
     slug: "drip-irrigation-basics",
     title: "Drip Irrigation Basics",
     authorId: "user-spac-consultant-1",
@@ -42,6 +42,7 @@ const courses: Course[] = [
   {
     id: "course-livestock-vaccination-schedules",
     type: "course",
+    category: "Livestock",
     slug: "livestock-vaccination-schedules",
     title: "Livestock Vaccination Schedules",
     authorId: "user-spac-consultant-1",
@@ -88,6 +89,7 @@ const courses: Course[] = [
   {
     id: "course-soil-health-fundamentals",
     type: "course",
+    category: "Soil Health",
     slug: "soil-health-fundamentals",
     title: "Soil Health Fundamentals",
     authorId: "user-tes-author-1",
@@ -138,6 +140,7 @@ const courses: Course[] = [
   {
     id: "course-crypto-farming-riches",
     type: "course",
+    category: "Agribusiness",
     slug: "crypto-farming-riches",
     title: "Get Rich Quick With Crypto Farming",
     authorId: "user-spac-consultant-1",
@@ -166,6 +169,7 @@ const courses: Course[] = [
   {
     id: "course-greenhouse-tomato-2023",
     type: "course",
+    category: "Crop Production",
     slug: "greenhouse-tomato-production-2023",
     title: "Greenhouse Tomato Production (2023 Edition)",
     authorId: "user-tes-author-1",
