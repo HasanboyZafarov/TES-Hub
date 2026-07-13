@@ -1,9 +1,6 @@
 import type Comment from "../../types/comment";
 
-// Flat comments only — no replying. Likes are anonymous counts; liking
-// notifies the comment author server-side but no liker list is exposed.
 const comments: Comment[] = [
-  // On story-apple-orchard-frost-recovery
   {
     id: "comment-story-thanks",
     contentId: "story-apple-orchard-frost-recovery",
@@ -23,7 +20,6 @@ const comments: Comment[] = [
     isHidden: true,
   },
 
-  // On question-rootstock-high-altitude (isSolved, acceptedAnswerId points here)
   {
     id: "comment-rootstock-accepted",
     contentId: "question-rootstock-high-altitude",
@@ -36,7 +32,6 @@ const comments: Comment[] = [
     isExpertAnswer: true,
   },
 
-  // On question-old-silage-technique (archived, isSolved)
   {
     id: "comment-silage-accepted",
     contentId: "question-old-silage-technique",

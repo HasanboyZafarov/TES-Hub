@@ -1,6 +1,5 @@
 import type Session from "../../types/session";
 
-// 5 live sessions — one per BaseContent status, static (no faker).
 const sessions: Session[] = [
   {
     id: "session-pruning-workshop-draft",

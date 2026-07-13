@@ -1,9 +1,11 @@
 import type BaseContent from "./base-content";
+import type { Category } from "./category";
 import type CourseSection from "./course-section";
 import type Pricing from "./pricing";
 
 export default interface Course extends BaseContent {
   type: "course";
+  category: Category;
   visibility: "public" | "unlisted" | "hidden";
   shortDescription: string;
   longDescription: string;

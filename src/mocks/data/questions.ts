@@ -1,6 +1,5 @@
 import type Question from "../../types/question";
 
-// 5 questions — one per BaseContent status, static (no faker).
 const questions: Question[] = [
   {
     id: "question-draft-yellow-leaves",
