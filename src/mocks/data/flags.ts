@@ -2,8 +2,6 @@ import type Flag from "../../types/flag";
 import type { Role } from "../../types/role";
 import { can } from "../../lib/permissions";
 
-// Moderation flags. "pending" flags are confirmation-in-progress reports —
-// only tes_admin (moderateContent permission) should ever see them.
 const flags: Flag[] = [
   {
     id: "flag-story-spam-pending",
@@ -37,8 +35,9 @@ const flags: Flag[] = [
   },
 ];
 
-// Pending flags are moderation-queue-only: gate them behind moderateContent.
 export const getVisibleFlags = (role: Role): Flag[] =>
-  can(role, "moderateContent") ? flags : flags.filter((f) => f.status !== "pending");
+  can(role, "moderateContent")
+    ? flags
+    : flags.filter((f) => f.status !== "pending");
 
 export default flags;

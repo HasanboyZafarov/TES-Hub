@@ -7,6 +7,7 @@ import Button from "../../components/ui/button";
 import axiosInstance from "../../lib/api/apiClient";
 import { useAuthStore } from "../../store/authStore";
 import type User from "../../types/user";
+import CATEGORIES from "../../types/category";
 import AuthShell from "./components/AuthShell";
 
 const OBLASTS = [
@@ -27,16 +28,7 @@ const LANGUAGES = [
   { value: "en", label: "English" },
 ] as const;
 
-const INTERESTS = [
-  "Crop Production",
-  "Livestock",
-  "Irrigation",
-  "Soil Health",
-  "Agribusiness",
-  "Organic Farming",
-  "Pest Management",
-  "Climate & Weather",
-];
+const INTERESTS = CATEGORIES;
 
 const Step1Schema = z.object({
   displayName: z.string().min(2, "Display name must be at least 2 characters."),
