@@ -76,7 +76,7 @@ const Footer = (props: Props) => {
     <footer
       className={`border-t border-b bg-[#ECEEEC] py-5 pt-10 ${className}`}
     >
-      <div className="container mx-auto px-10">
+      <div className="container mx-auto px-5">
         <div className="grid grid-cols-2 gap-8 lg:grid-cols-5">
           <div className="col-span-2 mb-8 lg:mb-0">
             <div className="flex items-center lg:justify-start">
