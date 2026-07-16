@@ -1,10 +1,10 @@
-import { Bell, Menu, Search, X } from "lucide-react";
+import { Bell, Menu, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import useAuth from "../../lib/hooks/useAuth";
+import { useAuthStore } from "../../store/authStore";
 import Button from "../ui/button";
 import StyledContainer from "./StyledContainer";
-import { useAuthStore } from "../../store/authStore";
 
 const Header = () => {
   const user = useAuth();
@@ -100,8 +100,6 @@ const Header = () => {
             <Link to={"/notifications"}>
               <Bell />
             </Link>
-
-            <Search />
 
             {user ? (
               <div>
