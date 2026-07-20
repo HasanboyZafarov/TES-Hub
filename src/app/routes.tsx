@@ -53,6 +53,11 @@ import SessionRegisterConfirmation from "../pages/sessions/SessionRegisterConfir
 import TopicDetail from "../pages/community/topic/TopicDetail";
 import Profile from "../pages/profile";
 
+// Manage routes
+import Manage from "../pages/manage";
+import Articles from "@/pages/manage/articles/Articles";
+import ArticlesCRUD from "@/pages/manage/articles/ArticlesCRUD";
+
 const TOP_ROUTES = [
   { path: "/", element: <Home /> },
   { path: "/about", element: <About /> },
@@ -146,6 +151,12 @@ const PRIVATE_ROUTES = [
   },
 ];
 
+const MANAGE_ROUTES = [
+  { path: "/manage", element: <Manage /> },
+  { path: "/manage/articles", element: <Articles /> },
+  { path: "/manage/articles/:slug", element: <ArticlesCRUD /> },
+];
+
 const routes = createBrowserRouter([
   {
     element: <Layout />,
@@ -157,6 +168,7 @@ const routes = createBrowserRouter([
       ...COMMUNITY_ROUTES,
       ...SESSION_ROUTES,
       ...PRIVATE_ROUTES,
+      ...MANAGE_ROUTES,
     ],
   },
   ...AUTH_ROUTES.map((route) => ({ ...route, errorElement: <RouteError /> })),

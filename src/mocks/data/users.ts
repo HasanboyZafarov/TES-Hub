@@ -3,7 +3,7 @@ import type User from "../../types/user";
 const users: User[] = [
   {
     id: "user-guest-1",
-    email: "guest.demo@tes-hub.kg",
+    email: "guest@gmail.com",
     username: "guest_demo",
     displayName: "Aigerim Bekova",
     avatar: "/img/avatars/guest.png",
@@ -25,7 +25,7 @@ const users: User[] = [
   },
   {
     id: "user-member-1",
-    email: "nurlan.member@tes-hub.kg",
+    email: "member@gmail.com",
     username: "nurlan_m",
     displayName: "Nurlan Toktosunov",
     avatar: "/img/avatars/member.png",
@@ -55,7 +55,7 @@ const users: User[] = [
   },
   {
     id: "user-verified-farmer-1",
-    email: "gulnara.farmer@tes-hub.kg",
+    email: "verified_farmer@gmail.com",
     username: "gulnara_farms",
     displayName: "Gulnara Isakova",
     avatar: "/img/avatars/verified-farmer.png",
@@ -90,7 +90,7 @@ const users: User[] = [
   },
   {
     id: "user-spac-consultant-1",
-    email: "damir.spac@tes-hub.kg",
+    email: "spac_consultant@gmail.com",
     username: "damir_spac",
     displayName: "Damir Osmonov",
     avatar: "/img/avatars/spac-consultant.png",
@@ -121,7 +121,7 @@ const users: User[] = [
   },
   {
     id: "user-tes-author-1",
-    email: "elena.author@tes-hub.kg",
+    email: "tes_author@gmail.com",
     username: "elena_writes",
     displayName: "Elena Petrova",
     avatar: "/img/avatars/tes-author.png",
@@ -152,7 +152,7 @@ const users: User[] = [
   },
   {
     id: "user-tes-admin-1",
-    email: "admin@tes-hub.kg",
+    email: "tes_admin@gmail.com",
     username: "tes_admin",
     displayName: "Aibek Sadykov",
     avatar: "/img/avatars/tes-admin.png",

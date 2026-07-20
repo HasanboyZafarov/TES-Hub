@@ -9,6 +9,7 @@ import SkillsInterest from "../../components/ui/skillsInterest";
 import Certificate from "./../../components/ui/certificate";
 import Modal, { type ModalVariant } from "@/components/ui/modal";
 import { useState } from "react";
+import StyledContainer from "../../components/layout/StyledContainer";
 
 const Profile = () => {
   const { id } = useParams();
@@ -22,7 +23,7 @@ const Profile = () => {
   const closeModal = () => setVariant(null);
 
   return (
-    <div>
+    <StyledContainer className="py-10">
       <div className="mb-5">{user.isBanned && <Alert />}</div>
 
       <div className="flex flex-col items-center text-center gap-5 md:grid md:grid-cols-[auto_1fr_auto] md:items-center md:text-left md:justify-between">
@@ -115,7 +116,7 @@ const Profile = () => {
         </div>
       </div>
       <Modal variant={variant} user={user} onClose={closeModal} />
-    </div>
+    </StyledContainer>
   );
 };
 
