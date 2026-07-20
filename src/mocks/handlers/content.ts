@@ -40,7 +40,10 @@ export const content_handlers = [
   http.get(`${endPoint}/comments`, ({ request }) => {
     const contentId = new URL(request.url).searchParams.get("contentId");
     if (!contentId) {
-      return HttpResponse.json({ message: "contentId is required." }, { status: 400 });
+      return HttpResponse.json(
+        { message: "contentId is required." },
+        { status: 400 },
+      );
     }
     return HttpResponse.json(comments.filter((c) => c.contentId === contentId));
   }),
