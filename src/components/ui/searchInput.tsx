@@ -2,15 +2,16 @@ import { Search } from "lucide-react";
 
 interface Props {
   onChange: (e: string) => void;
+  placeholder: string;
 }
 
-const SearchInput = ({ onChange }: Props) => {
+const SearchInput = ({ onChange, placeholder }: Props) => {
   return (
     <div className="border border-[#C1C8C2] p-4 px-6 flex items-center gap-3 bg-[#F2F4F2] rounded-xl">
       <input
         type="text"
         className="outline-none w-full placeholder:text-[#6B7280] placeholder:text-base text-[#191C1B] text-lg"
-        placeholder="Search courses..."
+        placeholder={placeholder}
         onChange={(e) => {
           onChange(e.target.value);
         }}

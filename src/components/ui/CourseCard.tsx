@@ -12,7 +12,7 @@ const CourseCard = ({ course: c }: Props) => {
   return (
     <div
       className="h-full flex flex-col rounded-lg border border-[#C1C8C2] cursor-pointer hover:shadow-lg transition-all delay-0 duration-200"
-      onClick={() => navigate(`/academy/courses/${c.id}`)}
+      onClick={() => navigate(`/academy/courses/${c.slug}`)}
     >
       <header
         className="shrink-0 bg-no-repeat bg-center bg-cover p-6 pt-5 rounded-t-lg h-50"

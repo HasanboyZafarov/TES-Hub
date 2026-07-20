@@ -54,6 +54,7 @@ const AcademyCourses = () => {
               setSearch(e);
               setPage(1);
             }}
+            placeholder="Search courses..."
           />
         </div>
       </header>
