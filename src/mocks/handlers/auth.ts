@@ -6,10 +6,20 @@ const randomToken = () => crypto.randomUUID().replace(/-/g, "");
 
 const randomUser = () => users[Math.floor(Math.random() * users.length)];
 
+const CREDENTIALS: Record<string, string> = {
+  "tes_admin@gmail.com": "tesadmin",
+  "tes_author@gmail.com": "tesauthor",
+  "spac_consultant@gmail.com": "spacconsultant",
+  "verified_farmer@gmail.com": "verifiedfarmer",
+  "member@gmail.com": "tesmember",
+  "guest@gmail.com": "tesguest",
+};
+
 export const auth_handlers = [
   http.post(`${endPoint}/auth/login`, async ({ request }) => {
     const body = (await request.json()) as { email: string; password: string };
-    if (body.password === "wrongpassword") {
+    const expectedPassword = CREDENTIALS[body.email];
+    if (!expectedPassword || body.password !== expectedPassword) {
       return HttpResponse.json(
         { message: "Invalid email or password." },
         { status: 401 },
@@ -17,7 +27,7 @@ export const auth_handlers = [
     }
     return HttpResponse.json({
       token: randomToken(),
-      user: users.find((u) => u.email === body.email) ?? randomUser(),
+      user: users.find((u) => u.email === body.email)!,
     });
   }),
 

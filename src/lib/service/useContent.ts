@@ -21,7 +21,7 @@ const useContent = <T>(endpoint: string, slug: string) => {
         }
       })
       .finally(() => setLoading(false));
-  }, []);
+  }, [endpoint, slug]);
 
   return { content, error, isLoading };
 };
