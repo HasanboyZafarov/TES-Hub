@@ -84,6 +84,7 @@ const Footer = (props: Props) => {
                 TES Hub
               </Link>
             </div>
+            
             <p className="mt-4 text-sm font-medium text-muted-foreground">
               {description}
             </p>
