@@ -8,3 +8,7 @@ export type EntityStatus =
 export interface Status {
   status: EntityStatus;
 }
+
+const status = ["archived", "published", "draft", "pending_review", "rejected"];
+
+export default status;

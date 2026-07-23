@@ -4,6 +4,7 @@ import stories from "../data/stories";
 import questions from "../data/questions";
 import courses from "../data/courses";
 import articles from "../data/articles";
+import type Article from "../../types/article";
 import sessions from "../data/sessions";
 import comments from "../data/comments";
 
@@ -31,6 +32,22 @@ export const content_handlers = [
 
   http.get(`${endPoint}/articles`, () => HttpResponse.json(articles)),
   http.get<{ slug: string }>(`${endPoint}/articles/:slug`, bySlug(articles)),
+  http.patch<{ slug: string }>(
+    `${endPoint}/articles/:slug/status`,
+    async ({ params, request }) => {
+      const { status } = (await request.json()) as { status: string };
+      const article = articles.find((a) => a.slug === params.slug);
+      if (!article) {
+        return HttpResponse.json({ message: "Not found." }, { status: 404 });
+      }
+      article.status = status as Article["status"];
+      if (status === "published") {
+        article.publishedAt = new Date().toISOString();
+      }
+      article.updatedAt = new Date().toISOString();
+      return HttpResponse.json(article);
+    },
+  ),
 
   // Sessions
   http.get(`${endPoint}/sessions`, () => HttpResponse.json(sessions)),
