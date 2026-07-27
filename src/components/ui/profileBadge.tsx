@@ -2,11 +2,13 @@ import { UserRound, Leaf, BadgeCheck, BookA, Shield } from "lucide-react";
 
 interface Props {
   role?: string;
+  className?: string;
 }
 
-const ProfileBadge = ({ role }: Props) => {
+const ProfileBadge = ({ role, className }: Props) => {
   const baseClasses =
-    "flex gap-2 p-1 px-2 rounded-xl font-semibold text-sm justify-center items-center";
+    "flex gap-2 p-1 px-2 rounded-xl font-semibold text-sm justify-center items-center " +
+    className;
   return (
     <div>
       {role === "member" ? (
