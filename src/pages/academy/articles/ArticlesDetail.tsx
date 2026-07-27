@@ -6,7 +6,6 @@ import { useNavigate, useParams } from "react-router-dom";
 
 import ProfileBadge from "@/components/ui/profileBadge";
 import styles from "./styles.module.css";
-import UnlockFull from "@/components/ui/unlockFull";
 
 const ArticlesDetail = () => {
   const { slug } = useParams();
