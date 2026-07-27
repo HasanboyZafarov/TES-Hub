@@ -1,11 +1,12 @@
 import { useUser } from "@/lib/hooks/useUser";
 import useArticle from "@/lib/service/useArticle";
-import { Bookmark, Share2, SpaceIcon } from "lucide-react";
+import { Bookmark, Share2 } from "lucide-react";
 import moment from "moment";
 import { useNavigate, useParams } from "react-router-dom";
 
 import ProfileBadge from "@/components/ui/profileBadge";
 import styles from "./styles.module.css";
+import UnlockFull from "@/components/ui/unlockFull";
 
 const ArticlesDetail = () => {
   const { slug } = useParams();
@@ -58,10 +59,12 @@ const ArticlesDetail = () => {
             className={styles.content_editor}
             dangerouslySetInnerHTML={{ __html: article?.body || "" }}
           />
+
+          {/* <UnlockFull /> */}
         </div>
 
         <div className="w-[25%] flex flex-col gap-8">
-          <div className="h-max p-6 border border-[#C1C8C2] rounded-lg flex flex-col items-center">
+          <div className="h-max p-6 border border-[#C1C8C2] bg-white rounded-lg flex flex-col items-center">
             <h3 className="border-b border-[#C1C8C2] pb-2 text-xs w-full">
               ABOUT THE AUTHOR
             </h3>
@@ -89,7 +92,7 @@ const ArticlesDetail = () => {
             </button>
           </div>
 
-          <div className="h-max p-6 border border-[#C1C8C2] rounded-lg">
+          <div className="h-max p-6 border border-[#C1C8C2] bg-white rounded-lg">
             <h3 className="text-[#414844] font-semibold">TOPICS</h3>
             <div className="flex gap-2 mt-4">
               {article?.topicTags.map((t) => (
