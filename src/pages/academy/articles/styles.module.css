@@ -1,0 +1,9 @@
+@import "tailwindcss";
+
+.content_editor h1 {
+  @apply text-[#191c1b] text-3xl mt-10;
+}
+
+.content_editor p {
+  @apply text-[#191c1b] text-base mt-4;
+}
