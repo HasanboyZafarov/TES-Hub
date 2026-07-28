@@ -4,7 +4,9 @@ import { Bookmark, Share2 } from "lucide-react";
 import moment from "moment";
 import { useNavigate, useParams } from "react-router-dom";
 
+import Comments from "@/components/ui/comments";
 import ProfileBadge from "@/components/ui/profileBadge";
+import sanitize from "@/lib/sanitize";
 import styles from "./styles.module.css";
 
 const ArticlesDetail = () => {
@@ -20,10 +22,38 @@ const ArticlesDetail = () => {
       .replace(/^./, (char) => char.toUpperCase());
   }
 
+  if (isLoading)
+    return (
+      <div className="container mx-auto px-4 sm:px-10 py-5 pt-12 animate-pulse">
+        <div className="bg-[#c1c8c280] h-4 w-48 rounded-xs" />
+        <div className="bg-[#c1c8c280] h-12 w-3/4 rounded-xs my-6" />
+        <div className="bg-[#c1c8c280] h-5 w-full rounded-xs" />
+        <div className="bg-[#c1c8c280] h-80 w-full rounded-sm mt-8" />
+      </div>
+    );
+
+  if (error || !article)
+    return (
+      <div className="container mx-auto px-4 sm:px-10 py-5 pt-12">
+        <h1 className="text-[#191C1B] text-3xl font-semibold">
+          Article not found
+        </h1>
+        <p className="text-[#414844] mt-2">
+          {error ?? "This article may have been removed or unpublished."}
+        </p>
+        <button
+          onClick={() => navigate("/academy/articles")}
+          className="border border-[#717973] mt-6 text-[#191C1B] py-2 px-5 text-sm rounded-xs cursor-pointer hover:shadow"
+        >
+          Back to articles
+        </button>
+      </div>
+    );
+
   return (
     <div>
-      <div className="container mx-auto px-10 py-5 flex pt-12 gap-12">
-        <div className="w-[75%]">
+      <div className="container mx-auto px-4 sm:px-10 py-5 flex flex-col lg:flex-row pt-12 gap-12">
+        <div className="w-full lg:w-[75%]">
           <header>
             <p className="text-[#414844] text-xs">
               {article?.readTimeMinutes} min read • Updated at{" "}
@@ -42,7 +72,7 @@ const ArticlesDetail = () => {
                 alt="User avatar"
                 className="w-15 h-15 object-cover rounded-xl"
               />
-              <h3 className="text-[#191C1B]">Dr. {user?.displayName}</h3>
+              <h3 className="text-[#191C1B]">{user?.displayName}</h3>
             </div>
             <div className="flex gap-2">
               <div className="border-2 rounded-xl border-[#C1C8C2] p-3 flex items-center justify-center hover:shadow-xl cursor-pointer">
@@ -54,15 +84,23 @@ const ArticlesDetail = () => {
             </div>
           </div>
 
+          {article.coverImage && (
+            <img
+              src={article.coverImage}
+              alt={article.title}
+              className="w-full rounded-lg mt-6 bg-[#ECEEEC]"
+            />
+          )}
+
           <div
             className={styles.content_editor}
-            dangerouslySetInnerHTML={{ __html: article?.body || "" }}
+            dangerouslySetInnerHTML={{ __html: sanitize(article.body || "") }}
           />
 
-          {/* <UnlockFull /> */}
+          <Comments contentId={article.id} />
         </div>
 
-        <div className="w-[25%] flex flex-col gap-8">
+        <div className="w-full lg:w-[25%] flex flex-col gap-8">
           <div className="h-max p-6 border border-[#C1C8C2] bg-white rounded-lg flex flex-col items-center">
             <h3 className="border-b border-[#C1C8C2] pb-2 text-xs w-full">
               ABOUT THE AUTHOR
@@ -93,9 +131,9 @@ const ArticlesDetail = () => {
 
           <div className="h-max p-6 border border-[#C1C8C2] bg-white rounded-lg">
             <h3 className="text-[#414844] font-semibold">TOPICS</h3>
-            <div className="flex gap-2 mt-4">
+            <div className="flex gap-2 flex-wrap mt-4">
               {article?.topicTags.map((t) => (
-                <span className="py-1 px-3 bg-[#ECEEEC] rounded-full">
+                <span key={t} className="py-1 px-3 bg-[#ECEEEC] rounded-full">
                   {formatStatus(t)}
                 </span>
               ))}

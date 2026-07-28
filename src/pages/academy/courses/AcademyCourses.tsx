@@ -17,10 +17,7 @@ const AcademyCourses = () => {
   );
 
   const PAGE_SIZE = 6;
-  const pageCount = Math.max(
-    1,
-    Math.ceil((published ?? []).length / PAGE_SIZE),
-  );
+  const pageCount = Math.max(1, Math.ceil((filtered ?? []).length / PAGE_SIZE));
   const currentPage = Math.min(page, pageCount);
   const pageItems = (filtered ?? []).slice(
     (currentPage - 1) * PAGE_SIZE,
