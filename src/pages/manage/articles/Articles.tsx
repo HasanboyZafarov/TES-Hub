@@ -282,7 +282,7 @@ const Pagination = ({ page, totalPages, onPage }: PaginationProps) => {
     <div className="flex items-center gap-2">
       <button
         onClick={() => onPage(page - 1)}
-        disabled={page === 1}
+        disabled={page <= 1}
         className="px-4 py-2 rounded-md border border-[#E5E7EB] text-sm text-[#414844] disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#F9FAFB]"
       >
         Prev
@@ -308,7 +308,7 @@ const Pagination = ({ page, totalPages, onPage }: PaginationProps) => {
       )}
       <button
         onClick={() => onPage(page + 1)}
-        disabled={page === totalPages}
+        disabled={page >= totalPages}
         className="px-4 py-2 rounded-md border border-[#E5E7EB] text-sm text-[#414844] disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#F9FAFB]"
       >
         Next
@@ -318,7 +318,7 @@ const Pagination = ({ page, totalPages, onPage }: PaginationProps) => {
 };
 
 const Articles = () => {
-  const { articles } = useArticles();
+  const { articles, error, isLoading } = useArticles();
   const { can } = usePermissions();
   const canModerate = can("moderateContent");
 
@@ -397,14 +397,30 @@ const Articles = () => {
               </tr>
             </thead>
             <tbody>
-              {pageItems.map((a) => (
-                <TableRow
-                  key={a.id}
-                  article={a}
-                  canModerate={canModerate}
-                  onAction={handleAction}
-                />
-              ))}
+              {(isLoading || error || pageItems.length === 0) && (
+                <tr>
+                  <td
+                    colSpan={6}
+                    className="px-6 py-10 text-center text-sm text-[#414844]"
+                  >
+                    {isLoading
+                      ? "Loading articles…"
+                      : error
+                        ? `Error occurred: ${error}`
+                        : "No articles match your filters."}
+                  </td>
+                </tr>
+              )}
+              {!isLoading &&
+                !error &&
+                pageItems.map((a) => (
+                  <TableRow
+                    key={a.id}
+                    article={a}
+                    canModerate={canModerate}
+                    onAction={handleAction}
+                  />
+                ))}
             </tbody>
           </table>
 

@@ -5,19 +5,21 @@ import axiosInstance from "../api/apiClient";
 const useContent = <T>(endpoint: string, slug: string) => {
   const [content, setContent] = useState<T | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [isLoading, setLoading] = useState(true);
+  const [isLoading, setLoading] = useState(Boolean(slug));
 
   useEffect(() => {
+    if (!slug) return;
+
     axiosInstance
       .get<T>(`${endpoint}/${slug}`)
       .then((res) => setContent(res.data))
       .catch((err) => {
-        if (err instanceof Error) {
+        if (axios.isAxiosError(err)) {
+          setError(err.response?.data?.message ?? err.message);
+        } else if (err instanceof Error) {
           setError(err.message);
-        } else if (axios.isAxiosError(err)) {
-          setError(err.response?.data);
         } else {
-          setError(err);
+          setError("An unexpected error occurred.");
         }
       })
       .finally(() => setLoading(false));

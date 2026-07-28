@@ -55,6 +55,7 @@ import Profile from "../pages/profile";
 
 // Manage routes
 import Manage from "../pages/manage";
+import ManageRoutes from "./ManageRoutes";
 import Articles from "@/pages/manage/articles/Articles";
 import ArticlesCRUD from "@/pages/manage/articles/ArticlesCRUD";
 
@@ -152,9 +153,14 @@ const PRIVATE_ROUTES = [
 ];
 
 const MANAGE_ROUTES = [
-  { path: "/manage", element: <Manage /> },
-  { path: "/manage/articles", element: <Articles /> },
-  { path: "/manage/articles/:slug", element: <ArticlesCRUD /> },
+  {
+    element: <ManageRoutes />,
+    children: [
+      { path: "/manage", element: <Manage /> },
+      { path: "/manage/articles", element: <Articles /> },
+      { path: "/manage/articles/:slug", element: <ArticlesCRUD /> },
+    ],
+  },
 ];
 
 const routes = createBrowserRouter([

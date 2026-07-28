@@ -43,6 +43,35 @@ const comments: Comment[] = [
     isAcceptedAnswer: true,
     isExpertAnswer: true,
   },
+
+  {
+    id: "comment-ipm-traps",
+    contentId: "article-ipm-orchards-published",
+    authorId: "user-member-1",
+    body: "Ran pheromone traps in a 4ha apple block last season and cut two spray rounds. The threshold table here matches what we counted.",
+    createdAt: "2026-06-02T07:30:00.000Z",
+    likes: 31,
+    isHidden: false,
+  },
+  {
+    id: "comment-ipm-habitat-strips",
+    contentId: "article-ipm-orchards-published",
+    authorId: "user-spac-consultant-1",
+    body: "Worth adding: sow the habitat strips a season ahead. Beneficials need the flowering window established before the first pest peak, otherwise the strips do nothing in year one.",
+    createdAt: "2026-06-04T11:00:00.000Z",
+    likes: 58,
+    isHidden: false,
+    isExpertAnswer: true,
+  },
+  {
+    id: "comment-ipm-hidden-spam",
+    contentId: "article-ipm-orchards-published",
+    authorId: "user-member-1",
+    body: "Cheap generic pesticide, DM me, no license needed!!!",
+    createdAt: "2026-06-05T02:00:00.000Z",
+    likes: 0,
+    isHidden: true,
+  },
 ];
 
 export default comments;
