@@ -7,9 +7,11 @@ import Title from "./title";
 interface Props {
   title: string;
   setTitle: (title: string) => void;
+  titleError?: string;
   className?: string;
   coverImage: File | null;
   setCoverImage: (file: File | null) => void;
+  existingCover?: string;
   coverImageError?: string;
   category: CategoryType | "";
   setCategory: (category: CategoryType) => void;
@@ -21,9 +23,11 @@ interface Props {
 const ArticleSettings = ({
   title,
   setTitle,
+  titleError,
   className,
   coverImage,
   setCoverImage,
+  existingCover,
   coverImageError,
   category,
   setCategory,
@@ -47,11 +51,13 @@ const ArticleSettings = ({
           setValue={setTitle}
           label="Title"
           placeholder="Add title..."
+          error={titleError}
         />
 
         <CoverImage
           coverImage={coverImage}
           setCoverImage={setCoverImage}
+          existingUrl={existingCover}
           error={coverImageError}
         />
 
