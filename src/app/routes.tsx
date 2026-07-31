@@ -55,8 +55,12 @@ import Profile from "../pages/profile";
 
 // Manage routes
 import Manage from "../pages/manage";
+
 import Articles from "@/pages/manage/articles/Articles";
 import ArticlesCRUD from "@/pages/manage/articles/ArticlesCRUD";
+
+import ManageSessions from "@/pages/manage/sessions/Sessions";
+import SessionsCRUD from "@/pages/manage/sessions/SessionsCRUD";
 
 const TOP_ROUTES = [
   { path: "/", element: <Home /> },
@@ -155,6 +159,8 @@ const MANAGE_ROUTES = [
   { path: "/manage", element: <Manage /> },
   { path: "/manage/articles", element: <Articles /> },
   { path: "/manage/articles/:slug", element: <ArticlesCRUD /> },
+  { path: "/manage/sessions", element: <ManageSessions /> },
+  { path: "/manage/sessions/:slug", element: <SessionsCRUD /> },
 ];
 
 const routes = createBrowserRouter([
