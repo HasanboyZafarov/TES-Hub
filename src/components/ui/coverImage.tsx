@@ -4,10 +4,16 @@ import { useRef } from "react";
 interface Props {
   coverImage: File | null;
   setCoverImage: (file: File | null) => void;
+  existingUrl?: string;
   error?: string;
 }
 
-const CoverImage = ({ coverImage, setCoverImage, error }: Props) => {
+const CoverImage = ({
+  coverImage,
+  setCoverImage,
+  existingUrl,
+  error,
+}: Props) => {
   const inputRef = useRef<HTMLInputElement>(null);
 
   return (
@@ -26,11 +32,23 @@ const CoverImage = ({ coverImage, setCoverImage, error }: Props) => {
           error ? "border-red-500" : "border-[#C1C8C2]"
         }`}
       >
-        <div className="bg-[#1B4332] w-max p-4 rounded-xl">
-          <ImagePlus size={30} color="#86AF99" />
-        </div>
+        {!coverImage && existingUrl ? (
+          <img
+            src={existingUrl}
+            alt="Current cover"
+            className="w-full max-h-40 object-cover rounded-md"
+          />
+        ) : (
+          <div className="bg-[#1B4332] w-max p-4 rounded-xl">
+            <ImagePlus size={30} color="#86AF99" />
+          </div>
+        )}
         <h3 className="text-[#012D1D] text-sm font-semibold mt-3">
-          {coverImage ? coverImage.name : "Click to upload"}
+          {coverImage
+            ? coverImage.name
+            : existingUrl
+              ? "Click to replace"
+              : "Click to upload"}
         </h3>
         <p className="text-[#414844] text-xs mt-1">PNG, JPG up to 5MB</p>
       </div>

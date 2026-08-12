@@ -83,10 +83,10 @@ export default function Editor({
 
         [&_.ql-container]:border!
         [&_.ql-container]:h-full!
-        [&_.ql-container]:border-[#C1C8C2]!
-        [&_.ql-container]:bg-[red]!
+        ${error ? "[&_.ql-container]:border-red-500!" : "[&_.ql-container]:border-[#C1C8C2]!"}
+        [&_.ql-container]:bg-[#F8FAF8]!
         [&_.ql-container]:font-sans!
-   
+
         [&_.ql-editor]:bg-[#F8FAF8]!
         [&_.ql-editor]:text-base!
         [&_.ql-editor]:h-full!
