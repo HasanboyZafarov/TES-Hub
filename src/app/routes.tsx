@@ -59,11 +59,14 @@ import ManageRoutes from "./ManageRoutes";
 import Articles from "@/pages/manage/articles/Articles";
 import ArticlesCRUD from "@/pages/manage/articles/ArticlesCRUD";
 
+import ManageSessions from "@/pages/manage/sessions/Sessions";
+import SessionsCRUD from "@/pages/manage/sessions/SessionsCRUD";
+
 const TOP_ROUTES = [
   { path: "/", element: <Home /> },
   { path: "/about", element: <About /> },
   { path: "/contact", element: <Contact /> },
-  { path: "/terms-of-use", element: <Terms /> },
+  { path: "/terms-of-service", element: <Terms /> },
   { path: "/privacy-policy", element: <Privacy /> },
   { path: "/profile/:id", element: <Profile /> },
   { path: "/profile/", element: <Profile /> },
@@ -159,6 +162,8 @@ const MANAGE_ROUTES = [
       { path: "/manage", element: <Manage /> },
       { path: "/manage/articles", element: <Articles /> },
       { path: "/manage/articles/:slug", element: <ArticlesCRUD /> },
+      { path: "/manage/sessions", element: <ManageSessions /> },
+      { path: "/manage/sessions/:slug", element: <SessionsCRUD /> },
     ],
   },
 ];
