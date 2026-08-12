@@ -54,7 +54,7 @@ const defaultProps: Footer2Props = {
       title: "Support",
       links: [
         { name: "Contact", url: "/contact" },
-        { name: "Terms of use", url: "/terms-of-use" },
+        { name: "Terms of Service", url: "/terms-of-service" },
         { name: "Privacy Policy", url: "/privacy-policy" },
       ],
     },
@@ -84,7 +84,7 @@ const Footer = (props: Props) => {
                 TES Hub
               </Link>
             </div>
-            
+
             <p className="mt-4 text-sm font-medium text-muted-foreground">
               {description}
             </p>

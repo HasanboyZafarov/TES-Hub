@@ -66,7 +66,7 @@ const TOP_ROUTES = [
   { path: "/", element: <Home /> },
   { path: "/about", element: <About /> },
   { path: "/contact", element: <Contact /> },
-  { path: "/terms-of-use", element: <Terms /> },
+  { path: "/terms-of-service", element: <Terms /> },
   { path: "/privacy-policy", element: <Privacy /> },
   { path: "/profile/:id", element: <Profile /> },
   { path: "/profile/", element: <Profile /> },

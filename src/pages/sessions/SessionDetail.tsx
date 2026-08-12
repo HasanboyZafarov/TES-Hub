@@ -251,17 +251,17 @@ const SessionDetail = () => {
 
   if (error || !session) {
     return (
-      <div className="container mx-auto px-10 py-20">
+      <div className="container mx-auto px-10 py-10">
         <h1 className="text-[#012D1D] text-3xl font-bold">Session not found</h1>
         <p className="text-[#414844] mt-2">
           This session may have been removed or is not public.
         </p>
         <button
-          onClick={() => navigate("/sessions")}
+          onClick={() => navigate(-1)}
           className="flex items-center gap-2 mt-6 text-[#012D1D] font-semibold cursor-pointer"
         >
           <ChevronLeft size={18} />
-          Back to sessions
+          Go back
         </button>
       </div>
     );
