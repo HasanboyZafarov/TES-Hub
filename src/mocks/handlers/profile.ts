@@ -22,6 +22,18 @@ export const profile_handlers = [
     });
   }),
 
+  // Public community profile, addressed by username rather than id.
+  http.get<{ username: string }>(
+    endPoint + "/authors/:username",
+    ({ params }) => {
+      const user = users.find((u) => u.username === params.username);
+      if (!user) {
+        return HttpResponse.json({ message: "Not found." }, { status: 404 });
+      }
+      return HttpResponse.json<User>(user);
+    },
+  ),
+
   http.get<{ id: string }>(endPoint + "/profile/:id", ({ params }) => {
     const { id } = params;
     const user = findUserById(id as string) ?? fallbackUser();

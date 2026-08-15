@@ -9,6 +9,8 @@ import sessions from "../data/sessions";
 import type Session from "../../types/session";
 import type Course from "../../types/course";
 import comments from "../data/comments";
+import type Comment from "../../types/comment";
+import type BaseContent from "../../types/base-content";
 
 type ArticleInput = Pick<Article, "title" | "body" | "category"> &
   Partial<
@@ -43,6 +45,46 @@ const bySlug =
     if (!item) {
       return HttpResponse.json({ message: "Not found." }, { status: 404 });
     }
+    return HttpResponse.json(item);
+  };
+
+/**
+ * Keeps the denormalized counters on a story/question in sync. Replies count as
+ * comments but not as answers, so `isAnswer` gates the question counter.
+ */
+const bumpCommentCount = (contentId: string, delta: number, isAnswer: boolean) => {
+  const item = [...stories, ...questions].find((c) => c.id === contentId);
+  if (!item) return;
+  item.stats.comments = Math.max(0, item.stats.comments + delta);
+  if (isAnswer && "answerCount" in item) {
+    item.answerCount = Math.max(0, item.answerCount + delta);
+  }
+};
+
+/** POST /:slug/:metric where metric is `like` or `save`; `?undo=true` reverses it. */
+const engagement =
+  <T extends { slug: string; stats: BaseContent["stats"] }>(list: T[]) =>
+  ({
+    params,
+    request,
+  }: {
+    params: { slug: string; metric: string };
+    request: Request;
+  }) => {
+    const { slug, metric } = params;
+    if (metric !== "like" && metric !== "save") {
+      return HttpResponse.json({ message: "Unknown action." }, { status: 404 });
+    }
+
+    const item = list.find((i) => i.slug === slug);
+    if (!item) {
+      return HttpResponse.json({ message: "Not found." }, { status: 404 });
+    }
+
+    const undo = new URL(request.url).searchParams.get("undo") === "true";
+    const key = metric === "like" ? "likes" : "saves";
+    item.stats[key] = Math.max(0, item.stats[key] + (undo ? -1 : 1));
+
     return HttpResponse.json(item);
   };
 
@@ -423,4 +465,53 @@ export const content_handlers = [
     }
     return HttpResponse.json(comments.filter((c) => c.contentId === contentId));
   }),
+
+  http.post(`${endPoint}/comments`, async ({ request }) => {
+    const payload = (await request.json()) as Partial<Comment>;
+
+    if (!payload.contentId || !payload.body?.trim()) {
+      return HttpResponse.json(
+        { message: "contentId and body are required." },
+        { status: 400 },
+      );
+    }
+
+    const comment: Comment = {
+      id: `comment-${Date.now()}`,
+      contentId: payload.contentId,
+      parentId: payload.parentId,
+      authorId: payload.authorId ?? "user-member-1",
+      body: payload.body.trim(),
+      createdAt: new Date().toISOString(),
+      likes: 0,
+      isHidden: false,
+    };
+
+    comments.push(comment);
+    bumpCommentCount(payload.contentId, 1, !payload.parentId);
+
+    return HttpResponse.json(comment, { status: 201 });
+  }),
+
+  http.post<{ id: string }>(
+    `${endPoint}/comments/:id/like`,
+    ({ params }) => {
+      const comment = comments.find((c) => c.id === params.id);
+      if (!comment) {
+        return HttpResponse.json({ message: "Not found." }, { status: 404 });
+      }
+      comment.likes += 1;
+      return HttpResponse.json(comment);
+    },
+  ),
+
+  // Community engagement — like / save toggles on stories and questions
+  http.post<{ slug: string; metric: string }>(
+    `${endPoint}/stories/:slug/:metric`,
+    engagement(stories),
+  ),
+  http.post<{ slug: string; metric: string }>(
+    `${endPoint}/questions/:slug/:metric`,
+    engagement(questions),
+  ),
 ];
