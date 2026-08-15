@@ -292,7 +292,10 @@ const CoursesDetail = () => {
               <span>Full lifetime access</span>
             </li>
             <li className="flex items-center gap-3 text-[#191C1B]">
-              <MonitorSmartphone size={20} className="shrink-0 text-[#414844]" />
+              <MonitorSmartphone
+                size={20}
+                className="shrink-0 text-[#414844]"
+              />
               <span>Access on mobile and TV</span>
             </li>
             {course?.certificateTemplate && (
