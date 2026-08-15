@@ -1,6 +1,7 @@
 export default interface Comment {
   id: string;
   contentId: string;
+  parentId?: string; // set on replies; threads are one level deep
   authorId: string;
   body: string;
   createdAt: string;
