@@ -61,6 +61,8 @@ import ArticlesCRUD from "@/pages/manage/articles/ArticlesCRUD";
 
 import ManageSessions from "@/pages/manage/sessions/Sessions";
 import SessionsCRUD from "@/pages/manage/sessions/SessionsCRUD";
+import ManageCourses from "@/pages/manage/courses/Courses";
+import CourseComposer from "@/pages/manage/courses/CourseComposer";
 
 const TOP_ROUTES = [
   { path: "/", element: <Home /> },
@@ -164,6 +166,8 @@ const MANAGE_ROUTES = [
       { path: "/manage/articles/:slug", element: <ArticlesCRUD /> },
       { path: "/manage/sessions", element: <ManageSessions /> },
       { path: "/manage/sessions/:slug", element: <SessionsCRUD /> },
+      { path: "/manage/courses", element: <ManageCourses /> },
+      { path: "/manage/courses/:slug", element: <CourseComposer /> },
     ],
   },
 ];

@@ -7,6 +7,7 @@ import articles from "../data/articles";
 import type Article from "../../types/article";
 import sessions from "../data/sessions";
 import type Session from "../../types/session";
+import type Course from "../../types/course";
 import comments from "../data/comments";
 
 type ArticleInput = Pick<Article, "title" | "body" | "category"> &
@@ -56,6 +57,121 @@ export const content_handlers = [
   // Academy
   http.get(`${endPoint}/courses`, () => HttpResponse.json(courses)),
   http.get<{ slug: string }>(`${endPoint}/courses/:slug`, bySlug(courses)),
+
+  http.post(`${endPoint}/courses`, async ({ request }) => {
+    const body = (await request.json()) as Partial<Course>;
+    const now = new Date().toISOString();
+
+    if (!body.title) {
+      return HttpResponse.json(
+        { message: "title is required." },
+        { status: 400 },
+      );
+    }
+
+    const slug = body.slug || slugify(body.title);
+    if (courses.some((c) => c.slug === slug)) {
+      return HttpResponse.json(
+        { message: "A course with this slug already exists." },
+        { status: 409 },
+      );
+    }
+
+    const course: Course = {
+      id: `course-${slug}-${Date.now()}`,
+      type: "course",
+      slug,
+      title: body.title,
+      authorId: body.authorId ?? "user-tes-admin-1",
+      status: body.status ?? "draft",
+      visibility: body.visibility ?? "hidden",
+      language: body.language ?? "en",
+      topicTags: body.topicTags ?? [],
+      region: body.region,
+      coverImage: body.coverImage,
+      createdAt: now,
+      updatedAt: now,
+      publishedAt: body.status === "published" ? now : undefined,
+      stats: { views: 0, likes: 0, comments: 0, saves: 0 },
+      category: body.category ?? "Crop Production",
+      shortDescription: body.shortDescription ?? "",
+      longDescription: body.longDescription ?? "",
+      level: body.level ?? "beginner",
+      estimatedDurationHours: body.estimatedDurationHours ?? 0,
+      sections: body.sections ?? [],
+      enrollmentCount: 0,
+      rating: 0,
+      reviewCount: 0,
+      pricing: body.pricing ?? {
+        model: "free",
+        currency: "KGS",
+        hasDiscount: false,
+        isRefundable: false,
+      },
+      certificateTemplate: body.certificateTemplate,
+      completionThresholdPercent: body.completionThresholdPercent ?? 80,
+      perks: body.perks ?? [],
+      enrollmentLimit: body.enrollmentLimit,
+      surface: "academy",
+    };
+
+    courses.push(course);
+    return HttpResponse.json(course, { status: 201 });
+  }),
+
+  http.patch<{ slug: string }>(
+    `${endPoint}/courses/:slug`,
+    async ({ params, request }) => {
+      const body = (await request.json()) as Partial<Course>;
+      const course = courses.find((c) => c.slug === params.slug);
+      if (!course) {
+        return HttpResponse.json({ message: "Not found." }, { status: 404 });
+      }
+      if (
+        body.slug &&
+        body.slug !== course.slug &&
+        courses.some((c) => c.slug === body.slug)
+      ) {
+        return HttpResponse.json(
+          { message: "A course with this slug already exists." },
+          { status: 409 },
+        );
+      }
+
+      Object.assign(course, body);
+      course.updatedAt = new Date().toISOString();
+      if (body.status === "published" && !course.publishedAt) {
+        course.publishedAt = course.updatedAt;
+      }
+      return HttpResponse.json(course);
+    },
+  ),
+
+  http.patch<{ slug: string }>(
+    `${endPoint}/courses/:slug/status`,
+    async ({ params, request }) => {
+      const { status } = (await request.json()) as { status: string };
+      const course = courses.find((c) => c.slug === params.slug);
+      if (!course) {
+        return HttpResponse.json({ message: "Not found." }, { status: 404 });
+      }
+      course.status = status as Course["status"];
+      if (status === "published") {
+        course.publishedAt = new Date().toISOString();
+      }
+      course.updatedAt = new Date().toISOString();
+      return HttpResponse.json(course);
+    },
+  ),
+
+  http.delete<{ slug: string }>(`${endPoint}/courses/:slug`, ({ params }) => {
+    const index = courses.findIndex((c) => c.slug === params.slug);
+    if (index === -1) {
+      return HttpResponse.json({ message: "Not found." }, { status: 404 });
+    }
+    const [removed] = courses.splice(index, 1);
+    return HttpResponse.json(removed);
+  }),
 
   http.get(`${endPoint}/articles`, () => HttpResponse.json(articles)),
   http.get<{ slug: string }>(`${endPoint}/articles/:slug`, bySlug(articles)),
