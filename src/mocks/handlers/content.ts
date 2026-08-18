@@ -48,10 +48,6 @@ const bySlug =
     return HttpResponse.json(item);
   };
 
-/**
- * Keeps the denormalized counters on a story/question in sync. Replies count as
- * comments but not as answers, so `isAnswer` gates the question counter.
- */
 const bumpCommentCount = (contentId: string, delta: number, isAnswer: boolean) => {
   const item = [...stories, ...questions].find((c) => c.id === contentId);
   if (!item) return;
@@ -61,7 +57,6 @@ const bumpCommentCount = (contentId: string, delta: number, isAnswer: boolean) =
   }
 };
 
-/** POST /:slug/:metric where metric is `like` or `save`; `?undo=true` reverses it. */
 const engagement =
   <T extends { slug: string; stats: BaseContent["stats"] }>(list: T[]) =>
   ({
@@ -89,14 +84,12 @@ const engagement =
   };
 
 export const content_handlers = [
-  // Community
   http.get(`${endPoint}/stories`, () => HttpResponse.json(stories)),
   http.get<{ slug: string }>(`${endPoint}/stories/:slug`, bySlug(stories)),
 
   http.get(`${endPoint}/questions`, () => HttpResponse.json(questions)),
   http.get<{ slug: string }>(`${endPoint}/questions/:slug`, bySlug(questions)),
 
-  // Academy
   http.get(`${endPoint}/courses`, () => HttpResponse.json(courses)),
   http.get<{ slug: string }>(`${endPoint}/courses/:slug`, bySlug(courses)),
 
@@ -310,7 +303,6 @@ export const content_handlers = [
     },
   ),
 
-  // Sessions
   http.get(`${endPoint}/sessions`, () => HttpResponse.json(sessions)),
   http.get<{ slug: string }>(`${endPoint}/sessions/:slug`, bySlug(sessions)),
 
@@ -454,7 +446,6 @@ export const content_handlers = [
     return HttpResponse.json(removed);
   }),
 
-  // Comments — ?contentId=<id> required
   http.get(`${endPoint}/comments`, ({ request }) => {
     const contentId = new URL(request.url).searchParams.get("contentId");
     if (!contentId) {
@@ -505,7 +496,6 @@ export const content_handlers = [
     },
   ),
 
-  // Community engagement — like / save toggles on stories and questions
   http.post<{ slug: string; metric: string }>(
     `${endPoint}/stories/:slug/:metric`,
     engagement(stories),

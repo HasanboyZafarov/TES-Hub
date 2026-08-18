@@ -3,7 +3,6 @@ import type CourseSection from "@/types/course-section";
 import type Enrollment from "@/types/enrollment";
 import type Lesson from "@/types/lesson";
 
-/** Sections in author order, each with its lessons in author order. */
 export const orderedSections = (course?: Course | null): CourseSection[] =>
   [...(course?.sections ?? [])]
     .sort((a, b) => a.order - b.order)
@@ -12,7 +11,6 @@ export const orderedSections = (course?: Course | null): CourseSection[] =>
       lessons: [...section.lessons].sort((a, b) => a.order - b.order),
     }));
 
-/** Every lesson of a course, flattened into the order a learner walks them. */
 export const orderedLessons = (course?: Course | null): Lesson[] =>
   orderedSections(course).flatMap((section) => section.lessons);
 
@@ -54,11 +52,6 @@ export const isLessonComplete = (
   lessonId: string,
 ) => Boolean(enrollment?.completedLessonIds.includes(lessonId));
 
-/**
- * Preview lessons stay open to everyone; everything else needs an enrollment.
- * Lessons are not sequentially gated — learners may jump around a course they
- * have enrolled in.
- */
 export const isLessonLocked = (
   lesson: Lesson,
   enrollment: Enrollment | null | undefined,
@@ -90,7 +83,6 @@ export const remainingMinutes = (
     .filter((lesson) => !isLessonComplete(enrollment, lesson.id))
     .reduce((total, lesson) => total + (lesson.durationMinutes || 0), 0);
 
-/** The lesson a "Resume" button should open. */
 export const resumeLessonId = (
   course: Course | null | undefined,
   enrollment: Enrollment | null | undefined,

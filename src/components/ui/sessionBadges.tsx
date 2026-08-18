@@ -95,10 +95,6 @@ const Pill = ({ style }: { style: BadgeStyle }) => {
   );
 };
 
-/**
- * Published sessions read as their lifecycle (Live / Upcoming / Completed /
- * Canceled); everything else reads as its moderation status.
- */
 export const SessionStatusBadge = ({ session }: { session: Session }) => {
   if (session.isCanceled) return <Pill style={LIFECYCLE_STYLES.canceled} />;
   if (session.status === "published") {

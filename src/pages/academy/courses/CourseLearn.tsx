@@ -234,7 +234,6 @@ const CourseLearn = () => {
           </ul>
         </section>
 
-        {/* The rail is desktop-only, so the overview repeats the curriculum. */}
         <section className="lg:hidden overflow-hidden rounded-xl border border-[#C1C8C2] bg-white">
           <h2 className="border-b border-[#E1E6E1] px-5 py-4 text-lg font-semibold text-[#191C1B]">
             {t("learn.curriculum")}

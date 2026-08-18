@@ -20,17 +20,14 @@ export default interface Resource {
   type: ResourceType;
   category: Category;
   language: "ru" | "ky" | "en";
-  /** Files served by TES. Undefined for `link` resources. */
   fileUrl?: string;
   fileName?: string;
   sizeKb?: number;
-  /** Set for `link` and `video` resources hosted elsewhere. */
   externalUrl?: string;
   updatedAt: string;
   downloadCount: number;
   tags: string[];
   region?: Region;
-  /** Members-only downloads prompt a sign-in first. */
   requiresAuth: boolean;
   isFeatured?: boolean;
 }

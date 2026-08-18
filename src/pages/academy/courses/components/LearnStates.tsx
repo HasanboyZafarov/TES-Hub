@@ -45,7 +45,6 @@ interface GateProps {
   isEnrolling: boolean;
 }
 
-/** Shown in place of locked lesson content until the learner enrolls. */
 export const EnrollGate = ({
   courseSlug,
   onEnroll,

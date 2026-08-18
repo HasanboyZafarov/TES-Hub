@@ -32,8 +32,6 @@ import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
 import z from "zod";
 
-/* --------------------------------- schema --------------------------------- */
-
 type Translate = (key: string) => string;
 
 const buildSessionSchema = (t: Translate) =>
@@ -108,9 +106,6 @@ const EMPTY_FORM: FormState = {
   coverImage: "",
 };
 
-/* --------------------------------- helpers -------------------------------- */
-
-/** ISO → value accepted by <input type="datetime-local"> (local time). */
 function toLocalInput(iso?: string) {
   if (!iso) return "";
   const d = new Date(iso);
@@ -122,8 +117,6 @@ function toLocalInput(iso?: string) {
 }
 
 const toISO = (local: string) => (local ? new Date(local).toISOString() : "");
-
-/* ------------------------------ field widgets ----------------------------- */
 
 const Field = ({
   label,
@@ -163,8 +156,6 @@ const Card = ({
     <div className="mt-5">{children}</div>
   </section>
 );
-
-/* ---------------------------------- page ---------------------------------- */
 
 const SessionsCRUD = () => {
   const { t } = useTranslation();
@@ -309,8 +300,6 @@ const SessionsCRUD = () => {
       );
     }
   }
-
-  /* ------------------------------ repeaters ------------------------------ */
 
   const addAgendaItem = () =>
     setAgenda((a) => [

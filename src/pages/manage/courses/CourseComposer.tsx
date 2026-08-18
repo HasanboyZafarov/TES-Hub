@@ -133,12 +133,10 @@ const Composer = ({ course }: { course: Course | null }) => {
   );
   const [coverFile, setCoverFile] = useState<File | null>(null);
   const [step, setStep] = useState(0);
-  // An existing course has already cleared every step, so all tabs stay open.
   const [furthest, setFurthest] = useState(course ? STEPS.length - 1 : 0);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [banner, setBanner] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
-  /** Set once the course exists on the server, so later steps patch it. */
   const [savedSlug, setSavedSlug] = useState<string | null>(
     course?.slug ?? null,
   );
@@ -146,7 +144,6 @@ const Composer = ({ course }: { course: Course | null }) => {
   function set<K extends keyof CourseDraft>(key: K, value: CourseDraft[K]) {
     setDraft((d) => {
       const next = { ...d, [key]: value };
-      // Keep the slug in sync with the title until the course is first saved.
       if (key === "title" && !savedSlug) next.slug = slugify(String(value));
       return next;
     });

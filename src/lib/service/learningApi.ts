@@ -4,7 +4,6 @@ import type Enrollment from "@/types/enrollment";
 import type Resource from "@/types/resource";
 import type { PublicQuiz, QuizAnswers, QuizAttempt } from "@/types/quiz";
 
-/** The API scopes every learning read/write by learner id. */
 const scope = (userId?: string) => ({ params: userId ? { userId } : undefined });
 
 export const fetchEnrollments = (userId?: string) =>

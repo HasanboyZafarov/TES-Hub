@@ -1,6 +1,5 @@
 import type Certificate from "../../types/certificate";
 
-/** Mutable in-memory store — issued by the learning handlers on completion. */
 const certificates: Certificate[] = [
   {
     id: "cert-soil-health-verified-farmer",

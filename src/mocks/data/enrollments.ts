@@ -1,9 +1,5 @@
 import type Enrollment from "../../types/enrollment";
 
-/**
- * Mutable in-memory store — the learning handlers push into it as learners
- * enrol and tick lessons off.
- */
 const enrollments: Enrollment[] = [
   {
     id: "enr-verified-farmer-soil-health",

@@ -14,11 +14,6 @@ const messageOf = (err: unknown, fallback: string) => {
   return fallback;
 };
 
-/**
- * The learner's enrollment in one course, plus the writes the player needs.
- * A 404 from the API means "not enrolled" — that is a normal state here, not
- * an error, so it resolves to `enrollment: null` with `error` left clear.
- */
 const useEnrollment = (slug: string) => {
   const user = useAuth();
   const userId = user?.id;
@@ -96,7 +91,6 @@ const useEnrollment = (slug: string) => {
     error,
     enroll,
     setLessonComplete,
-    /** Lets the quiz page push the enrollment the grader returned. */
     applyEnrollment: setEnrollment,
   };
 };

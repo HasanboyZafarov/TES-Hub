@@ -8,7 +8,6 @@ import { verifyCertificate } from "@/lib/service/learningApi";
 import type Certificate from "@/types/certificate";
 import { LearnLoading } from "./components/LearnStates";
 
-/** Public page — anyone holding a verification code can check a credential. */
 const CertificateVerify = () => {
   const { code = "" } = useParams();
   const { t, i18n } = useTranslation();

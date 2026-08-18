@@ -5,10 +5,10 @@ import type Pricing from "./pricing";
 export default interface Article extends BaseContent {
   type: "article";
   category: Category;
-  body: string; // TipTap JSON or HTML
+  body: string;
   excerpt: string;
   readTimeMinutes: number;
   pricing: Pricing;
   surface: "academy";
-  isVerifiedByTES: true; // articles are always Academy/Verified
+  isVerifiedByTES: true;
 }

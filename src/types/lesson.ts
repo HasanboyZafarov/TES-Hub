@@ -7,7 +7,6 @@ export interface LessonResource {
 
 export interface ArticleLessonContent {
   kind: "article";
-  /** Rich text — always run through `sanitize` before rendering. */
   body: string;
 }
 
@@ -51,9 +50,7 @@ export default interface Lesson {
   type: "article" | "video" | "pdf" | "quiz" | "external_link";
   durationMinutes: number;
   isFreePreview: boolean;
-  /** One-line teaser shown in the player header and the curriculum sidebar. */
   summary?: string;
-  /** Undefined while the lesson is still being authored in the composer. */
   content?: LessonContent;
   resources?: LessonResource[];
 }

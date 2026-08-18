@@ -28,9 +28,7 @@ export default interface Course extends BaseContent {
   pricing: Pricing;
   certificateTemplate?: string;
   completionThresholdPercent: number;
-  /** Perks advertised on the enrollment card. */
   perks?: CoursePerk[];
-  /** Undefined means unlimited seats. */
   enrollmentLimit?: number;
   surface: "academy";
 }

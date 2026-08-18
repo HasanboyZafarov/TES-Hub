@@ -6,7 +6,6 @@ import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 
-/** A tile drops out of the wall entirely if its image file is missing. */
 const PhotoTile = ({ story }: { story: Story }) => {
   const { t } = useTranslation();
   const [failed, setFailed] = useState(false);
@@ -43,10 +42,6 @@ const PhotoTile = ({ story }: { story: Story }) => {
   );
 };
 
-/**
- * The photo wall is a visual cut of the story feed — every published story that
- * carries a cover image, newest first.
- */
 const Photos = () => {
   const { t } = useTranslation();
   const { posts, regions, isLoading, error } = useCommunityFeed({

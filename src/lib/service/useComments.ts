@@ -50,8 +50,6 @@ const useComments = (contentId: string) => {
   );
 
   const like = useCallback(async (id: string) => {
-    // Optimistic — the counter is cosmetic and a failed like is not worth a
-    // blocking error state.
     setComments((prev) =>
       prev.map((c) => (c.id === id ? { ...c, likes: c.likes + 1 } : c)),
     );

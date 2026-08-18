@@ -15,7 +15,6 @@ interface Props {
   course: Course;
   enrollment: Enrollment | null;
   activeLessonId?: string;
-  /** Mobile drawer closes itself after a lesson is picked. */
   onNavigate?: () => void;
 }
 

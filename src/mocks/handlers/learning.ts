@@ -66,11 +66,6 @@ const newEnrollment = (userId: string, course: Course): Enrollment => ({
   quizState: {},
 });
 
-/**
- * Recomputes progress from the completed-lesson list and, once the completion
- * threshold is crossed, stamps `completedAt` and issues the certificate.
- * Idempotent — safe to call after every progress write.
- */
 const syncProgress = (enrollment: Enrollment, course: Course) => {
   const lessons = allLessons(course);
   const total = lessons.length;
@@ -129,9 +124,7 @@ const sameSet = (a: string[], b: string[]) =>
   a.length === b.length && [...a].sort().join("|") === [...b].sort().join("|");
 
 export const learning_handlers = [
-  /* ------------------------------ enrollment ----------------------------- */
 
-  // Every enrollment for one learner, used by the "My learning" surfaces.
   http.get(`${endPoint}/enrollments`, ({ request }) => {
     const userId = userIdFrom(request);
     return HttpResponse.json(enrollments.filter((e) => e.userId === userId));
@@ -187,9 +180,6 @@ export const learning_handlers = [
     },
   ),
 
-  /* ------------------------------- progress ------------------------------ */
-
-  // Marks a lesson complete / incomplete and moves the resume pointer.
   http.post<{ slug: string }>(
     `${endPoint}/courses/:slug/progress`,
     async ({ params, request }) => {
@@ -230,8 +220,6 @@ export const learning_handlers = [
       return HttpResponse.json(syncProgress(enrollment, course));
     },
   ),
-
-  /* --------------------------------- quiz -------------------------------- */
 
   http.get<{ quizId: string }>(
     `${endPoint}/quizzes/:quizId`,
@@ -325,7 +313,6 @@ export const learning_handlers = [
         },
       };
 
-      // Passing the quiz completes the lesson that hosts it.
       if (passed && quiz.lessonId) {
         const done = new Set(enrollment.completedLessonIds);
         done.add(quiz.lessonId);
@@ -337,8 +324,6 @@ export const learning_handlers = [
       return HttpResponse.json({ attempt, enrollment }, { status: 201 });
     },
   ),
-
-  /* ----------------------------- certificates ---------------------------- */
 
   http.get<{ slug: string }>(
     `${endPoint}/courses/:slug/certificate`,
@@ -382,8 +367,6 @@ export const learning_handlers = [
       return HttpResponse.json(certificate);
     },
   ),
-
-  /* ------------------------------ resources ------------------------------ */
 
   http.get(`${endPoint}/resources`, () => HttpResponse.json(resources)),
 

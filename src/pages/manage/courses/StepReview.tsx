@@ -42,7 +42,6 @@ const StepReview = ({
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      {/* Preview */}
       <div className="lg:col-span-2 border border-[#C1C8C2] rounded-xl bg-white overflow-hidden">
         <div className="relative h-52 bg-[#E6E9E7] flex items-center justify-center">
           {draft.coverImage ? (
@@ -132,7 +131,6 @@ const StepReview = ({
         </div>
       </div>
 
-      {/* Checklist + actions */}
       <aside className="flex flex-col gap-6">
         <section className="border border-[#C1C8C2] rounded-xl bg-white p-6">
           <h3 className="text-[#012D1D] font-semibold flex items-center gap-2">
