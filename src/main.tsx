@@ -6,7 +6,7 @@ import "./index.css";
 import "./i18n";
 
 async function enableMocking() {
-  if (process.env.NODE_ENV !== "development") {
+  if (!import.meta.env.DEV) {
     return;
   }
 
