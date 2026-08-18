@@ -1,5 +1,6 @@
 import { TriangleAlert, X } from "lucide-react";
 import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   open: boolean;
@@ -16,12 +17,14 @@ const ConfirmDialog = ({
   open,
   title,
   message,
-  confirmLabel = "Confirm",
-  cancelLabel = "Cancel",
+  confirmLabel,
+  cancelLabel,
   tone = "danger",
   onConfirm,
   onCancel,
 }: Props) => {
+  const { t } = useTranslation();
+
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
@@ -64,7 +67,7 @@ const ConfirmDialog = ({
           </div>
           <button
             type="button"
-            aria-label="Close"
+            aria-label={t("common.close")}
             onClick={onCancel}
             className="text-[#6B7280] hover:text-[#191C1B] cursor-pointer"
           >
@@ -78,14 +81,14 @@ const ConfirmDialog = ({
             onClick={onCancel}
             className="px-5 py-2 rounded-md border border-[#C1C8C2] text-[#191C1B] text-sm font-semibold cursor-pointer hover:bg-[#F9FAFB]"
           >
-            {cancelLabel}
+            {cancelLabel ?? t("common.cancel")}
           </button>
           <button
             type="button"
             onClick={onConfirm}
             className={`px-5 py-2 rounded-md text-white text-sm font-semibold cursor-pointer ${confirmClass}`}
           >
-            {confirmLabel}
+            {confirmLabel ?? t("common.confirm")}
           </button>
         </div>
       </div>

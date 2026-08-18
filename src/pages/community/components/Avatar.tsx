@@ -1,5 +1,6 @@
 import { initialsOf } from "@/lib/utils/community";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   name?: string;
@@ -20,15 +21,20 @@ const Avatar = ({
   rounded = "full",
   className = "",
 }: Props) => {
+  const { t } = useTranslation();
   const [failed, setFailed] = useState(false);
   const shape = rounded === "full" ? "rounded-full" : "rounded-lg";
-  const style = { width: size, height: size, fontSize: Math.max(11, size / 2.8) };
+  const style = {
+    width: size,
+    height: size,
+    fontSize: Math.max(11, size / 2.8),
+  };
 
   if (src && !failed) {
     return (
       <img
         src={src}
-        alt={name ?? "Avatar"}
+        alt={name ?? t("community.avatarAlt")}
         style={style}
         onError={() => setFailed(true)}
         className={`shrink-0 object-cover bg-[#ECEEEC] ${shape} ${className}`}

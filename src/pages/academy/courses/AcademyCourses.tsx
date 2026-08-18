@@ -3,9 +3,11 @@ import CourseCard from "@/components/ui/courseCard";
 import useCourses from "@/lib/hooks/useCourses";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import SearchInput from "./../../../components/ui/searchInput";
 
 const AcademyCourses = () => {
+  const { t } = useTranslation();
   const [search, setSearch] = useState<string>("");
   const [page, setPage] = useState(1);
   const { published, error, isLoading } = useCourses();
@@ -28,7 +30,7 @@ const AcademyCourses = () => {
     return (
       <div className="container mx-auto px-4 sm:px-6 lg:px-10 pt-5">
         <h1 className="text-[#191C1B] text-3xl font-semibold">
-          {error} "Error occured"
+          {t("academy.errorOccurred")}
         </h1>
       </div>
     );
@@ -38,12 +40,9 @@ const AcademyCourses = () => {
       <header className="mb-10 flex flex-col md:flex-row md:justify-between md:items-start gap-6">
         <div>
           <h1 className="text-[#012D1D] text-3xl sm:text-4xl lg:text-5xl font-bold">
-            Academy Courses
+            {t("academy.coursesTitle")}
           </h1>
-          <h3 className="mt-3">
-            Discover a curated selection of courses that connect time-honored
-            farming knowledge with today's agricultural innovations.
-          </h3>
+          <h3 className="mt-3">{t("academy.coursesSubtitle")}</h3>
         </div>
         <div className="w-full md:w-auto md:min-w-[280px]">
           <SearchInput
@@ -51,7 +50,7 @@ const AcademyCourses = () => {
               setSearch(e);
               setPage(1);
             }}
-            placeholder="Search courses..."
+            placeholder={t("academy.searchCourses")}
           />
         </div>
       </header>
@@ -62,7 +61,7 @@ const AcademyCourses = () => {
             ))
           : pageItems.map((p) => <CourseCard key={p.id} course={p} />)}
 
-        {pageItems.length === 0 && "No courses"}
+        {pageItems.length === 0 && t("academy.noCourses")}
       </div>
 
       {!isLoading && pageCount > 1 && (

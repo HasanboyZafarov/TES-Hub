@@ -1,4 +1,8 @@
-import CATEGORIES, { type Category as CategoryType } from "@/types/category";
+import CATEGORIES, {
+  CATEGORY_KEYS,
+  type Category as CategoryType,
+} from "@/types/category";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   category: CategoryType | "";
@@ -7,9 +11,13 @@ interface Props {
 }
 
 const Category = ({ category, setCategory, error }: Props) => {
+  const { t } = useTranslation();
+
   return (
     <div className="flex flex-col">
-      <h3 className="text-[#012D1D] text-sm font-semibold mt-8">Category</h3>
+      <h3 className="text-[#012D1D] text-sm font-semibold mt-8">
+        {t("category.label")}
+      </h3>
       <select
         name=""
         id=""
@@ -20,11 +28,11 @@ const Category = ({ category, setCategory, error }: Props) => {
         }`}
       >
         <option value="" disabled>
-          Select a category
+          {t("category.select")}
         </option>
         {CATEGORIES.map((c) => (
           <option key={c} value={c}>
-            {c}
+            {t(CATEGORY_KEYS[c])}
           </option>
         ))}
       </select>

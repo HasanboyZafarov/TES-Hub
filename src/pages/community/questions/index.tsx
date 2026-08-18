@@ -1,21 +1,22 @@
 import SearchInput from "@/components/ui/searchInput";
-import useCommunityFeed, { isQuestion, type FeedSort } from "@/lib/hooks/useCommunityFeed";
+import useCommunityFeed, {
+  isQuestion,
+  type FeedSort,
+} from "@/lib/hooks/useCommunityFeed";
 import { ChevronLeft } from "lucide-react";
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import FeedTabs from "../components/FeedTabs";
 import PostList from "../components/PostList";
 import { GuidelinesWidget, TopicsWidget } from "../components/SidebarWidgets";
 
-const SORT_TABS: { value: FeedSort; label: string }[] = [
-  { value: "latest", label: "Latest" },
-  { value: "popular", label: "Popular" },
-  { value: "unanswered", label: "Unanswered" },
-];
+const SORT_VALUES: FeedSort[] = ["latest", "popular", "unanswered"];
 
 type Filter = "all" | "open" | "solved";
 
 const Questions = () => {
+  const { t } = useTranslation();
   const [sort, setSort] = useState<FeedSort>("latest");
   const [search, setSearch] = useState("");
   const [tag, setTag] = useState<string | null>(null);
@@ -37,37 +38,46 @@ const Questions = () => {
 
   const openCount = posts.filter((p) => isQuestion(p) && !p.isSolved).length;
 
+  const sortTabs = SORT_VALUES.map((value) => ({
+    value,
+    label:
+      value === "unanswered"
+        ? t("community.questions.sortUnanswered")
+        : t(`community.sort.${value}`),
+  }));
+
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-10 pt-6 sm:pt-10 pb-20">
       <Link
         to="/community"
         className="inline-flex items-center gap-1 text-[#414844] text-sm hover:text-[#012D1D]"
       >
-        <ChevronLeft size={16} /> Community
+        <ChevronLeft size={16} /> {t("community.back")}
       </Link>
 
       <header className="flex flex-col lg:flex-row lg:justify-between lg:items-end gap-6 mt-4">
         <div>
           <h1 className="text-[#012D1D] text-3xl sm:text-4xl lg:text-5xl font-bold">
-            Questions &amp; Answers
+            {t("community.questions.title")}
           </h1>
           <p className="text-[#414844] text-base sm:text-lg mt-3 max-w-2xl">
-            Ask the people who have already dealt with it. Consultants review the
-            answers and mark the ones that hold up.
+            {t("community.questions.subtitle")}
           </p>
           <p className="text-[#414844] text-sm mt-3">
-            {openCount} {openCount === 1 ? "question" : "questions"} still
-            waiting for an answer.
+            {t("community.questions.openCount", { count: openCount })}
           </p>
         </div>
         <div className="w-full lg:w-90">
-          <SearchInput onChange={setSearch} placeholder="Search questions..." />
+          <SearchInput
+            onChange={setSearch}
+            placeholder={t("community.questions.searchPlaceholder")}
+          />
         </div>
       </header>
 
       <div className="flex flex-col lg:flex-row gap-8 mt-10">
         <div className="w-full lg:w-[70%]">
-          <FeedTabs tabs={SORT_TABS} value={sort} onChange={setSort} />
+          <FeedTabs tabs={sortTabs} value={sort} onChange={setSort} />
 
           <div className="flex flex-wrap items-center gap-3 mt-5">
             {(["all", "open", "solved"] as Filter[]).map((f) => (
@@ -75,13 +85,13 @@ const Questions = () => {
                 key={f}
                 type="button"
                 onClick={() => setFilter(f)}
-                className={`text-xs font-semibold py-1.5 px-3 rounded-full cursor-pointer capitalize ${
+                className={`text-xs font-semibold py-1.5 px-3 rounded-full cursor-pointer ${
                   filter === f
                     ? "bg-[#012D1D] text-white"
                     : "bg-[#F2F4F2] text-[#414844] hover:bg-[#E4E9E4]"
                 }`}
               >
-                {f}
+                {t(`community.questions.filter.${f}`)}
               </button>
             ))}
 
@@ -100,7 +110,7 @@ const Questions = () => {
             posts={visible}
             isLoading={isLoading}
             error={error}
-            emptyMessage="No questions match your filters yet."
+            emptyMessage={t("community.questions.empty")}
           />
         </div>
 

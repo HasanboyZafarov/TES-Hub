@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import z from "zod";
@@ -15,18 +16,24 @@ import type Article from "@/types/article";
 import type { EntityStatus } from "@/types/status";
 import CATEGORIES, { type Category } from "@/types/category";
 
-const ArticleSchema = z.object({
-  body: z.string().min(1, "Article content is required."),
-  title: z.string().min(1, "Title is required."),
-  category: z.enum(CATEGORIES, { error: "Please select a category." }),
-  coverImage: z.union([z.instanceof(File), z.string().min(1)], {
-    error: "Cover image is required.",
-  }),
-});
+type Translate = (key: string) => string;
 
-const DraftSchema = z.object({
-  title: z.string().min(1, "Title is required."),
-});
+const buildArticleSchema = (t: Translate) =>
+  z.object({
+    body: z.string().min(1, t("manage.articles.errors.bodyRequired")),
+    title: z.string().min(1, t("manage.articles.errors.titleRequired")),
+    category: z.enum(CATEGORIES, {
+      error: t("manage.articles.errors.categoryRequired"),
+    }),
+    coverImage: z.union([z.instanceof(File), z.string().min(1)], {
+      error: t("manage.articles.errors.coverRequired"),
+    }),
+  });
+
+const buildDraftSchema = (t: Translate) =>
+  z.object({
+    title: z.string().min(1, t("manage.articles.errors.titleRequired")),
+  });
 
 type Intent = "draft" | "publish" | "review";
 
@@ -41,6 +48,7 @@ interface FormProps {
 }
 
 const ArticleForm = ({ article }: FormProps) => {
+  const { t } = useTranslation();
   const { can } = usePermissions();
   const auth = useAuth();
   const navigate = useNavigate();
@@ -61,8 +69,11 @@ const ArticleForm = ({ article }: FormProps) => {
 
   const existingCover = article?.coverImage ?? "";
 
+  const articleSchema = useMemo(() => buildArticleSchema(t), [t]);
+  const draftSchema = useMemo(() => buildDraftSchema(t), [t]);
+
   const save = async (intent: Intent) => {
-    const schema = intent === "draft" ? DraftSchema : ArticleSchema;
+    const schema = intent === "draft" ? draftSchema : articleSchema;
     const result = schema.safeParse({
       title,
       body,
@@ -104,7 +115,7 @@ const ArticleForm = ({ article }: FormProps) => {
       setSaveError(
         axios.isAxiosError(err)
           ? (err.response?.data?.message ?? err.message)
-          : "Could not save the article.",
+          : t("manage.articles.saveFailed"),
       );
     } finally {
       setSaving(false);
@@ -119,11 +130,11 @@ const ArticleForm = ({ article }: FormProps) => {
       <div className="flex items-center justify-between">
         {article ? (
           <h2 className="text-5xl text-[#012D1D] font-bold">
-            Editing article: {article.title}
+            {t("manage.articles.editing", { title: article.title })}
           </h2>
         ) : (
           <h2 className="text-5xl text-[#012D1D] font-bold">
-            Adding new article
+            {t("manage.articles.adding")}
           </h2>
         )}
         <div className="flex gap-3">
@@ -133,7 +144,7 @@ const ArticleForm = ({ article }: FormProps) => {
             disabled={isSaving}
             onClick={() => save("draft")}
           >
-            Save Draft
+            {t("manage.articles.saveDraft")}
           </Button>
           {canPublish && (
             <Button
@@ -141,7 +152,7 @@ const ArticleForm = ({ article }: FormProps) => {
               disabled={isSaving}
               onClick={() => save("publish")}
             >
-              Publish
+              {t("manage.articles.publish")}
             </Button>
           )}
 
@@ -152,15 +163,13 @@ const ArticleForm = ({ article }: FormProps) => {
               disabled={isSaving}
               onClick={() => save("review")}
             >
-              Submit For Review
+              {t("manage.articles.submitForReview")}
             </Button>
           )}
         </div>
       </div>
 
-      {saveError && (
-        <p className="text-red-500 text-sm mt-4">{saveError}</p>
-      )}
+      {saveError && <p className="text-red-500 text-sm mt-4">{saveError}</p>}
 
       <div className="flex mt-5 items-stretch">
         <Editor
@@ -190,6 +199,7 @@ const ArticleForm = ({ article }: FormProps) => {
 };
 
 const ArticlesCRUD = () => {
+  const { t } = useTranslation();
   const { slug } = useParams();
   const isNew = slug === "new";
 
@@ -198,7 +208,7 @@ const ArticlesCRUD = () => {
   if (!isNew && isLoading)
     return (
       <div className="container mx-auto px-10 pt-5 pb-10">
-        <p className="text-[#414844]">Loading article…</p>
+        <p className="text-[#414844]">{t("manage.articles.loadingArticle")}</p>
       </div>
     );
 
@@ -206,9 +216,11 @@ const ArticlesCRUD = () => {
     return (
       <div className="container mx-auto px-10 pt-5 pb-10">
         <h2 className="text-3xl text-[#012D1D] font-bold">
-          Article not found
+          {t("manage.articles.notFound")}
         </h2>
-        <p className="text-[#414844] mt-2">{error ?? `No article "${slug}".`}</p>
+        <p className="text-[#414844] mt-2">
+          {error ?? t("manage.articles.notFoundText", { slug })}
+        </p>
       </div>
     );
 

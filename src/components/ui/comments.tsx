@@ -1,6 +1,7 @@
 import { ThumbsUp } from "lucide-react";
 import moment from "moment";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import ProfileBadge from "./profileBadge";
 import useComments from "@/lib/service/useComments";
@@ -8,6 +9,7 @@ import { useUser } from "@/lib/hooks/useUser";
 import type CommentType from "@/types/comment";
 
 const CommentRow = ({ comment }: { comment: CommentType }) => {
+  const { t } = useTranslation();
   const { user } = useUser(comment.authorId);
   const [avatarFailed, setAvatarFailed] = useState(false);
 
@@ -34,7 +36,7 @@ const CommentRow = ({ comment }: { comment: CommentType }) => {
       <div className="w-full">
         <div className="flex items-center gap-2 flex-wrap">
           <h4 className="text-[#191C1B] text-sm font-semibold">
-            {user?.displayName ?? "Unknown author"}
+            {user?.displayName ?? t("comments.unknownAuthor")}
           </h4>
           {comment.isExpertAnswer && <ProfileBadge role={user?.role} />}
           <span className="text-[#414844] text-xs">
@@ -52,25 +54,28 @@ const CommentRow = ({ comment }: { comment: CommentType }) => {
 };
 
 const Comments = ({ contentId }: { contentId: string }) => {
+  const { t } = useTranslation();
   const { comments, error, isLoading } = useComments(contentId);
 
   return (
     <section className="mt-12">
       <h2 className="text-[#012D1D] text-2xl font-semibold">
-        Comments {!isLoading && !error && `(${comments.length})`}
+        {isLoading || error
+          ? t("comments.title")
+          : t("comments.titleWithCount", { count: comments.length })}
       </h2>
 
       <div className="mt-2">
-        {isLoading && <p className="text-[#414844] text-sm py-5">Loading…</p>}
+        {isLoading && (
+          <p className="text-[#414844] text-sm py-5">{t("common.loading")}</p>
+        )}
 
         {!isLoading && error && (
           <p className="text-[#414844] text-sm py-5">{error}</p>
         )}
 
         {!isLoading && !error && comments.length === 0 && (
-          <p className="text-[#414844] text-sm py-5">
-            No comments yet. Be the first to share your experience.
-          </p>
+          <p className="text-[#414844] text-sm py-5">{t("comments.empty")}</p>
         )}
 
         {!isLoading &&

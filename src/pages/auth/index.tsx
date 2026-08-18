@@ -1,5 +1,6 @@
 import { LogIn, SendHorizonal } from "lucide-react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import Button from "../../components/ui/button";
 import background_img from "/img/login/section-right-bg.png";
 
@@ -7,21 +8,22 @@ import LoginForm from "./components/login-form";
 import SignupForm from "./components/signup-form";
 
 const Auth = () => {
+  const { t } = useTranslation();
   const [tab, setTab] = useState("login");
 
   return (
     <div className="flex min-h-screen">
       <div className="w-full lg:w-[50%] p-6 lg:p-10 bg-[#F8FAF8]">
         <h1 className="text-[#012D1D] font-bold text-xl lg:text-2xl">
-          TES Hub
+          {t("auth.brand")}
         </h1>
         <div className="flex items-center justify-center h-full py-8">
           <div className="w-full max-w-md">
             <h2 className="text-[#012D1D] font-bold text-3xl lg:text-5xl">
-              Welcome Back
+              {t("auth.welcomeBack")}
             </h2>
             <p className="text-[#414844] font-size text-lg mt-3">
-              Access expert agricultural resources and join our community.
+              {t("auth.welcomeText")}
             </p>
 
             <div>
@@ -30,13 +32,13 @@ const Auth = () => {
                   className={`border-b-3 border-[#012D1D] ${tab == "login" ? " border-[#012D1D]" : "border-transparent text-[#717973]"} p-2 w-[50%] text-center cursor-pointer`}
                   onClick={() => setTab("login")}
                 >
-                  Log In
+                  {t("auth.logIn")}
                 </span>
                 <span
                   className={`border-b-3 border-[#012D1D] ${tab == "signup" ? " border-[#012D1D]" : "border-transparent text-[#717973]"} p-2 w-[50%] text-center cursor-pointer`}
                   onClick={() => setTab("signup")}
                 >
-                  Sign Up
+                  {t("auth.signUp")}
                 </span>
               </div>
 
@@ -46,7 +48,9 @@ const Auth = () => {
 
               <div className="flex w-full justify-center items-center gap-3 my-7">
                 <span className="w-[35%] h-0.5 bg-[#C1C8C2]"></span>
-                <span className="text-[#414844] text-xs">OR CONTINUE WITH</span>
+                <span className="text-[#414844] text-xs">
+                  {t("auth.orContinueWith")}
+                </span>
                 <span className="w-[35%] h-0.5 bg-[#C1C8C2]"></span>
               </div>
 
@@ -57,7 +61,7 @@ const Auth = () => {
                   iconStyles=""
                   className="w-[45%] gap-1"
                 >
-                  Google
+                  {t("auth.google")}
                 </Button>
                 <Button
                   variant="outline"
@@ -65,7 +69,7 @@ const Auth = () => {
                   iconStyles="text-[#229ED9]"
                   className="w-[45%] gap-1"
                 >
-                  Telegram
+                  {t("auth.telegram")}
                 </Button>
               </div>
             </div>

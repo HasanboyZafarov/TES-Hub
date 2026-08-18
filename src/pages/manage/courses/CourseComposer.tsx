@@ -11,6 +11,7 @@ import type { EntityStatus } from "@/types/status";
 import axios from "axios";
 import { ArrowLeft, ArrowRight, TriangleAlert } from "lucide-react";
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
 import z from "zod";
 import { Card, Stepper, type StepDef } from "./composerUI";
@@ -28,63 +29,45 @@ import {
   type CourseDraft,
 } from "./courseDraft";
 
-const STEPS: StepDef[] = [
-  { key: "basics", label: "Basics" },
-  { key: "curriculum", label: "Curriculum" },
-  { key: "pricing", label: "Pricing" },
-  { key: "review", label: "Review" },
-];
+const STEP_KEYS = ["basics", "curriculum", "pricing", "review"] as const;
 
-const STEP_HEADINGS = [
-  {
-    title: "Create New Course",
-    subtitle:
-      "Fill in the fundamental details to structure your agricultural knowledge module.",
-  },
-  {
-    title: "Course Composer",
-    subtitle:
-      "Structure your agricultural training program by organizing modules and lessons.",
-  },
-  {
-    title: "Set Course Pricing",
-    subtitle: "Decide how learners get access to this course.",
-  },
-  {
-    title: "Review Course",
-    subtitle: "Final check before submitting your course for expert review.",
-  },
-];
+type Translate = (key: string, options?: Record<string, unknown>) => string;
 
-const BasicsSchema = z.object({
-  title: z.string().trim().min(1, "Course title is required."),
-  shortDescription: z
-    .string()
-    .trim()
-    .min(1, "A short description is required."),
-  category: z.enum(CATEGORIES, { error: "Please select a category." }),
-  level: z.enum(COURSE_LEVELS, { error: "Please select a difficulty level." }),
-});
+const buildBasicsSchema = (t: Translate) =>
+  z.object({
+    title: z.string().trim().min(1, t("composer.errors.titleRequired")),
+    shortDescription: z
+      .string()
+      .trim()
+      .min(1, t("composer.errors.shortDescriptionRequired")),
+    category: z.enum(CATEGORIES, {
+      error: t("composer.errors.categoryRequired"),
+    }),
+    level: z.enum(COURSE_LEVELS, {
+      error: t("composer.errors.levelRequired"),
+    }),
+  });
 
-const PricingSchema = z
-  .object({
-    priceModel: z.enum(["free", "one_time"]),
-    amount: z.union([z.number(), z.literal("")]),
-    discountPercent: z.union([z.number(), z.literal("")]),
-  })
-  .refine((v) => v.priceModel === "free" || Number(v.amount) > 0, {
-    message: "Paid courses need a price above zero.",
-    path: ["amount"],
-  })
-  .refine(
-    (v) =>
-      v.discountPercent === "" ||
-      (Number(v.discountPercent) >= 0 && Number(v.discountPercent) <= 100),
-    {
-      message: "Discount must be between 0 and 100.",
-      path: ["discountPercent"],
-    },
-  );
+const buildPricingSchema = (t: Translate) =>
+  z
+    .object({
+      priceModel: z.enum(["free", "one_time"]),
+      amount: z.union([z.number(), z.literal("")]),
+      discountPercent: z.union([z.number(), z.literal("")]),
+    })
+    .refine((v) => v.priceModel === "free" || Number(v.amount) > 0, {
+      message: t("composer.errors.priceAboveZero"),
+      path: ["amount"],
+    })
+    .refine(
+      (v) =>
+        v.discountPercent === "" ||
+        (Number(v.discountPercent) >= 0 && Number(v.discountPercent) <= 100),
+      {
+        message: t("composer.errors.discountRange"),
+        path: ["discountPercent"],
+      },
+    );
 
 function issuesToErrors(error: z.ZodError) {
   const fieldErrors: Record<string, string> = {};
@@ -94,40 +77,56 @@ function issuesToErrors(error: z.ZodError) {
   return fieldErrors;
 }
 
-function validateCurriculum(draft: CourseDraft): Record<string, string> {
+function validateCurriculum(
+  draft: CourseDraft,
+  t: Translate,
+): Record<string, string> {
   if (!draft.sections.length) {
-    return { sections: "Add at least one module before continuing." };
+    return { sections: t("composer.errors.sectionsRequired") };
   }
   if (draft.sections.some((s) => !s.title.trim())) {
-    return { sections: "Every module needs a title." };
+    return { sections: t("composer.errors.moduleTitleRequired") };
   }
   if (draft.sections.some((s) => !s.lessons.length)) {
-    return { sections: "Every module needs at least one lesson." };
+    return { sections: t("composer.errors.moduleLessonRequired") };
   }
-  if (
-    draft.sections.some((s) => s.lessons.some((l) => !l.title.trim()))
-  ) {
-    return { sections: "Every lesson needs a title." };
+  if (draft.sections.some((s) => s.lessons.some((l) => !l.title.trim()))) {
+    return { sections: t("composer.errors.lessonTitleRequired") };
   }
   return {};
 }
 
-function validateStep(step: number, draft: CourseDraft): Record<string, string> {
+function validateStep(
+  step: number,
+  draft: CourseDraft,
+  t: Translate,
+): Record<string, string> {
   if (step === 0) {
-    const parsed = BasicsSchema.safeParse(draft);
+    const parsed = buildBasicsSchema(t).safeParse(draft);
     return parsed.success ? {} : issuesToErrors(parsed.error);
   }
-  if (step === 1) return validateCurriculum(draft);
+  if (step === 1) return validateCurriculum(draft, t);
   if (step === 2) {
-    const parsed = PricingSchema.safeParse(draft);
+    const parsed = buildPricingSchema(t).safeParse(draft);
     return parsed.success ? {} : issuesToErrors(parsed.error);
   }
   return {};
 }
 
 const Composer = ({ course }: { course: Course | null }) => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const auth = useAuth();
+
+  const STEPS: StepDef[] = STEP_KEYS.map((key) => ({
+    key,
+    label: t(`composer.steps.${key}`),
+  }));
+
+  const STEP_HEADINGS = STEP_KEYS.map((key) => ({
+    title: t(`composer.headings.${key}Title`),
+    subtitle: t(`composer.headings.${key}Subtitle`),
+  }));
 
   const [draft, setDraft] = useState<CourseDraft>(
     course ? draftFromCourse(course) : EMPTY_DRAFT,
@@ -180,10 +179,10 @@ const Composer = ({ course }: { course: Course | null }) => {
   }
 
   async function saveAndContinue() {
-    const stepErrors = validateStep(step, draft);
+    const stepErrors = validateStep(step, draft, t);
     setErrors(stepErrors);
     if (Object.keys(stepErrors).length) {
-      setBanner("Please fix the highlighted fields before continuing.");
+      setBanner(t("composer.fixFields"));
       return;
     }
 
@@ -199,7 +198,7 @@ const Composer = ({ course }: { course: Course | null }) => {
       setBanner(
         axios.isAxiosError(err)
           ? (err.response?.data?.message ?? err.message)
-          : "Could not save the course.",
+          : t("composer.saveFailed"),
       );
     } finally {
       setSaving(false);
@@ -216,7 +215,7 @@ const Composer = ({ course }: { course: Course | null }) => {
       setBanner(
         axios.isAxiosError(err)
           ? (err.response?.data?.message ?? err.message)
-          : "Could not save the course.",
+          : t("composer.saveFailed"),
       );
     } finally {
       setSaving(false);
@@ -225,7 +224,7 @@ const Composer = ({ course }: { course: Course | null }) => {
 
   function goToStep(next: number) {
     if (next > step) {
-      const stepErrors = validateStep(step, draft);
+      const stepErrors = validateStep(step, draft, t);
       setErrors(stepErrors);
       if (Object.keys(stepErrors).length) return;
     }
@@ -235,40 +234,46 @@ const Composer = ({ course }: { course: Course | null }) => {
 
   const checklist: ChecklistItem[] = useMemo(() => {
     const lessons = totalLessons(draft.sections);
-    const basicsDone = !Object.keys(validateStep(0, draft)).length;
-    const curriculumDone = !Object.keys(validateCurriculum(draft)).length;
-    const pricingDone = !Object.keys(validateStep(2, draft)).length;
+    const basicsDone = !Object.keys(validateStep(0, draft, t)).length;
+    const curriculumDone = !Object.keys(validateCurriculum(draft, t)).length;
+    const pricingDone = !Object.keys(validateStep(2, draft, t)).length;
 
     return [
       {
-        label: "Basic Info Completed",
-        detail: "Title, description, category, and level",
+        key: "basics",
+        label: t("composer.review.basicsDone"),
+        detail: t("composer.review.basicsDetail"),
         done: basicsDone,
       },
       {
-        label: "Curriculum Structured",
-        detail: `${draft.sections.length} module${
-          draft.sections.length === 1 ? "" : "s"
-        }, ${lessons} lesson${lessons === 1 ? "" : "s"}, ${formatDuration(
-          totalMinutes(draft.sections),
-        )}`,
+        key: "curriculum",
+        label: t("composer.review.curriculumDone"),
+        detail: t("composer.review.curriculumDetail", {
+          modules: t("manage.courses.moduleCount", {
+            count: draft.sections.length,
+          }),
+          lessons: t("manage.courses.lessonCount", { count: lessons }),
+          duration: formatDuration(totalMinutes(draft.sections)),
+        }),
         done: curriculumDone,
       },
       {
-        label: "Pricing Configured",
+        key: "pricing",
+        label: t("composer.review.pricingDone"),
         detail:
           draft.priceModel === "free"
-            ? "Free for all learners"
+            ? t("composer.review.pricingFree")
             : `${draft.currency} ${draft.amount || 0}`,
         done: pricingDone,
       },
       {
-        label: "Expert Review",
-        detail: "Pending submission",
+        key: "expertReview",
+        label: t("composer.review.expertReview"),
+        detail: t("composer.review.expertReviewDetail"),
         done: false,
       },
     ];
-  }, [draft]);
+  }, [draft, t]);
 
   const heading = STEP_HEADINGS[step];
   const isReview = step === STEPS.length - 1;
@@ -281,11 +286,13 @@ const Composer = ({ course }: { course: Course | null }) => {
         className="flex items-center gap-1 text-sm text-[#414844] hover:text-[#012D1D] cursor-pointer"
       >
         <ArrowLeft size={16} />
-        Back to Courses
+        {t("composer.backToCourses")}
       </button>
 
       <h1 className="text-[#012D1D] text-4xl lg:text-5xl font-bold mt-4">
-        {step === 0 && course ? "Edit Course" : heading.title}
+        {step === 0 && course
+          ? t("composer.headings.editCourse")
+          : heading.title}
       </h1>
       <p className="text-[#414844] text-sm mt-2">{heading.subtitle}</p>
 
@@ -349,7 +356,7 @@ const Composer = ({ course }: { course: Course | null }) => {
           disabled={step === 0 || saving}
           onClick={() => goToStep(step - 1)}
         >
-          Back
+          {t("common.back")}
         </Button>
 
         {!isReview && (
@@ -358,7 +365,7 @@ const Composer = ({ course }: { course: Course | null }) => {
             disabled={saving}
             onClick={saveAndContinue}
           >
-            {saving ? "Saving…" : "Save & Continue"}
+            {saving ? t("common.saving") : t("composer.saveAndContinue")}
             <ArrowRight size={18} />
           </Button>
         )}
@@ -368,6 +375,7 @@ const Composer = ({ course }: { course: Course | null }) => {
 };
 
 const CourseComposer = () => {
+  const { t } = useTranslation();
   const { slug } = useParams();
   const isNew = slug === "new";
   const { can } = usePermissions();
@@ -377,11 +385,9 @@ const CourseComposer = () => {
     return (
       <div className="container mx-auto px-4 sm:px-6 lg:px-10 py-20">
         <h1 className="text-[#012D1D] text-3xl font-bold">
-          You cannot create courses
+          {t("composer.noPermissionTitle")}
         </h1>
-        <p className="text-[#414844] mt-2">
-          Ask a TES administrator for expert access to publish courses.
-        </p>
+        <p className="text-[#414844] mt-2">{t("composer.noPermissionText")}</p>
       </div>
     );
   }
@@ -389,7 +395,7 @@ const CourseComposer = () => {
   if (!isNew && isLoading) {
     return (
       <div className="container mx-auto px-10 py-20 text-[#414844]">
-        Loading course…
+        {t("composer.loading")}
       </div>
     );
   }
@@ -397,8 +403,12 @@ const CourseComposer = () => {
   if (!isNew && (error || !course)) {
     return (
       <div className="container mx-auto px-4 sm:px-6 lg:px-10 py-20">
-        <h1 className="text-[#012D1D] text-3xl font-bold">Course not found</h1>
-        <p className="text-[#414844] mt-2">{error ?? `No course "${slug}".`}</p>
+        <h1 className="text-[#012D1D] text-3xl font-bold">
+          {t("composer.notFound")}
+        </h1>
+        <p className="text-[#414844] mt-2">
+          {error ?? t("composer.notFoundText", { slug })}
+        </p>
       </div>
     );
   }

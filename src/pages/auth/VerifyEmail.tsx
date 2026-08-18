@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
 import Button from "../../components/ui/button";
 import axiosInstance from "../../lib/api/apiClient";
@@ -14,6 +15,7 @@ interface LocationState {
 const CODE_LENGTH = 6;
 
 const VerifyEmail = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const state = location.state as LocationState | null;
@@ -72,7 +74,7 @@ const VerifyEmail = () => {
     e.preventDefault();
     const fullCode = code.join("");
     if (fullCode.length < CODE_LENGTH) {
-      setError("Please enter the full 6-digit code.");
+      setError(t("auth.verify.incomplete"));
       return;
     }
     setError("");
@@ -95,9 +97,7 @@ const VerifyEmail = () => {
         });
       }
     } catch (err: any) {
-      setError(
-        err.response?.data?.message || "Invalid code. Please try again.",
-      );
+      setError(err.response?.data?.message || t("auth.verify.invalid"));
     } finally {
       setLoading(false);
     }
@@ -113,7 +113,7 @@ const VerifyEmail = () => {
       await axiosInstance.post(endpoint, { email: state?.email });
       setResendCooldown(60);
     } catch (err: any) {
-      setError(err.response?.data?.message || "Failed to resend code.");
+      setError(err.response?.data?.message || t("auth.verify.resendFailed"));
     }
   };
 
@@ -122,14 +122,14 @@ const VerifyEmail = () => {
   return (
     <AuthShell>
       <h2 className="text-[#012D1D] font-bold text-4xl">
-        {isForgot ? "Reset Password" : "Verify Your Email"}
+        {isForgot ? t("auth.verify.titleForgot") : t("auth.verify.titleSignup")}
       </h2>
       <p className="text-[#414844] text-base mt-3">
-        We sent a 6-digit code to{" "}
+        {t("auth.verify.subtitlePrefix")}{" "}
         <span className="font-semibold text-[#012D1D]">
-          {state?.email || "your email"}
+          {state?.email || t("auth.verify.yourEmail")}
         </span>
-        . Enter it below.
+        {t("auth.verify.subtitleSuffix")}
       </p>
 
       <form onSubmit={handleSubmit} className="mt-8">
@@ -162,12 +162,12 @@ const VerifyEmail = () => {
           variant="filled"
           disabled={loading}
         >
-          {loading ? "Verifying..." : "Verify Code"}
+          {loading ? t("auth.verify.verifying") : t("auth.verify.submit")}
         </Button>
       </form>
 
       <p className="text-center mt-5 text-[#414844] text-sm">
-        Didn't receive it?{" "}
+        {t("auth.verify.notReceived")}{" "}
         <span
           className={`font-semibold ${
             resendCooldown > 0
@@ -176,7 +176,9 @@ const VerifyEmail = () => {
           }`}
           onClick={handleResend}
         >
-          {resendCooldown > 0 ? `Resend in ${resendCooldown}s` : "Resend code"}
+          {resendCooldown > 0
+            ? t("auth.verify.resendIn", { seconds: resendCooldown })
+            : t("auth.verify.resend")}
         </span>
       </p>
     </AuthShell>

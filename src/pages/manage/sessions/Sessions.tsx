@@ -39,6 +39,7 @@ import {
 } from "lucide-react";
 import moment from "moment";
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 
 const PAGE_SIZE = 8;
@@ -82,6 +83,7 @@ const StatCard = ({
 );
 
 const StatCards = ({ sessions }: { sessions: Session[] }) => {
+  const { t } = useTranslation();
   const stats = useMemo(() => {
     const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
     const createdRecently = sessions.filter(
@@ -120,29 +122,36 @@ const StatCards = ({ sessions }: { sessions: Session[] }) => {
   return (
     <div className="flex flex-col md:flex-row gap-6 mt-8">
       <StatCard
-        label="Total Sessions"
+        label={t("manage.sessions.totalSessions")}
         value={String(stats.total)}
-        hint={`+${stats.createdRecently} from last month`}
+        hint={t("manage.sessions.fromLastMonth", {
+          count: stats.createdRecently,
+        })}
         hintIcon={TrendingUp}
         icon={CalendarRange}
         iconClass="bg-[#DCFCE7] text-[#15803D]"
       />
       <StatCard
-        label="Active Registrations"
+        label={t("manage.sessions.activeRegistrations")}
         value={stats.registrations.toLocaleString()}
-        hint={`${stats.capacityAvg}% Capacity Avg.`}
+        hint={t("manage.sessions.capacityAvg", {
+          percent: stats.capacityAvg,
+        })}
         hintIcon={Users}
         hintClass="text-[#414844]"
         icon={UserPlus}
         iconClass="bg-[#DCFCE7] text-[#15803D]"
       />
       <StatCard
-        label="Upcoming Today"
+        label={t("manage.sessions.upcomingToday")}
         value={String(stats.todayCount)}
         hint={
           stats.next
-            ? `Next: ${stats.next.title} @ ${moment(stats.next.startsAt).format("h:mmA")}`
-            : "Nothing else scheduled today"
+            ? t("manage.sessions.nextToday", {
+                title: stats.next.title,
+                time: moment(stats.next.startsAt).format("h:mmA"),
+              })
+            : t("manage.sessions.nothingToday")
         }
         hintIcon={Clock}
         hintClass="text-[#B45309]"
@@ -152,7 +161,6 @@ const StatCards = ({ sessions }: { sessions: Session[] }) => {
     </div>
   );
 };
-
 
 interface FiltersProps {
   search: string;
@@ -171,9 +179,7 @@ const AdvancedFilters = ({
   formatFilter,
   onFormat,
 }: FiltersProps) => {
-  function formatStatus(s: string) {
-    return s.replace(/_/g, " ").replace(/^./, (c) => c.toUpperCase());
-  }
+  const { t } = useTranslation();
 
   return (
     <div className="flex flex-col lg:flex-row gap-3 px-6 pb-5 border-b border-[#E5E7EB]">
@@ -184,7 +190,7 @@ const AdvancedFilters = ({
           onChange={(e) => onSearch(e.target.value)}
           type="text"
           className="outline-none w-full text-sm"
-          placeholder="Search sessions"
+          placeholder={t("manage.sessions.searchPlaceholder")}
         />
       </div>
       <select
@@ -192,10 +198,10 @@ const AdvancedFilters = ({
         onChange={(e) => onStatus(e.target.value as EntityStatus | "all")}
         className="px-4 h-11 outline-none border border-[#C1C8C2] bg-white text-[#191C1B] rounded-md text-sm"
       >
-        <option value="all">All Status</option>
+        <option value="all">{t("manage.sessions.allStatus")}</option>
         {status.map((s) => (
           <option key={s} value={s}>
-            {formatStatus(s)}
+            {t(`status.${s}`)}
           </option>
         ))}
       </select>
@@ -204,10 +210,10 @@ const AdvancedFilters = ({
         onChange={(e) => onFormat(e.target.value)}
         className="px-4 h-11 outline-none border border-[#C1C8C2] bg-white text-[#191C1B] rounded-md text-sm"
       >
-        <option value="all">All Formats</option>
-        <option value="online">Online</option>
-        <option value="onsite">In-Person</option>
-        <option value="hybrid">Hybrid</option>
+        <option value="all">{t("manage.sessions.allFormats")}</option>
+        <option value="online">{t("session.format.online")}</option>
+        <option value="onsite">{t("session.format.onsite")}</option>
+        <option value="hybrid">{t("session.format.hybrid")}</option>
       </select>
     </div>
   );
@@ -215,7 +221,7 @@ const AdvancedFilters = ({
 
 interface ActionDef {
   icon: typeof Send;
-  label: string;
+  labelKey: string;
   next: EntityStatus;
   className: string;
 }
@@ -224,7 +230,7 @@ const WORKFLOW: Partial<Record<EntityStatus, ActionDef[]>> = {
   draft: [
     {
       icon: Send,
-      label: "Submit for review",
+      labelKey: "manage.courses.workflow.submit",
       next: "pending_review",
       className: "text-[#2563EB] hover:bg-[#EFF6FF]",
     },
@@ -232,13 +238,13 @@ const WORKFLOW: Partial<Record<EntityStatus, ActionDef[]>> = {
   pending_review: [
     {
       icon: Check,
-      label: "Approve & publish",
+      labelKey: "manage.courses.workflow.approve",
       next: "published",
       className: "text-[#15803D] hover:bg-[#DCFCE7]",
     },
     {
       icon: X,
-      label: "Reject",
+      labelKey: "manage.courses.workflow.reject",
       next: "rejected",
       className: "text-[#DC2626] hover:bg-[#FEE2E2]",
     },
@@ -246,7 +252,7 @@ const WORKFLOW: Partial<Record<EntityStatus, ActionDef[]>> = {
   rejected: [
     {
       icon: Send,
-      label: "Resubmit for review",
+      labelKey: "manage.courses.workflow.resubmit",
       next: "pending_review",
       className: "text-[#2563EB] hover:bg-[#EFF6FF]",
     },
@@ -254,7 +260,7 @@ const WORKFLOW: Partial<Record<EntityStatus, ActionDef[]>> = {
   published: [
     {
       icon: Archive,
-      label: "Archive",
+      labelKey: "manage.courses.workflow.archive",
       next: "archived",
       className: "text-[#B45309] hover:bg-[#FEF3C7]",
     },
@@ -262,7 +268,7 @@ const WORKFLOW: Partial<Record<EntityStatus, ActionDef[]>> = {
   archived: [
     {
       icon: Send,
-      label: "Restore to review",
+      labelKey: "manage.courses.workflow.restore",
       next: "pending_review",
       className: "text-[#2563EB] hover:bg-[#EFF6FF]",
     },
@@ -331,6 +337,7 @@ const TableRow = ({
   onRestore,
   onDelete,
 }: RowProps) => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const lifecycle = getLifecycle(session);
   const canceled = Boolean(session.isCanceled);
@@ -357,7 +364,7 @@ const TableRow = ({
         {moment(session.startsAt).format("MMM D, YYYY")}
         <span className="block text-[#414844] text-xs mt-0.5">
           {canceled
-            ? "Canceled"
+            ? t("session.lifecycle.canceled")
             : `${moment(session.startsAt).format("HH:mm")} - ${moment(
                 session.endsAt,
               ).format("HH:mm")}`}
@@ -379,13 +386,13 @@ const TableRow = ({
             <>
               <IconButton
                 icon={RotateCcw}
-                label="Restore session"
+                label={t("manage.sessions.restoreSession")}
                 className="text-[#2563EB] hover:bg-[#EFF6FF]"
                 onClick={() => onRestore(session)}
               />
               <IconButton
                 icon={Trash2}
-                label="Delete session"
+                label={t("manage.sessions.deleteSession")}
                 className="text-[#DC2626] hover:bg-[#FEE2E2]"
                 onClick={() => onDelete(session)}
               />
@@ -394,13 +401,13 @@ const TableRow = ({
             <>
               <IconButton
                 icon={Pencil}
-                label="Edit session"
+                label={t("manage.sessions.editSession")}
                 className="text-[#414844] hover:bg-[#F2F4F2]"
                 onClick={() => navigate(`/manage/sessions/${session.slug}`)}
               />
               <IconButton
                 icon={BarChart3}
-                label="View public page"
+                label={t("manage.sessions.viewPublic")}
                 className="text-[#414844] hover:bg-[#F2F4F2]"
                 onClick={() => navigate(`/sessions/${session.slug}`)}
               />
@@ -408,7 +415,7 @@ const TableRow = ({
                 <IconButton
                   key={a.next}
                   icon={a.icon}
-                  label={a.label}
+                  label={t(a.labelKey)}
                   className={a.className}
                   onClick={() => onStatus(session, a.next)}
                 />
@@ -416,14 +423,14 @@ const TableRow = ({
               {session.status === "published" && lifecycle !== "completed" ? (
                 <IconButton
                   icon={CircleX}
-                  label="Cancel session"
+                  label={t("manage.sessions.cancelSession")}
                   className="text-[#DC2626] hover:bg-[#FEE2E2]"
                   onClick={() => onCancel(session)}
                 />
               ) : (
                 <IconButton
                   icon={Trash2}
-                  label="Delete session"
+                  label={t("manage.sessions.deleteSession")}
                   className="text-[#DC2626] hover:bg-[#FEE2E2]"
                   onClick={() => onDelete(session)}
                 />
@@ -443,6 +450,7 @@ interface PaginationProps {
 }
 
 const Pagination = ({ page, totalPages, onPage }: PaginationProps) => {
+  const { t } = useTranslation();
   const pages: (number | "...")[] = [];
   for (let i = 1; i <= totalPages; i++) {
     if (i <= 3 || i === totalPages || Math.abs(i - page) <= 1) {
@@ -459,7 +467,7 @@ const Pagination = ({ page, totalPages, onPage }: PaginationProps) => {
         disabled={page === 1}
         className="px-4 py-2 rounded-md border border-[#E5E7EB] text-sm text-[#414844] disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#F9FAFB]"
       >
-        Prev
+        {t("manage.pagination.prev")}
       </button>
       {pages.map((p, i) =>
         p === "..." ? (
@@ -485,13 +493,14 @@ const Pagination = ({ page, totalPages, onPage }: PaginationProps) => {
         disabled={page === totalPages}
         className="px-4 py-2 rounded-md border border-[#E5E7EB] text-sm text-[#414844] disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#F9FAFB]"
       >
-        Next
+        {t("manage.pagination.next")}
       </button>
     </div>
   );
 };
 
 const ManageSessions = () => {
+  const { t } = useTranslation();
   const { sessions, isLoading, error } = useSessions();
   const { can } = usePermissions();
   const canModerate = can("moderateContent");
@@ -591,11 +600,13 @@ const ManageSessions = () => {
       <header className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
         <div>
           <nav className="text-sm text-[#6B7280]">
-            Content Management <span className="mx-1">/</span>
-            <span className="text-[#012D1D] font-semibold">Sessions</span>
+            {t("manage.contentManagement")} <span className="mx-1">/</span>
+            <span className="text-[#012D1D] font-semibold">
+              {t("manage.sessions.breadcrumb")}
+            </span>
           </nav>
           <h1 className="text-[#012D1D] text-4xl lg:text-5xl font-bold mt-2">
-            Session Management
+            {t("manage.sessions.title")}
           </h1>
         </div>
         {canCreate && (
@@ -604,7 +615,7 @@ const ManageSessions = () => {
             onClick={() => navigate("/manage/sessions/new")}
           >
             <CirclePlus size={20} />
-            Create New Session
+            {t("manage.sessions.create")}
           </Button>
         )}
       </header>
@@ -613,13 +624,15 @@ const ManageSessions = () => {
 
       <div className="mt-8 border border-[#C1C8C2] rounded-xl overflow-hidden bg-white">
         <div className="flex flex-wrap items-center justify-between gap-3 px-6 py-5">
-          <h3 className="text-[#012D1D] text-lg font-semibold">All Sessions</h3>
+          <h3 className="text-[#012D1D] text-lg font-semibold">
+            {t("manage.sessions.allSessions")}
+          </h3>
           <button
             onClick={() => setShowFilters((v) => !v)}
             className="flex items-center gap-2 text-sm text-[#414844] hover:text-[#012D1D] cursor-pointer"
           >
             <ListFilter size={16} />
-            Advanced Filters
+            {t("manage.sessions.advancedFilters")}
           </button>
         </div>
 
@@ -638,12 +651,14 @@ const ManageSessions = () => {
           <table className="w-full border-collapse min-w-[900px]">
             <thead className="bg-[#F9FAFB] border-y border-[#E5E7EB]">
               <tr className="text-left text-xs font-semibold tracking-wider text-[#6B7280]">
-                <th className="px-6 py-4">Session Title &amp; Type</th>
-                <th className="px-6 py-4">Expert / Host</th>
-                <th className="px-6 py-4">Date &amp; Time</th>
-                <th className="px-6 py-4">Status</th>
-                <th className="px-6 py-4">Capacity</th>
-                <th className="px-6 py-4">Actions</th>
+                <th className="px-6 py-4">{t("manage.sessions.colTitle")}</th>
+                <th className="px-6 py-4">{t("manage.sessions.colHost")}</th>
+                <th className="px-6 py-4">{t("manage.sessions.colDate")}</th>
+                <th className="px-6 py-4">{t("manage.sessions.colStatus")}</th>
+                <th className="px-6 py-4">
+                  {t("manage.sessions.colCapacity")}
+                </th>
+                <th className="px-6 py-4">{t("manage.sessions.colActions")}</th>
               </tr>
             </thead>
             <tbody>
@@ -669,10 +684,10 @@ const ManageSessions = () => {
                     className="px-6 py-12 text-center text-[#6B7280] text-sm"
                   >
                     {isLoading
-                      ? "Loading sessions…"
+                      ? t("manage.sessions.loading")
                       : error
-                        ? `Could not load sessions: ${error}`
-                        : "No sessions match these filters."}
+                        ? t("manage.sessions.loadError", { error })
+                        : t("manage.sessions.noMatches")}
                   </td>
                 </tr>
               )}
@@ -683,11 +698,12 @@ const ManageSessions = () => {
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-6 py-4 border-t border-[#E5E7EB] bg-white">
           <p className="text-sm text-[#414844]">
             {filtered.length === 0
-              ? "No entries"
-              : `Showing ${start + 1}-${Math.min(
-                  start + PAGE_SIZE,
-                  filtered.length,
-                )} of ${filtered.length} sessions`}
+              ? t("manage.sessions.noEntries")
+              : t("manage.sessions.showing", {
+                  from: start + 1,
+                  to: Math.min(start + PAGE_SIZE, filtered.length),
+                  total: filtered.length,
+                })}
           </p>
           <Pagination
             page={currentPage}
@@ -699,16 +715,26 @@ const ManageSessions = () => {
 
       <ConfirmDialog
         open={Boolean(pending)}
-        title={pending?.kind === "cancel" ? "Cancel session" : "Delete session"}
+        title={
+          pending?.kind === "cancel"
+            ? t("manage.sessions.cancelSession")
+            : t("manage.sessions.deleteSession")
+        }
         message={
           pending?.kind === "cancel"
-            ? `"${pending.session.title}" will be marked canceled and registrants lose their spot.`
-            : `"${pending?.session.title}" will be removed permanently. This cannot be undone.`
+            ? t("manage.sessions.cancelMessage", {
+                title: pending.session.title,
+              })
+            : t("manage.sessions.deleteMessage", {
+                title: pending?.session.title,
+              })
         }
         confirmLabel={
-          pending?.kind === "cancel" ? "Cancel session" : "Delete session"
+          pending?.kind === "cancel"
+            ? t("manage.sessions.cancelSession")
+            : t("manage.sessions.deleteSession")
         }
-        cancelLabel="Keep it"
+        cancelLabel={t("manage.sessions.keepIt")}
         onConfirm={runPendingAction}
         onCancel={() => setPending(null)}
       />

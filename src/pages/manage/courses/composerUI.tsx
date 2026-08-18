@@ -47,10 +47,10 @@ export const Card = ({
   <section
     className={`border border-[#C1C8C2] rounded-xl bg-white p-6 ${className}`}
   >
-    {title && (
-      <h2 className="text-[#012D1D] text-xl font-semibold">{title}</h2>
+    {title && <h2 className="text-[#012D1D] text-xl font-semibold">{title}</h2>}
+    {description && (
+      <p className="text-[#414844] text-sm mt-1">{description}</p>
     )}
-    {description && <p className="text-[#414844] text-sm mt-1">{description}</p>}
     <div className={title ? "mt-5" : ""}>{children}</div>
   </section>
 );

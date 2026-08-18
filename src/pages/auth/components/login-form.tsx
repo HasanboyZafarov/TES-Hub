@@ -1,6 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod/src/zod.js";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import z from "zod";
 import Button from "../../../components/ui/button";
@@ -8,24 +9,27 @@ import axiosInstance from "../../../lib/api/apiClient";
 import { useAuthStore } from "../../../store/authStore";
 import type User from "../../../types/user";
 
-const LoginSchema = z.object({
-  email: z.email(),
-  password: z.string().min(8, "Password must be at least 8 characters."),
-});
+const buildSchema = (t: (key: string) => string) =>
+  z.object({
+    email: z.email(t("auth.errors.emailInvalid")),
+    password: z.string().min(8, t("auth.errors.passwordMin")),
+  });
 
-type SchemaProps = z.infer<typeof LoginSchema>;
+type SchemaProps = z.infer<ReturnType<typeof buildSchema>>;
 
 const LoginForm = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const setAuth = useAuthStore((state) => state.setAuth);
   const [serverError, setServerError] = useState("");
+  const schema = useMemo(() => buildSchema(t), [t]);
 
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<SchemaProps>({
-    resolver: zodResolver(LoginSchema),
+    resolver: zodResolver(schema),
   });
 
   const onSubmit: SubmitHandler<SchemaProps> = async (data) => {
@@ -38,9 +42,7 @@ const LoginForm = () => {
       setAuth(res.data.token, res.data.user);
       navigate("/");
     } catch (err: any) {
-      setServerError(
-        err.response?.data?.message || "Login failed. Please try again.",
-      );
+      setServerError(err.response?.data?.message || t("auth.loginFailed"));
     }
   };
 
@@ -48,12 +50,12 @@ const LoginForm = () => {
     <form onSubmit={handleSubmit(onSubmit)}>
       <div className="flex flex-col mt-5">
         <label htmlFor="email" className="text-[#414844]">
-          Email Address
+          {t("auth.email")}
         </label>
         <input
           id="email"
           type="text"
-          placeholder="farmer@example.com"
+          placeholder={t("auth.emailPlaceholder")}
           {...register("email")}
           className={`placeholder:text-[#6B7280] p-3 py-2 rounded-none outline-none border mt-1 bg-white ${
             errors.email ? "border-red-500" : "border-[#6B7280]"
@@ -61,7 +63,7 @@ const LoginForm = () => {
         />
         {errors.email && (
           <span className="mt-2 text-red-500 text-sm">
-            {errors.email.message || "Invalid email format, it must have \"@\"."}
+            {errors.email.message || t("auth.errors.emailAt")}
           </span>
         )}
       </div>
@@ -69,13 +71,13 @@ const LoginForm = () => {
       <div className="flex flex-col mt-5">
         <div className="flex justify-between">
           <label htmlFor="password" className="text-[#414844]">
-            Password
+            {t("auth.password")}
           </label>
           <span
             className="text-[#1F6D1A] text-sm cursor-pointer"
             onClick={() => navigate("/auth/forgot-password")}
           >
-            Forgot password?
+            {t("auth.forgotPassword")}
           </span>
         </div>
         <input
@@ -104,7 +106,7 @@ const LoginForm = () => {
         variant="filled"
         disabled={isSubmitting}
       >
-        {isSubmitting ? "Logging in..." : "Log in"}
+        {isSubmitting ? t("auth.loggingIn") : t("auth.logIn")}
       </Button>
     </form>
   );

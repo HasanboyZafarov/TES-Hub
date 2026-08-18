@@ -3,6 +3,7 @@ import type Article from "@/types/article";
 import status, { type EntityStatus } from "@/types/status";
 import { Search } from "lucide-react";
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useUser } from "@/lib/hooks/useUser";
 import { usePermissions } from "@/lib/hooks/usePermissions";
 import { Eye, ThumbsUp, Archive, Check, X, Send } from "lucide-react";
@@ -18,6 +19,8 @@ interface SearchProps {
 }
 
 const SearchBar = ({ search, onSearch }: SearchProps) => {
+  const { t } = useTranslation();
+
   return (
     <div className="border-2 p-4 py-3 h-15 bg-white text-[#191C1B] rounded-sm flex items-center gap-2 w-max placeholder:text-[#6B7280]">
       <Search />
@@ -26,7 +29,7 @@ const SearchBar = ({ search, onSearch }: SearchProps) => {
         onChange={(e) => onSearch(e.target.value)}
         type="text"
         className="outline-none"
-        placeholder="Search articles"
+        placeholder={t("manage.articles.searchPlaceholder")}
       />
     </div>
   );
@@ -37,22 +40,18 @@ interface StatusProps {
 }
 
 const StatusSelect = ({ onSelect }: StatusProps) => {
-  function formatStatus(status: string): string {
-    return status
-      .replace(/_/g, " ")
-      .replace(/^./, (char) => char.toUpperCase());
-  }
+  const { t } = useTranslation();
 
   return (
     <select
       onChange={(e) => onSelect(e.target.value as EntityStatus | "all")}
       className="p-4 py-3 h-15 outline-none border-2 bg-white text-[#191C1B] rounded-sm"
     >
-      <option value="all">All Status</option>
+      <option value="all">{t("manage.articles.allStatus")}</option>
 
       {status.map((s) => (
         <option key={s} value={s}>
-          {formatStatus(s)}
+          {t(`status.${s}`)}
         </option>
       ))}
     </select>
@@ -61,48 +60,49 @@ const StatusSelect = ({ onSelect }: StatusProps) => {
 
 const STATUS_STYLES: Record<
   EntityStatus,
-  { bg: string; text: string; dot: string; label: string }
+  { bg: string; text: string; dot: string; labelKey: string }
 > = {
   published: {
     bg: "bg-[#DCFCE7]",
     text: "text-[#15803D]",
     dot: "bg-[#22C55E]",
-    label: "Published",
+    labelKey: "status.published",
   },
   draft: {
     bg: "bg-[#F3F4F6]",
     text: "text-[#4B5563]",
     dot: "bg-[#9CA3AF]",
-    label: "Draft",
+    labelKey: "status.draft",
   },
   archived: {
     bg: "bg-[#FEE2E2]",
     text: "text-[#DC2626]",
     dot: "bg-[#EF4444]",
-    label: "Archived",
+    labelKey: "status.archived",
   },
   pending_review: {
     bg: "bg-[#FEF3C7]",
     text: "text-[#B45309]",
     dot: "bg-[#F59E0B]",
-    label: "Pending review",
+    labelKey: "status.pending_review",
   },
   rejected: {
     bg: "bg-[#FEE2E2]",
     text: "text-[#B91C1C]",
     dot: "bg-[#DC2626]",
-    label: "Rejected",
+    labelKey: "status.rejected",
   },
 };
 
 const StatusBadge = ({ status }: { status: EntityStatus }) => {
+  const { t } = useTranslation();
   const s = STATUS_STYLES[status] ?? STATUS_STYLES.draft;
   return (
     <span
       className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium ${s.bg} ${s.text}`}
     >
       <span className={`h-1.5 w-1.5 rounded-full ${s.dot}`} />
-      {s.label}
+      {t(s.labelKey)}
     </span>
   );
 };
@@ -122,7 +122,7 @@ function formatNumbers(n: number) {
 
 interface ActionDef {
   icon: typeof Eye;
-  label: string;
+  labelKey: string;
   next: EntityStatus;
   className: string;
 }
@@ -131,7 +131,7 @@ const WORKFLOW: Partial<Record<EntityStatus, ActionDef[]>> = {
   draft: [
     {
       icon: Send,
-      label: "Submit for review",
+      labelKey: "manage.courses.workflow.submit",
       next: "pending_review",
       className: "text-[#2563EB] hover:bg-[#EFF6FF]",
     },
@@ -139,13 +139,13 @@ const WORKFLOW: Partial<Record<EntityStatus, ActionDef[]>> = {
   pending_review: [
     {
       icon: Check,
-      label: "Approve & publish",
+      labelKey: "manage.courses.workflow.approve",
       next: "published",
       className: "text-[#15803D] hover:bg-[#DCFCE7]",
     },
     {
       icon: X,
-      label: "Reject",
+      labelKey: "manage.courses.workflow.reject",
       next: "rejected",
       className: "text-[#DC2626] hover:bg-[#FEE2E2]",
     },
@@ -153,7 +153,7 @@ const WORKFLOW: Partial<Record<EntityStatus, ActionDef[]>> = {
   rejected: [
     {
       icon: Send,
-      label: "Resubmit for review",
+      labelKey: "manage.courses.workflow.resubmit",
       next: "pending_review",
       className: "text-[#2563EB] hover:bg-[#EFF6FF]",
     },
@@ -161,7 +161,7 @@ const WORKFLOW: Partial<Record<EntityStatus, ActionDef[]>> = {
   published: [
     {
       icon: Archive,
-      label: "Archive",
+      labelKey: "manage.courses.workflow.archive",
       next: "archived",
       className: "text-[#B45309] hover:bg-[#FEF3C7]",
     },
@@ -169,7 +169,7 @@ const WORKFLOW: Partial<Record<EntityStatus, ActionDef[]>> = {
   archived: [
     {
       icon: Send,
-      label: "Restore to review",
+      labelKey: "manage.courses.workflow.restore",
       next: "pending_review",
       className: "text-[#2563EB] hover:bg-[#EFF6FF]",
     },
@@ -203,6 +203,7 @@ const TableRow = ({
   canModerate,
   onAction,
 }: TableProps) => {
+  const { t } = useTranslation();
   const { user } = useUser(authorId);
   const navigate = useNavigate();
 
@@ -243,7 +244,7 @@ const TableRow = ({
         <div className="flex items-center gap-1">
           <IconButton
             icon={Eye}
-            label="View article"
+            label={t("manage.articles.viewArticle")}
             className="text-[#414844] hover:bg-[#F2F4F2]"
             onClick={() => navigate(`/academy/articles/${slug}`)}
           />
@@ -251,7 +252,7 @@ const TableRow = ({
             <IconButton
               key={a.next}
               icon={a.icon}
-              label={a.label}
+              label={t(a.labelKey)}
               className={a.className}
               onClick={() => onAction(slug, id, a.next)}
             />
@@ -269,6 +270,7 @@ interface PaginationProps {
 }
 
 const Pagination = ({ page, totalPages, onPage }: PaginationProps) => {
+  const { t } = useTranslation();
   const pages: (number | "...")[] = [];
   for (let i = 1; i <= totalPages; i++) {
     if (i <= 3 || i === totalPages || Math.abs(i - page) <= 1) {
@@ -285,7 +287,7 @@ const Pagination = ({ page, totalPages, onPage }: PaginationProps) => {
         disabled={page <= 1}
         className="px-4 py-2 rounded-md border border-[#E5E7EB] text-sm text-[#414844] disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#F9FAFB]"
       >
-        Prev
+        {t("manage.pagination.prev")}
       </button>
       {pages.map((p, i) =>
         p === "..." ? (
@@ -311,13 +313,14 @@ const Pagination = ({ page, totalPages, onPage }: PaginationProps) => {
         disabled={page >= totalPages}
         className="px-4 py-2 rounded-md border border-[#E5E7EB] text-sm text-[#414844] disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#F9FAFB]"
       >
-        Next
+        {t("manage.pagination.next")}
       </button>
     </div>
   );
 };
 
 const Articles = () => {
+  const { t } = useTranslation();
   const { articles, error, isLoading } = useArticles();
   const { can } = usePermissions();
   const canModerate = can("moderateContent");
@@ -371,10 +374,12 @@ const Articles = () => {
     <div>
       <div className="container mx-auto px-10 py-10">
         <header>
-          <h1 className="text-[#012D1D] text-5xl font-bold">Manage Articles</h1>
+          <h1 className="text-[#012D1D] text-5xl font-bold">
+            {t("manage.articles.title")}
+          </h1>
           <div className="flex items-start justify-between">
             <p className="text-[#414844] text-lg mt-2">
-              Review, edit, and publish agricultural knowledge content.
+              {t("manage.articles.subtitle")}
             </p>
 
             <div className="flex gap-2 items-center">
@@ -388,12 +393,14 @@ const Articles = () => {
           <table className="w-full border-collapse">
             <thead className="bg-[#F9FAFB] border-b border-[#E5E7EB]">
               <tr className="text-left text-xs font-semibold tracking-wider text-[#6B7280]">
-                <th className="px-6 py-4">ARTICLE TITLE</th>
-                <th className="px-6 py-4">AUTHOR</th>
-                <th className="px-6 py-4">CREATED</th>
-                <th className="px-6 py-4">STATUS</th>
-                <th className="px-6 py-4">PERFORMANCE</th>
-                <th className="px-6 py-4">ACTIONS</th>
+                <th className="px-6 py-4">{t("manage.articles.colTitle")}</th>
+                <th className="px-6 py-4">{t("manage.articles.colAuthor")}</th>
+                <th className="px-6 py-4">{t("manage.articles.colCreated")}</th>
+                <th className="px-6 py-4">{t("manage.articles.colStatus")}</th>
+                <th className="px-6 py-4">
+                  {t("manage.articles.colPerformance")}
+                </th>
+                <th className="px-6 py-4">{t("manage.articles.colActions")}</th>
               </tr>
             </thead>
             <tbody>
@@ -404,10 +411,10 @@ const Articles = () => {
                     className="px-6 py-10 text-center text-sm text-[#414844]"
                   >
                     {isLoading
-                      ? "Loading articles…"
+                      ? t("manage.articles.loading")
                       : error
-                        ? `Error occurred: ${error}`
-                        : "No articles match your filters."}
+                        ? t("manage.articles.loadError", { error })
+                        : t("manage.articles.noMatches")}
                   </td>
                 </tr>
               )}
@@ -427,11 +434,12 @@ const Articles = () => {
           <div className="flex items-center justify-between px-6 py-4 border-t border-[#E5E7EB] bg-white">
             <p className="text-sm text-[#414844]">
               {filtered.length === 0
-                ? "No entries"
-                : `Showing ${start + 1} to ${Math.min(
-                    start + PAGE_SIZE,
-                    filtered.length,
-                  )} of ${filtered.length} entries`}
+                ? t("manage.articles.noEntries")
+                : t("manage.articles.showing", {
+                    from: start + 1,
+                    to: Math.min(start + PAGE_SIZE, filtered.length),
+                    total: filtered.length,
+                  })}
             </p>
             <Pagination
               page={currentPage}

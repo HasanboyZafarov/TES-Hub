@@ -3,10 +3,12 @@ import { formatCount, regionLabel } from "@/lib/utils/community";
 import type Story from "@/types/story";
 import { ChevronLeft, Images, MapPin, ThumbsUp } from "lucide-react";
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 
 /** A tile drops out of the wall entirely if its image file is missing. */
 const PhotoTile = ({ story }: { story: Story }) => {
+  const { t } = useTranslation();
   const [failed, setFailed] = useState(false);
   if (failed) return null;
 
@@ -30,7 +32,7 @@ const PhotoTile = ({ story }: { story: Story }) => {
         <div className="flex items-center justify-between gap-2 mt-3 text-[#414844] text-xs">
           <span className="flex items-center gap-1 truncate">
             <MapPin size={13} className="shrink-0" />
-            {regionLabel(story.region) || "Kyrgyzstan"}
+            {regionLabel(story.region) || t("community.photos.fallbackRegion")}
           </span>
           <span className="flex items-center gap-1 shrink-0">
             <ThumbsUp size={13} /> {formatCount(story.stats.likes)}
@@ -46,6 +48,7 @@ const PhotoTile = ({ story }: { story: Story }) => {
  * carries a cover image, newest first.
  */
 const Photos = () => {
+  const { t } = useTranslation();
   const { posts, regions, isLoading, error } = useCommunityFeed({
     kind: "story",
   });
@@ -65,16 +68,16 @@ const Photos = () => {
         to="/community"
         className="inline-flex items-center gap-1 text-[#414844] text-sm hover:text-[#012D1D]"
       >
-        <ChevronLeft size={16} /> Community
+        <ChevronLeft size={16} /> {t("community.back")}
       </Link>
 
       <header className="mt-4">
         <h1 className="flex items-center gap-3 text-[#012D1D] text-3xl sm:text-4xl lg:text-5xl font-bold">
-          <Images size={32} className="shrink-0" /> Photo Wall
+          <Images size={32} className="shrink-0" />{" "}
+          {t("community.photos.title")}
         </h1>
         <p className="text-[#414844] text-base sm:text-lg mt-3 max-w-2xl">
-          What the fields actually look like — pulled from stories shared across
-          the country.
+          {t("community.photos.subtitle")}
         </p>
       </header>
 
@@ -88,7 +91,7 @@ const Photos = () => {
               : "bg-[#F2F4F2] text-[#414844] hover:bg-[#E4E9E4]"
           }`}
         >
-          All regions
+          {t("community.photos.allRegions")}
         </button>
         {regions.map(({ oblast: name }) => (
           <button
@@ -107,7 +110,9 @@ const Photos = () => {
       </div>
 
       {error && (
-        <p className="text-[#C1292E] mt-8">Couldn't load the photo wall: {error}</p>
+        <p className="text-[#C1292E] mt-8">
+          {t("community.photos.loadError", { error })}
+        </p>
       )}
 
       {isLoading && (
@@ -128,10 +133,7 @@ const Photos = () => {
       )}
 
       {!isLoading && !error && photos.length === 0 && (
-        <p className="text-[#414844] mt-10">
-          No photos from this region yet. Stories with a cover image show up here
-          automatically.
-        </p>
+        <p className="text-[#414844] mt-10">{t("community.photos.empty")}</p>
       )}
 
       {!isLoading && !error && photos.length > 0 && (

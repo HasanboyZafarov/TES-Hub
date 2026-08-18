@@ -1,3 +1,49 @@
+export interface LessonResource {
+  id: string;
+  label: string;
+  url: string;
+  sizeKb?: number;
+}
+
+export interface ArticleLessonContent {
+  kind: "article";
+  /** Rich text — always run through `sanitize` before rendering. */
+  body: string;
+}
+
+export interface VideoLessonContent {
+  kind: "video";
+  url: string;
+  poster?: string;
+  transcript?: string;
+}
+
+export interface PdfLessonContent {
+  kind: "pdf";
+  url: string;
+  fileName: string;
+  sizeKb: number;
+  summary?: string;
+}
+
+export interface ExternalLinkLessonContent {
+  kind: "external_link";
+  url: string;
+  summary?: string;
+}
+
+export interface QuizLessonContent {
+  kind: "quiz";
+  quizId: string;
+}
+
+export type LessonContent =
+  | ArticleLessonContent
+  | VideoLessonContent
+  | PdfLessonContent
+  | ExternalLinkLessonContent
+  | QuizLessonContent;
+
 export default interface Lesson {
   id: string;
   title: string;
@@ -5,5 +51,9 @@ export default interface Lesson {
   type: "article" | "video" | "pdf" | "quiz" | "external_link";
   durationMinutes: number;
   isFreePreview: boolean;
-//   content: LessonContent; // shape depends on type
+  /** One-line teaser shown in the player header and the curriculum sidebar. */
+  summary?: string;
+  /** Undefined while the lesson is still being authored in the composer. */
+  content?: LessonContent;
+  resources?: LessonResource[];
 }

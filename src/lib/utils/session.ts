@@ -15,25 +15,26 @@ export function getLifecycle(
   return "completed";
 }
 
-export const SESSION_TYPE_LABELS: Record<SessionType, string> = {
-  webinar: "Live Webinar",
-  workshop: "Workshop",
-  field_day: "Field Day",
-  clinic: "In-Person Clinic",
-  recorded_course: "Recorded Course",
+// Values are i18n keys — render them through `t()`.
+export const SESSION_TYPE_KEYS: Record<SessionType, string> = {
+  webinar: "session.type.webinar",
+  workshop: "session.type.workshop",
+  field_day: "session.type.field_day",
+  clinic: "session.type.clinic",
+  recorded_course: "session.type.recorded_course",
 };
 
-export const SESSION_FORMAT_LABELS: Record<SessionFormat, string> = {
-  online: "Online (Zoom)",
-  onsite: "Offline (In-Person)",
-  hybrid: "Hybrid",
+export const SESSION_FORMAT_KEYS: Record<SessionFormat, string> = {
+  online: "session.format.online",
+  onsite: "session.format.onsite",
+  hybrid: "session.format.hybrid",
 };
 
-export const MATERIAL_KIND_LABELS: Record<MaterialKind, string> = {
-  pdf: "PDF",
-  excel: "Excel",
-  video: "Video",
-  link: "Link",
+export const MATERIAL_KIND_KEYS: Record<MaterialKind, string> = {
+  pdf: "session.material.pdf",
+  excel: "session.material.excel",
+  video: "session.material.video",
+  link: "session.material.link",
 };
 
 export function capacityPercent(registered: number, capacity: number) {
@@ -41,8 +42,11 @@ export function capacityPercent(registered: number, capacity: number) {
   return Math.min(100, Math.round((registered / capacity) * 100));
 }
 
-export function priceLabel(pricing: Session["pricing"]) {
-  if (pricing.model === "free" || !pricing.amount) return "Free";
+export function priceLabel(
+  pricing: Session["pricing"],
+  t: (key: string) => string,
+) {
+  if (pricing.model === "free" || !pricing.amount) return t("session.free");
   return `${pricing.amount} ${pricing.currency}`;
 }
 

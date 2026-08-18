@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import ArticleCard from "@/components/ui/articleCard";
 import CourseCard from "@/components/ui/courseCard";
@@ -6,16 +7,16 @@ import CardSkeleton from "@/components/ui/cardSkeleton";
 import useAcademyProducts, {
   type AcademyProduct,
 } from "@/lib/hooks/useAcademyProducts";
-import CATEGORIES, { type Category } from "@/types/category";
+import CATEGORIES, { CATEGORY_KEYS, type Category } from "@/types/category";
 
 type AccessType = "all" | "free" | "premium";
 type Format = "video" | "written" | "audio";
 type SortBy = "recent" | "popular";
 
-const FORMAT_OPTIONS: { value: Format; label: string }[] = [
-  { value: "video", label: "Video Courses" },
-  { value: "written", label: "Written Articles" },
-  { value: "audio", label: "Audio Guides" },
+const FORMAT_OPTIONS: { value: Format; labelKey: string }[] = [
+  { value: "video", labelKey: "academy.videoCourses" },
+  { value: "written", labelKey: "academy.writtenArticles" },
+  { value: "audio", labelKey: "academy.audioGuides" },
 ];
 
 const FORMAT_BY_TYPE: Record<AcademyProduct["type"], Format> = {
@@ -29,6 +30,7 @@ const toggle = <T,>(list: T[], value: T): T[] =>
   list.includes(value) ? list.filter((v) => v !== value) : [...list, value];
 
 const ProductList = () => {
+  const { t } = useTranslation();
   const { products, isLoading, error } = useAcademyProducts();
 
   const [categories, setCategories] = useState<Category[]>([]);
@@ -56,17 +58,21 @@ const ProductList = () => {
   const currentPage = Math.min(page, pageCount);
   const pageItems = filtered.slice(
     (currentPage - 1) * PAGE_SIZE,
-    currentPage * PAGE_SIZE
+    currentPage * PAGE_SIZE,
   );
 
-  const updateFilter = <T,>(setter: (v: T) => void) => (v: T) => {
-    setter(v);
-    setPage(1);
-  };
+  const updateFilter =
+    <T,>(setter: (v: T) => void) =>
+    (v: T) => {
+      setter(v);
+      setPage(1);
+    };
 
   if (error) {
     return (
-      <p className="text-[#C1292E] mt-10">Couldn't load resources: {error}</p>
+      <p className="text-[#C1292E] mt-10">
+        {t("academy.loadError", { error })}
+      </p>
     );
   }
 
@@ -74,7 +80,9 @@ const ProductList = () => {
     <div className="flex flex-col lg:flex-row gap-6 lg:gap-10 mt-10 items-start">
       <aside className="w-full lg:w-64 shrink-0 flex flex-col gap-8 border border-[#C1C8C2] rounded-sm px-6 sm:px-8 pt-8 lg:pt-14 pb-8">
         <div>
-          <h4 className="text-[#012D1D] font-semibold mb-3 text-2xl">Categories</h4>
+          <h4 className="text-[#012D1D] font-semibold mb-3 text-2xl">
+            {t("academy.categories")}
+          </h4>
           <div className="flex flex-col gap-2">
             {CATEGORIES.map((c) => (
               <label
@@ -86,25 +94,27 @@ const ProductList = () => {
                   checked={categories.includes(c)}
                   onChange={() =>
                     updateFilter<Category[]>(setCategories)(
-                      toggle(categories, c)
+                      toggle(categories, c),
                     )
                   }
                   className="accent-[#1F6D1A]  hover:border-blue-500 hover:bg-blue-50"
                 />
-                {c}
+                {t(CATEGORY_KEYS[c])}
               </label>
             ))}
           </div>
         </div>
 
         <div>
-          <h4 className="text-[#012D1D] font-semibold mb-3 text-2xl">Access Type</h4>
+          <h4 className="text-[#012D1D] font-semibold mb-3 text-2xl">
+            {t("academy.accessType")}
+          </h4>
           <div className="flex flex-col gap-2">
             {(
               [
-                { value: "all", label: "All Content" },
-                { value: "free", label: "Free Resources" },
-                { value: "premium", label: "Premium Courses" },
+                { value: "all", label: t("academy.allContent") },
+                { value: "free", label: t("academy.freeResources") },
+                { value: "premium", label: t("academy.premiumCourses") },
               ] as { value: AccessType; label: string }[]
             ).map((opt) => (
               <label
@@ -127,7 +137,9 @@ const ProductList = () => {
         </div>
 
         <div>
-          <h4 className="text-[#012D1D] font-semibold mb-3 text-2xl">Format</h4>
+          <h4 className="text-[#012D1D] font-semibold mb-3 text-2xl">
+            {t("academy.format")}
+          </h4>
           <div className="flex flex-col gap-2">
             {FORMAT_OPTIONS.map((opt) => (
               <label
@@ -139,12 +151,12 @@ const ProductList = () => {
                   checked={formats.includes(opt.value)}
                   onChange={() =>
                     updateFilter<Format[]>(setFormats)(
-                      toggle(formats, opt.value)
+                      toggle(formats, opt.value),
                     )
                   }
                   className="accent-[#1F6D1A]"
                 />
-                {opt.label}
+                {t(opt.labelKey)}
               </label>
             ))}
           </div>
@@ -154,15 +166,17 @@ const ProductList = () => {
       <div className="flex-1 w-full min-w-0">
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-6">
           <p className="text-[#414844]">
-            {isLoading ? "Loading..." : `Showing ${filtered.length} resources`}
+            {isLoading
+              ? t("common.loading")
+              : t("academy.showingResources", { count: filtered.length })}
           </p>
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value as SortBy)}
             className="border border-[#C1C8C2] rounded-sm px-3 py-1.5 text-sm text-[#414844] w-full sm:w-auto"
           >
-            <option value="recent">Most Recent</option>
-            <option value="popular">Most Popular</option>
+            <option value="recent">{t("academy.sortRecent")}</option>
+            <option value="popular">{t("academy.sortPopular")}</option>
           </select>
         </div>
 
@@ -176,7 +190,7 @@ const ProductList = () => {
                   <CourseCard key={p.id} course={p} />
                 ) : (
                   <ArticleCard key={p.id} article={p} />
-                )
+                ),
               )}
         </div>
 

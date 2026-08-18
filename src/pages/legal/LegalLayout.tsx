@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { useTranslation } from "react-i18next";
 import { Link, useLocation } from "react-router-dom";
 import {
   ArrowRight,
@@ -10,11 +11,11 @@ import {
 } from "lucide-react";
 
 const NAV_ITEMS = [
-  { label: "Terms of Service", to: "/terms-of-service", icon: FileText },
-  { label: "Privacy Policy", to: "/privacy-policy", icon: ShieldCheck },
-  { label: "Contact Us", to: "/contact", icon: Mail },
-  { label: "Help Center", to: "/contact", icon: LifeBuoy },
-];
+  { key: "terms", to: "/terms-of-service", icon: FileText },
+  { key: "privacy", to: "/privacy-policy", icon: ShieldCheck },
+  { key: "contact", to: "/contact", icon: Mail },
+  { key: "help", to: "/contact", icon: LifeBuoy },
+] as const;
 
 interface Props {
   title: string;
@@ -32,6 +33,7 @@ const LegalLayout = ({
   next,
 }: Props) => {
   const { pathname } = useLocation();
+  const { t } = useTranslation();
 
   return (
     <div className="container mx-auto py-5 px-6 md:px-10">
@@ -47,15 +49,15 @@ const LegalLayout = ({
         <aside className="w-full lg:w-[27%] lg:sticky lg:top-24 flex flex-col gap-6">
           <nav className="p-6 border-2 border-[#C1C8C2] rounded-lg bg-white">
             <h2 className="text-[#191C1B] text-sm font-semibold tracking-wide">
-              LEGAL &amp; SUPPORT
+              {t("legal.navTitle")}
             </h2>
 
             <div className="flex flex-col gap-2 mt-4">
-              {NAV_ITEMS.map(({ label, to, icon: Icon }) => {
+              {NAV_ITEMS.map(({ key, to, icon: Icon }) => {
                 const isActive = pathname === to;
                 return (
                   <Link
-                    key={label}
+                    key={key}
                     to={to}
                     className={`flex items-center gap-2 text-sm py-2 px-3 rounded-sm font-semibold transition-colors ${
                       isActive
@@ -64,7 +66,7 @@ const LegalLayout = ({
                     }`}
                   >
                     <Icon size={16} />
-                    {label}
+                    {t(`legal.nav.${key}`)}
                   </Link>
                 );
               })}
@@ -74,23 +76,23 @@ const LegalLayout = ({
           <div className="p-6 border-2 border-[#C1C8C2] rounded-lg bg-white text-center">
             <Headset size={24} className="mx-auto text-[#1B4332]" />
             <h3 className="text-[#191C1B] text-sm font-semibold mt-3">
-              Need immediate assistance?
+              {t("legal.support.title")}
             </h3>
             <p className="text-[#414844] text-sm mt-2">
-              Our support team is available Mon–Fri, 9am–5pm (KGT).
+              {t("legal.support.text")}
             </p>
             <Link
               to="/contact"
               className="block mt-4 py-2 px-3 rounded-sm bg-[#1B4332] text-white text-sm font-semibold hover:brightness-120 transition"
             >
-              Contact Support
+              {t("legal.support.cta")}
             </Link>
           </div>
         </aside>
 
         <article className="w-full lg:w-[73%] p-6 md:p-10 border-2 border-[#C1C8C2] rounded-lg bg-white">
           <p className="text-[#414844] text-sm italic">
-            Last Updated: {lastUpdated}
+            {t("legal.lastUpdated", { date: lastUpdated })}
           </p>
 
           <div className="mt-6 flex flex-col gap-10">{children}</div>
@@ -98,12 +100,12 @@ const LegalLayout = ({
           <div className="h-px w-full bg-[#C1C8C2] mt-12"></div>
 
           <div className="flex items-center justify-between gap-4 mt-6">
-            <p className="text-[#414844] text-sm">End of document</p>
+            <p className="text-[#414844] text-sm">{t("legal.endOfDocument")}</p>
             <Link
               to={next.to}
               className="flex items-center gap-2 text-sm font-semibold text-[#1B4332] py-2 px-4 border-2 border-[#1B4332] rounded-sm hover:bg-[#f8faf8] transition-colors"
             >
-              Next: {next.label}
+              {t("legal.next", { label: next.label })}
               <ArrowRight size={16} />
             </Link>
           </div>

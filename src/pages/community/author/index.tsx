@@ -9,6 +9,7 @@ import {
 import { CalendarDays, ChevronLeft, MapPin } from "lucide-react";
 import moment from "moment";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import Avatar from "../components/Avatar";
 import FeedTabs from "../components/FeedTabs";
@@ -16,13 +17,10 @@ import PostList from "../components/PostList";
 
 type Tab = "all" | "story" | "question";
 
-const TABS: { value: Tab; label: string }[] = [
-  { value: "all", label: "All posts" },
-  { value: "story", label: "Stories" },
-  { value: "question", label: "Questions" },
-];
+const TAB_VALUES: Tab[] = ["all", "story", "question"];
 
 const AuthorProfile = () => {
+  const { t } = useTranslation();
   const { username = "" } = useParams();
   const navigate = useNavigate();
 
@@ -50,28 +48,39 @@ const AuthorProfile = () => {
     return (
       <div className="container mx-auto px-4 sm:px-10 py-5 pt-12">
         <h1 className="text-[#191C1B] text-3xl font-semibold">
-          Profile not found
+          {t("community.author.notFound")}
         </h1>
         <p className="text-[#414844] mt-2">
-          {error ?? "No community member with this username."}
+          {error ?? t("community.author.notFoundText")}
         </p>
         <button
           type="button"
           onClick={() => navigate("/community")}
           className="border border-[#717973] mt-6 text-[#191C1B] py-2 px-5 text-sm rounded-xs cursor-pointer hover:shadow"
         >
-          Back to community
+          {t("community.author.backToCommunity")}
         </button>
       </div>
     );
   }
 
   const stats = [
-    { label: "Posts", value: posts.length },
-    { label: "Followers", value: author.stats.followers },
-    { label: "Following", value: author.stats.following },
-    { label: "Courses", value: author.stats.coursesCompleted.length },
+    { label: t("community.author.posts"), value: posts.length },
+    { label: t("community.author.followers"), value: author.stats.followers },
+    {
+      label: t("community.author.followingCount"),
+      value: author.stats.following,
+    },
+    {
+      label: t("community.author.courses"),
+      value: author.stats.coursesCompleted.length,
+    },
   ];
+
+  const tabs = TAB_VALUES.map((value) => ({
+    value,
+    label: t(`community.kind.${value}`),
+  }));
 
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-10 pt-6 sm:pt-10 pb-20">
@@ -79,7 +88,7 @@ const AuthorProfile = () => {
         to="/community"
         className="inline-flex items-center gap-1 text-[#414844] text-sm hover:text-[#012D1D]"
       >
-        <ChevronLeft size={16} /> Community
+        <ChevronLeft size={16} /> {t("community.back")}
       </Link>
 
       <header className="border border-[#C1C8C2] bg-white rounded-xl p-6 sm:p-8 mt-4">
@@ -113,14 +122,17 @@ const AuthorProfile = () => {
                 </span>
               )}
               <span className="flex items-center gap-1">
-                <CalendarDays size={13} /> Joined{" "}
-                {moment(author.createdAt).format("MMMM YYYY")}
+                <CalendarDays size={13} />{" "}
+                {t("community.author.joined", {
+                  date: moment(author.createdAt).format("MMMM YYYY"),
+                })}
               </span>
               <span>
-                Speaks{" "}
-                {author.languages
-                  .map((l) => LANGUAGE_LABELS[l] ?? l)
-                  .join(", ")}
+                {t("community.author.speaks", {
+                  languages: author.languages
+                    .map((l) => LANGUAGE_LABELS[l] ?? l)
+                    .join(", "),
+                })}
               </span>
             </div>
           </div>
@@ -134,7 +146,9 @@ const AuthorProfile = () => {
                 : "bg-[#012D1D] text-white hover:bg-[#013d27]"
             }`}
           >
-            {following ? "Following" : "Follow"}
+            {following
+              ? t("community.author.following")
+              : t("community.author.follow")}
           </button>
         </div>
 
@@ -164,12 +178,14 @@ const AuthorProfile = () => {
       </header>
 
       <div className="mt-10">
-        <FeedTabs tabs={TABS} value={tab} onChange={setTab} />
+        <FeedTabs tabs={tabs} value={tab} onChange={setTab} />
         <PostList
           posts={posts}
           isLoading={feedLoading}
           error={feedError}
-          emptyMessage={`${author.displayName} hasn't published anything here yet.`}
+          emptyMessage={t("community.author.empty", {
+            name: author.displayName,
+          })}
         />
       </div>
     </div>

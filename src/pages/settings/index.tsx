@@ -1,9 +1,8 @@
-import React from 'react'
+import { useTranslation } from "react-i18next";
 
 const Settings = () => {
-  return (
-    <div>Settings</div>
-  )
-}
+  const { t } = useTranslation();
+  return <div>{t("settings.title")}</div>;
+};
 
-export default Settings
+export default Settings;

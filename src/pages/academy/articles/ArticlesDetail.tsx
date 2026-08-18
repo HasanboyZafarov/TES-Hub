@@ -2,6 +2,7 @@ import { useUser } from "@/lib/hooks/useUser";
 import useArticle from "@/lib/service/useArticle";
 import { Bookmark, Share2 } from "lucide-react";
 import moment from "moment";
+import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
 
 import Comments from "@/components/ui/comments";
@@ -10,6 +11,7 @@ import sanitize from "@/lib/sanitize";
 import styles from "./styles.module.css";
 
 const ArticlesDetail = () => {
+  const { t } = useTranslation();
   const { slug } = useParams();
   const { article, error, isLoading } = useArticle(slug || "");
   const { user } = useUser(article?.authorId || "");
@@ -36,16 +38,16 @@ const ArticlesDetail = () => {
     return (
       <div className="container mx-auto px-4 sm:px-10 py-5 pt-12">
         <h1 className="text-[#191C1B] text-3xl font-semibold">
-          Article not found
+          {t("articles.notFound")}
         </h1>
         <p className="text-[#414844] mt-2">
-          {error ?? "This article may have been removed or unpublished."}
+          {error ?? t("articles.notFoundText")}
         </p>
         <button
           onClick={() => navigate("/academy/articles")}
           className="border border-[#717973] mt-6 text-[#191C1B] py-2 px-5 text-sm rounded-xs cursor-pointer hover:shadow"
         >
-          Back to articles
+          {t("articles.backToArticles")}
         </button>
       </div>
     );
@@ -56,8 +58,10 @@ const ArticlesDetail = () => {
         <div className="w-full lg:w-[75%]">
           <header>
             <p className="text-[#414844] text-xs">
-              {article?.readTimeMinutes} min read • Updated at{" "}
-              {moment(article?.updatedAt).format("LL")}
+              {t("articles.meta", {
+                minutes: article?.readTimeMinutes,
+                date: moment(article?.updatedAt).format("LL"),
+              })}
             </p>
           </header>
           <h1 className="text-[#191C1B] font-bold text-5xl my-6">
@@ -69,7 +73,7 @@ const ArticlesDetail = () => {
             <div className="flex items-center gap-5">
               <img
                 src={user?.avatar}
-                alt="User avatar"
+                alt={t("articles.userAvatar")}
                 className="w-15 h-15 object-cover rounded-xl"
               />
               <h3 className="text-[#191C1B]">{user?.displayName}</h3>
@@ -103,7 +107,7 @@ const ArticlesDetail = () => {
         <div className="w-full lg:w-[25%] flex flex-col gap-8">
           <div className="h-max p-6 border border-[#C1C8C2] bg-white rounded-lg flex flex-col items-center">
             <h3 className="border-b border-[#C1C8C2] pb-2 text-xs w-full">
-              ABOUT THE AUTHOR
+              {t("articles.aboutAuthor")}
             </h3>
             <img
               src={user?.avatar}
@@ -125,12 +129,14 @@ const ArticlesDetail = () => {
               onClick={() => navigate(`/profile/${user?.id}`)}
               className="border border-[#717973] w-full mt-4 text-[#191C1B] py-2 text-sm rounded-xs cursor-pointer hover:shadow"
             >
-              View Full Profile
+              {t("articles.viewFullProfile")}
             </button>
           </div>
 
           <div className="h-max p-6 border border-[#C1C8C2] bg-white rounded-lg">
-            <h3 className="text-[#414844] font-semibold">TOPICS</h3>
+            <h3 className="text-[#414844] font-semibold">
+              {t("articles.topics")}
+            </h3>
             <div className="flex gap-2 flex-wrap mt-4">
               {article?.topicTags.map((t) => (
                 <span key={t} className="py-1 px-3 bg-[#ECEEEC] rounded-full">

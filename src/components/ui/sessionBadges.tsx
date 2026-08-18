@@ -3,7 +3,7 @@ import type { EntityStatus } from "@/types/status";
 import {
   capacityPercent,
   getLifecycle,
-  SESSION_TYPE_LABELS,
+  SESSION_TYPE_KEYS,
   type SessionLifecycle,
 } from "@/lib/utils/session";
 import {
@@ -14,12 +14,13 @@ import {
   Video,
 } from "lucide-react";
 import type { SessionType } from "@/types/session";
+import { useTranslation } from "react-i18next";
 
 interface BadgeStyle {
   bg: string;
   text: string;
   dot: string;
-  label: string;
+  labelKey: string;
 }
 
 export const MODERATION_STYLES: Record<EntityStatus, BadgeStyle> = {
@@ -27,31 +28,31 @@ export const MODERATION_STYLES: Record<EntityStatus, BadgeStyle> = {
     bg: "bg-[#DCFCE7]",
     text: "text-[#15803D]",
     dot: "bg-[#22C55E]",
-    label: "Published",
+    labelKey: "status.published",
   },
   draft: {
     bg: "bg-[#F3F4F6]",
     text: "text-[#4B5563]",
     dot: "bg-[#9CA3AF]",
-    label: "Draft",
+    labelKey: "status.draft",
   },
   archived: {
     bg: "bg-[#FEE2E2]",
     text: "text-[#DC2626]",
     dot: "bg-[#EF4444]",
-    label: "Archived",
+    labelKey: "status.archived",
   },
   pending_review: {
     bg: "bg-[#FEF3C7]",
     text: "text-[#B45309]",
     dot: "bg-[#F59E0B]",
-    label: "Pending review",
+    labelKey: "status.pending_review",
   },
   rejected: {
     bg: "bg-[#FEE2E2]",
     text: "text-[#B91C1C]",
     dot: "bg-[#DC2626]",
-    label: "Rejected",
+    labelKey: "status.rejected",
   },
 };
 
@@ -60,36 +61,39 @@ export const LIFECYCLE_STYLES: Record<SessionLifecycle, BadgeStyle> = {
     bg: "bg-[#FEE2E2]",
     text: "text-[#DC2626]",
     dot: "bg-[#EF4444] animate-pulse",
-    label: "Live Now",
+    labelKey: "session.lifecycle.live",
   },
   upcoming: {
     bg: "bg-[#DCFCE7]",
     text: "text-[#15803D]",
     dot: "bg-[#22C55E]",
-    label: "Upcoming",
+    labelKey: "session.lifecycle.upcoming",
   },
   completed: {
     bg: "bg-[#F3F4F6]",
     text: "text-[#4B5563]",
     dot: "bg-[#9CA3AF]",
-    label: "Completed",
+    labelKey: "session.lifecycle.completed",
   },
   canceled: {
     bg: "bg-[#F3F4F6]",
     text: "text-[#6B7280]",
     dot: "bg-[#9CA3AF]",
-    label: "Canceled",
+    labelKey: "session.lifecycle.canceled",
   },
 };
 
-const Pill = ({ style }: { style: BadgeStyle }) => (
-  <span
-    className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium whitespace-nowrap ${style.bg} ${style.text}`}
-  >
-    <span className={`h-1.5 w-1.5 rounded-full ${style.dot}`} />
-    {style.label}
-  </span>
-);
+const Pill = ({ style }: { style: BadgeStyle }) => {
+  const { t } = useTranslation();
+  return (
+    <span
+      className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium whitespace-nowrap ${style.bg} ${style.text}`}
+    >
+      <span className={`h-1.5 w-1.5 rounded-full ${style.dot}`} />
+      {t(style.labelKey)}
+    </span>
+  );
+};
 
 /**
  * Published sessions read as their lifecycle (Live / Upcoming / Completed /
@@ -116,11 +120,12 @@ export const SESSION_TYPE_ICONS: Record<SessionType, typeof Video> = {
 };
 
 export const SessionTypeLabel = ({ type }: { type: SessionType }) => {
+  const { t } = useTranslation();
   const Icon = SESSION_TYPE_ICONS[type] ?? MonitorPlay;
   return (
     <span className="inline-flex items-center gap-1.5 text-xs text-[#6B7280] mt-1">
       <Icon size={14} />
-      {SESSION_TYPE_LABELS[type]}
+      {t(SESSION_TYPE_KEYS[type])}
     </span>
   );
 };
@@ -138,6 +143,7 @@ export const CapacityMeter = ({
   canceled,
   className = "w-28",
 }: CapacityProps) => {
+  const { t } = useTranslation();
   const percent = capacityPercent(registered, capacity);
   const isFull = percent >= 100;
   const isAlmostFull = percent >= 85;
@@ -164,7 +170,9 @@ export const CapacityMeter = ({
         <span className={textColor}>
           {registered}/{capacity}
         </span>
-        <span className={textColor}>{isFull ? "Full" : `${percent}%`}</span>
+        <span className={textColor}>
+          {isFull ? t("session.full") : `${percent}%`}
+        </span>
       </div>
       <div className="w-full rounded-xl bg-[#E6E9E7] h-2 overflow-hidden mt-1.5">
         <div

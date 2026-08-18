@@ -1,9 +1,14 @@
 import { cn } from "@/lib/utils";
 import { COURSE_PERKS, type CoursePerk } from "@/types/course";
 import type Pricing from "@/types/pricing";
-import { Download, Infinity as InfinityIcon, MessagesSquare } from "lucide-react";
+import {
+  Download,
+  Infinity as InfinityIcon,
+  MessagesSquare,
+} from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { Field, inputClass } from "./composerUI";
-import { PERK_LABELS, type CourseDraft } from "./courseDraft";
+import { PERK_KEYS, type CourseDraft } from "./courseDraft";
 
 const PERK_ICONS: Record<CoursePerk, typeof Download> = {
   lifetime_access: InfinityIcon,
@@ -11,13 +16,7 @@ const PERK_ICONS: Record<CoursePerk, typeof Download> = {
   downloadable_resources: Download,
 };
 
-const ENROLLMENT_OPTIONS = [
-  { value: "", label: "Unlimited Students" },
-  { value: "25", label: "25 Students" },
-  { value: "50", label: "50 Students" },
-  { value: "100", label: "100 Students" },
-  { value: "250", label: "250 Students" },
-];
+const ENROLLMENT_VALUES = ["", "25", "50", "100", "250"];
 
 interface Props {
   draft: CourseDraft;
@@ -56,12 +55,19 @@ const TypeCard = ({
 );
 
 const StepPricing = ({ draft, set, errors }: Props) => {
+  const { t } = useTranslation();
   const isPaid = draft.priceModel === "one_time";
   const limit = String(draft.enrollmentLimit);
   // A course saved with a custom cap still needs its own option to stay selected.
-  const enrollmentOptions = ENROLLMENT_OPTIONS.some((o) => o.value === limit)
-    ? ENROLLMENT_OPTIONS
-    : [...ENROLLMENT_OPTIONS, { value: limit, label: `${limit} Students` }];
+  const values = ENROLLMENT_VALUES.includes(limit)
+    ? ENROLLMENT_VALUES
+    : [...ENROLLMENT_VALUES, limit];
+  const enrollmentOptions = values.map((value) => ({
+    value,
+    label: value
+      ? t("composer.pricing.studentCount", { count: Number(value) })
+      : t("composer.pricing.unlimitedStudents"),
+  }));
 
   const togglePerk = (perk: CoursePerk) =>
     set(
@@ -73,18 +79,18 @@ const StepPricing = ({ draft, set, errors }: Props) => {
 
   return (
     <div className="flex flex-col gap-6">
-      <Field label="Course Type">
+      <Field label={t("composer.pricing.courseType")}>
         <div className="flex gap-4">
           <TypeCard
             active={!isPaid}
-            title="Free"
-            subtitle="Accessible to all users"
+            title={t("composer.pricing.free")}
+            subtitle={t("composer.pricing.freeSubtitle")}
             onClick={() => set("priceModel", "free")}
           />
           <TypeCard
             active={isPaid}
-            title="Paid"
-            subtitle="Premium content"
+            title={t("composer.pricing.paid")}
+            subtitle={t("composer.pricing.paidSubtitle")}
             onClick={() => set("priceModel", "one_time")}
           />
         </div>
@@ -92,10 +98,14 @@ const StepPricing = ({ draft, set, errors }: Props) => {
 
       {isPaid && (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-          <Field label="Price" required error={errors.amount}>
+          <Field
+            label={t("composer.pricing.price")}
+            required
+            error={errors.amount}
+          >
             <div className="flex gap-2">
               <select
-                aria-label="Currency"
+                aria-label={t("composer.pricing.currency")}
                 className={cn(inputClass, "w-28")}
                 value={draft.currency}
                 onChange={(e) =>
@@ -117,14 +127,14 @@ const StepPricing = ({ draft, set, errors }: Props) => {
                     e.target.value === "" ? "" : Number(e.target.value),
                   )
                 }
-                placeholder="5000"
+                placeholder={t("composer.pricing.pricePlaceholder")}
               />
             </div>
           </Field>
 
           <Field
-            label="Discount / Early Bird"
-            hint="Optional percentage off the listed price."
+            label={t("composer.pricing.discount")}
+            hint={t("composer.pricing.discountHint")}
             error={errors.discountPercent}
           >
             <div className="flex items-center gap-2">
@@ -141,7 +151,7 @@ const StepPricing = ({ draft, set, errors }: Props) => {
                     e.target.value === "" ? "" : Number(e.target.value),
                   )
                 }
-                placeholder="Optional discount"
+                placeholder={t("composer.pricing.discountPlaceholder")}
               />
             </div>
           </Field>
@@ -154,12 +164,12 @@ const StepPricing = ({ draft, set, errors }: Props) => {
           checked={draft.certificate}
           onChange={(e) => set("certificate", e.target.checked)}
         />
-        Offer a certificate of completion
+        {t("composer.pricing.certificate")}
       </label>
 
       <div>
         <span className="text-[#191C1B] text-sm font-semibold">
-          What's Included
+          {t("composer.pricing.whatsIncluded")}
         </span>
         <div className="flex flex-col gap-3 mt-3">
           {COURSE_PERKS.map((perk) => {
@@ -181,7 +191,7 @@ const StepPricing = ({ draft, set, errors }: Props) => {
                 />
                 <Icon size={16} className="text-[#414844]" />
                 <span className="text-sm text-[#191C1B]">
-                  {PERK_LABELS[perk]}
+                  {t(PERK_KEYS[perk])}
                 </span>
               </label>
             );
@@ -189,7 +199,10 @@ const StepPricing = ({ draft, set, errors }: Props) => {
         </div>
       </div>
 
-      <Field label="Enrollment Limit" error={errors.enrollmentLimit}>
+      <Field
+        label={t("composer.pricing.enrollmentLimit")}
+        error={errors.enrollmentLimit}
+      >
         <select
           className={inputClass}
           value={String(draft.enrollmentLimit)}
