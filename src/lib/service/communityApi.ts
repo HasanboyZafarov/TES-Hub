@@ -20,7 +20,6 @@ type Metric = "like" | "save";
 const collectionOf = (kind: PostKind) =>
   kind === "story" ? "stories" : "questions";
 
-/** Toggles a like/save on a community post; `undo` reverses it. */
 export const setEngagement = (
   kind: PostKind,
   slug: string,

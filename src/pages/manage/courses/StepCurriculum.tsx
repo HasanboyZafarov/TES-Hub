@@ -93,8 +93,6 @@ const StepCurriculum = ({ sections, onChange, error }: Props) => {
       ),
     );
 
-  /* ------------------------------- reorder ------------------------------- */
-
   function moveSection(fromId: string, toId: string) {
     if (fromId === toId) return;
     const from = sections.findIndex((s) => s.id === fromId);
@@ -140,8 +138,6 @@ const StepCurriculum = ({ sections, onChange, error }: Props) => {
     if (source.lessonId) moveLesson(source, target);
     else if (!target.lessonId) moveSection(source.sectionId, target.sectionId);
   }
-
-  /* -------------------------------- render ------------------------------- */
 
   return (
     <div className="flex flex-col gap-5">

@@ -6,7 +6,6 @@ export default interface Certificate {
   courseTitle: string;
   recipientName: string;
   issuedAt: string;
-  /** Encoded into the QR code and checkable at /certificates/verify/:code. */
   verificationCode: string;
   scorePercent?: number;
   pdfUrl?: string;

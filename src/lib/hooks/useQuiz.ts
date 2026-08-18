@@ -11,10 +11,6 @@ const messageOf = (err: unknown, fallback: string) => {
   return fallback;
 };
 
-/**
- * Loads a quiz without its answer key and submits attempts for server-side
- * grading. The graded attempt carries the correct options and explanations.
- */
 const useQuiz = (quizId: string) => {
   const user = useAuth();
   const userId = user?.id;
@@ -81,7 +77,6 @@ const useQuiz = (quizId: string) => {
     isSubmitting,
     error,
     submit,
-    /** Clears the graded result so the learner can retake the quiz. */
     reset: () => setAttempt(null),
   };
 };

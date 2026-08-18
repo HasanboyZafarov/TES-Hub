@@ -40,7 +40,6 @@
   @apply mt-2;
 }
 
-/* Callout treatment — field posts use blockquotes for key thresholds. */
 .post_body blockquote {
   @apply border-l-4 border-[#1f6d1a] bg-[#f2f7f2] text-[#414844] text-sm italic px-4 py-3 mt-6 rounded-r-md;
 }

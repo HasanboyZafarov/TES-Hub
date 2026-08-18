@@ -15,10 +15,6 @@ interface Props {
   children: ReactNode;
 }
 
-/**
- * Chrome shared by every in-course screen: the dark progress header, the
- * curriculum rail on desktop, and the same rail as a drawer on mobile.
- */
 const LearnShell = ({
   course,
   enrollment,

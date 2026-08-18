@@ -2,7 +2,6 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 
 interface FooterLink {
-  /** Translation key under `footer`. */
   key: string;
   url: string;
 }

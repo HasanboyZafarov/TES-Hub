@@ -23,7 +23,6 @@ import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 
-/** One managed content type, with everything the dashboard renders for it. */
 interface Area {
   key: "articles" | "courses" | "sessions";
   icon: LucideIcon;
@@ -36,8 +35,6 @@ interface Area {
 
 const countBy = (items: BaseContent[], status: EntityStatus) =>
   items.filter((i) => i.status === status).length;
-
-/* -------------------------------- stat row -------------------------------- */
 
 interface StatCardProps {
   label: string;
@@ -61,8 +58,6 @@ const StatCard = ({ label, value, icon: Icon, iconClass }: StatCardProps) => (
     </div>
   </div>
 );
-
-/* ------------------------------- area cards ------------------------------- */
 
 interface AreaCardProps {
   area: Area;
@@ -131,8 +126,6 @@ const AreaCard = ({ area, canCreate }: AreaCardProps) => {
   );
 };
 
-/* --------------------------------- lists ---------------------------------- */
-
 interface ContentRow {
   item: BaseContent;
   area: Area["key"];
@@ -183,8 +176,6 @@ const ContentList = ({
     </ul>
   );
 };
-
-/* ---------------------------------- page ---------------------------------- */
 
 const Manage = () => {
   const { t } = useTranslation();

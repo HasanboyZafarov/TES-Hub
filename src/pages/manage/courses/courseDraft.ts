@@ -7,7 +7,6 @@ import type Pricing from "@/types/pricing";
 import type { EntityStatus } from "@/types/status";
 import { slugify } from "@/lib/utils/session";
 
-// Values are i18n keys — render them through `t()`.
 export const LEVEL_KEYS: Record<CourseLevel, string> = {
   beginner: "course.level.beginner",
   intermediate: "course.level.intermediate",
@@ -43,7 +42,6 @@ export interface CourseDraft {
   discountPercent: number | "";
   certificate: boolean;
   perks: CoursePerk[];
-  /** Empty string means unlimited seats. */
   enrollmentLimit: number | "";
 }
 
@@ -95,7 +93,6 @@ export const totalMinutes = (sections: CourseSection[]) =>
     0,
   );
 
-/** "1h 45m" / "45 min" — matches the wording used across the academy pages. */
 export function formatDuration(minutes: number) {
   if (minutes < 60) return `${minutes} min`;
   const hours = Math.floor(minutes / 60);
@@ -147,8 +144,6 @@ export function buildCoursePayload(
     authorId,
   };
 }
-
-/* --------------------------- id helpers --------------------------- */
 
 let counter = 0;
 const uid = (prefix: string) => `${prefix}-${Date.now()}-${counter++}`;

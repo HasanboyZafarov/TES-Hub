@@ -10,10 +10,6 @@ interface Props {
   className?: string;
 }
 
-/**
- * Avatars across the community feed come from user uploads that may be missing,
- * so every one of them falls back to initials rather than a broken image.
- */
 const Avatar = ({
   name,
   src,

@@ -40,8 +40,6 @@ const MATERIAL_ICONS = {
   link: Link2,
 } as const;
 
-/* -------------------------------- sections -------------------------------- */
-
 const Instructor = ({ hostId }: { hostId: string }) => {
   const { t } = useTranslation();
   const { user } = useUser(hostId);
@@ -239,8 +237,6 @@ const LocationCard = ({ session }: { session: Session }) => {
   );
 };
 
-/* ---------------------------------- page ---------------------------------- */
-
 const SessionDetail = () => {
   const { t } = useTranslation();
   const { slug } = useParams();
@@ -312,7 +308,6 @@ const SessionDetail = () => {
         {t("session.detail.allSessions")}
       </button>
 
-      {/* hero */}
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_420px] gap-8 mt-4">
         <div>
           <div className="flex flex-wrap items-center gap-3">
@@ -374,7 +369,6 @@ const SessionDetail = () => {
         </div>
       </div>
 
-      {/* body */}
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-6 mt-10">
         <div className="flex flex-col gap-6">
           <Instructor hostId={session.hostId} />

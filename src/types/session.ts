@@ -15,8 +15,8 @@ export type SessionType = (typeof SESSION_TYPES)[number];
 
 export interface AgendaItem {
   id: string;
-  startsAt: string; // "09:00"
-  endsAt: string; // "10:30"
+  startsAt: string;
+  endsAt: string;
   title: string;
   description?: string;
 }
@@ -28,9 +28,9 @@ export interface SessionMaterial {
   id: string;
   name: string;
   kind: MaterialKind;
-  size?: string; // "2.4 MB"
+  size?: string;
   url?: string;
-  locked: boolean; // unlocked after registration
+  locked: boolean;
 }
 
 export default interface Session extends BaseContent {

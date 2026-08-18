@@ -1,9 +1,7 @@
 import { createBrowserRouter } from "react-router-dom";
 
-// Layout
 import Layout from "../components/layout/Layout";
 
-// Top routes
 import About from "../pages/about";
 import Contact from "../pages/contact";
 import Home from "../pages/home";
@@ -12,7 +10,6 @@ import Resources from "../pages/resources";
 import Settings from "../pages/settings";
 import Terms from "../pages/terms";
 
-// Auth Routes
 import Auth from "../pages/auth";
 import ForgotPassword from "../pages/auth/ForgotPassword";
 import ResetPassword from "../pages/auth/ResetPassword";
@@ -21,7 +18,6 @@ import NotFound from "../pages/not-found";
 import PrivateRoutes from "./PrivateRoutes";
 import RouteError from "../components/layout/RouteError";
 
-// Academy routes
 import Academy from "../pages/academy";
 import AcademyArticles from "../pages/academy/articles/AcademyArticles";
 import ArticlesDetail from "../pages/academy/articles/ArticlesDetail";
@@ -34,7 +30,6 @@ import CourseQuiz from "../pages/academy/courses/CourseQuiz";
 import CoursesDetail from "../pages/academy/courses/CoursesDetail";
 import Onboarding from "../pages/auth/Onboarding";
 
-// Community routes
 import Community from "../pages/community";
 import AuthorProfile from "../pages/community/author";
 import Photos from "../pages/community/photos";
@@ -45,7 +40,6 @@ import Stories from "../pages/community/stories";
 import StoriesDetail from "../pages/community/stories/StoriesDetail";
 import Topics from "../pages/community/topic";
 
-// Session routes
 import Sessions from "../pages/sessions";
 import SessionCheckout from "../pages/sessions/SessionCheckout";
 import SessionDetail from "../pages/sessions/SessionDetail";
@@ -54,7 +48,6 @@ import SessionRegisterConfirmation from "../pages/sessions/SessionRegisterConfir
 import TopicDetail from "../pages/community/topic/TopicDetail";
 import Profile from "../pages/profile";
 
-// Manage routes
 import Manage from "../pages/manage";
 import ManageRoutes from "./ManageRoutes";
 import Articles from "@/pages/manage/articles/Articles";
@@ -79,7 +72,6 @@ const TOP_ROUTES = [
 const PUBLIC_ROUTES = [
   { path: "/community", element: <Community /> },
   { path: "/academy", element: <Academy /> },
-  // The library itself is public; member-only files gate at the download button.
   { path: "/resources", element: <Resources /> },
 ];
 
@@ -92,12 +84,9 @@ const AUTH_ROUTES = [
 ];
 
 const ACADEMY_ROUTES = [
-  // Articles
   { path: "/academy", element: <Academy /> },
   { path: "/academy/articles", element: <AcademyArticles /> },
   { path: "/academy/articles/:slug", element: <ArticlesDetail /> },
-
-  // Courses
 
   { path: "/academy/courses", element: <AcademyCourses /> },
   { path: "/academy/courses/:slug", element: <CoursesDetail /> },
@@ -112,33 +101,26 @@ const ACADEMY_ROUTES = [
     element: <CourseCertificate />,
   },
 
-  // Public credential check — no account needed.
   { path: "/certificates/verify/:code", element: <CertificateVerify /> },
 ];
 
 const COMMUNITY_ROUTES = [
-  // Stories
   {
     path: "/community/stories",
     element: <Stories />,
   },
   { path: "/community/stories/:slug", element: <StoriesDetail /> },
 
-  // Questions
   { path: "/community/questions", element: <Questions /> },
   { path: "/community/questions/:slug", element: <QuestionDetail /> },
 
-  // Photos
   { path: "/community/photos", element: <Photos /> },
 
-  // Topic
   { path: "/community/topics", element: <Topics /> },
   { path: "/community/topics/:topicSlug", element: <TopicDetail /> },
 
-  // Regional feed
   { path: "/community/region/:regionSlug", element: <RegionalFeed /> },
 
-  // Public author profile
   { path: "/community/author/:username", element: <AuthorProfile /> },
 ];
 

@@ -16,7 +16,6 @@ export const LESSON_ICONS: Record<Lesson["type"], LucideIcon> = {
   external_link: ExternalLink,
 };
 
-/** Tint per lesson type, so the curriculum reads at a glance. */
 export const LESSON_TINTS: Record<Lesson["type"], string> = {
   video: "bg-[#E4F0FF] text-[#1B4E86]",
   article: "bg-[#E7F3E7] text-[#1F6D1A]",
@@ -25,7 +24,6 @@ export const LESSON_TINTS: Record<Lesson["type"], string> = {
   external_link: "bg-[#E9ECEA] text-[#414844]",
 };
 
-/** "45 min" / "1h 45m" — the wording used across the academy pages. */
 export const formatMinutes = (minutes: number) => {
   const total = Math.round(minutes);
   if (total < 60) return `${total} min`;

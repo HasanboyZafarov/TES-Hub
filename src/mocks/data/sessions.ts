@@ -1,12 +1,10 @@
 import type Session from "../../types/session";
 
-// Anchored to "now" so the manage dashboard can demo live / upcoming states.
 const HOUR = 60 * 60 * 1000;
 const DAY = 24 * HOUR;
 const now = Date.now();
 const at = (offsetMs: number) => new Date(now + offsetMs).toISOString();
 
-/** N days from today at a fixed local wall-clock time. */
 const on = (days: number, hour: number, minute = 0) => {
   const d = new Date(now + days * DAY);
   d.setHours(hour, minute, 0, 0);

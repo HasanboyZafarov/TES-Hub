@@ -20,7 +20,6 @@ interface Props {
   quizState?: EnrollmentQuizState;
 }
 
-/** Renders whichever payload the lesson carries: article, video, PDF, link, quiz. */
 const LessonContent = ({ lesson, courseSlug, quizState }: Props) => {
   const { t } = useTranslation();
   const [showTranscript, setShowTranscript] = useState(false);
@@ -166,7 +165,6 @@ const LessonContent = ({ lesson, courseSlug, quizState }: Props) => {
     );
   }
 
-  // content.kind === "quiz"
   return (
     <div className="rounded-xl border border-[#C1C8C2] bg-white p-8 text-center">
       <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-xl bg-[#F1E7FF]">

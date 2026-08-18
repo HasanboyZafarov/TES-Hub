@@ -15,7 +15,6 @@ export function getLifecycle(
   return "completed";
 }
 
-// Values are i18n keys — render them through `t()`.
 export const SESSION_TYPE_KEYS: Record<SessionType, string> = {
   webinar: "session.type.webinar",
   workshop: "session.type.workshop",

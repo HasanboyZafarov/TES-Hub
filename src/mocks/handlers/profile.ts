@@ -22,7 +22,6 @@ export const profile_handlers = [
     });
   }),
 
-  // Public community profile, addressed by username rather than id.
   http.get<{ username: string }>(
     endPoint + "/authors/:username",
     ({ params }) => {

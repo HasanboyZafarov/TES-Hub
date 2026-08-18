@@ -20,7 +20,7 @@ export function useUser(id: string) {
 
   if (id === "me") {
     return {
-      user: auth, 
+      user: auth,
       loading: auth ? false : true,
     };
   }

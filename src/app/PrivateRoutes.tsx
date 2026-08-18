@@ -5,7 +5,6 @@ const PrivateRoutes = () => {
   const user = useAuth();
 
   if (user) return <Outlet />;
-  
 
   return <Navigate to={"/"} />;
 };

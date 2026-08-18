@@ -58,7 +58,6 @@ const StepPricing = ({ draft, set, errors }: Props) => {
   const { t } = useTranslation();
   const isPaid = draft.priceModel === "one_time";
   const limit = String(draft.enrollmentLimit);
-  // A course saved with a custom cap still needs its own option to stay selected.
   const values = ENROLLMENT_VALUES.includes(limit)
     ? ENROLLMENT_VALUES
     : [...ENROLLMENT_VALUES, limit];

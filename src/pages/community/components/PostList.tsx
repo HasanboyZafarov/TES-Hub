@@ -37,8 +37,6 @@ const PostList = ({
   const { t } = useTranslation();
   const [page, setPage] = useState(1);
 
-  // A changed filter reshapes the list underneath the current page, so reset to
-  // the first page whenever the result set changes size.
   const [countAtPage, setCountAtPage] = useState(posts.length);
   if (countAtPage !== posts.length) {
     setCountAtPage(posts.length);
