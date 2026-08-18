@@ -9,9 +9,9 @@ import {
 } from "@/lib/service/sessionsApi";
 import useSession from "@/lib/service/useSession";
 import {
-  MATERIAL_KIND_LABELS,
-  SESSION_FORMAT_LABELS,
-  SESSION_TYPE_LABELS,
+  MATERIAL_KIND_KEYS,
+  SESSION_FORMAT_KEYS,
+  SESSION_TYPE_KEYS,
   slugify,
 } from "@/lib/utils/session";
 import type Session from "@/types/session";
@@ -28,55 +28,62 @@ import {
 import type { EntityStatus } from "@/types/status";
 import { Plus, SendHorizonal, Trash2, TriangleAlert } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
 import z from "zod";
 
 /* --------------------------------- schema --------------------------------- */
 
-const SessionSchema = z
-  .object({
-    title: z.string().min(1, "Title is required."),
-    slug: z.string().min(1, "Slug is required."),
-    description: z.string().min(1, "Description is required."),
-    sessionType: z.enum(SESSION_TYPES),
-    format: z.enum(SESSION_FORMATS),
-    location: z.string().optional(),
-    venueAddress: z.string().optional(),
-    meetingUrl: z.string().optional(),
-    startsAt: z.string().min(1, "Start date & time is required."),
-    endsAt: z.string().min(1, "End date & time is required."),
-    registrationClosesAt: z.string().optional(),
-    capacity: z
-      .number({ error: "Capacity must be a number." })
-      .int()
-      .min(1, "Capacity must be at least 1."),
-    priceModel: z.enum(["free", "one_time", "subscription_only"]),
-    amount: z.number().optional(),
-    currency: z.enum(["KGS", "USD", "RUB"]),
-    language: z.enum(["ru", "ky", "en"]),
-    visibility: z.enum(["public", "unlisted", "private", "hidden"]),
-    oblast: z.string().optional(),
-    raion: z.string().optional(),
-    coverImage: z.string().optional(),
-  })
-  .refine((v) => new Date(v.endsAt) > new Date(v.startsAt), {
-    message: "End time must be after the start time.",
-    path: ["endsAt"],
-  })
-  .refine((v) => v.format === "online" || Boolean(v.location?.trim()), {
-    message: "Location is required for in-person and hybrid sessions.",
-    path: ["location"],
-  })
-  .refine((v) => v.format === "onsite" || Boolean(v.meetingUrl?.trim()), {
-    message: "Meeting URL is required for online and hybrid sessions.",
-    path: ["meetingUrl"],
-  })
-  .refine((v) => v.priceModel === "free" || (v.amount ?? 0) > 0, {
-    message: "Paid sessions need an amount above zero.",
-    path: ["amount"],
-  });
+type Translate = (key: string) => string;
 
-type FormState = z.input<typeof SessionSchema>;
+const buildSessionSchema = (t: Translate) =>
+  z
+    .object({
+      title: z.string().min(1, t("manage.sessionForm.errors.titleRequired")),
+      slug: z.string().min(1, t("manage.sessionForm.errors.slugRequired")),
+      description: z
+        .string()
+        .min(1, t("manage.sessionForm.errors.descriptionRequired")),
+      sessionType: z.enum(SESSION_TYPES),
+      format: z.enum(SESSION_FORMATS),
+      location: z.string().optional(),
+      venueAddress: z.string().optional(),
+      meetingUrl: z.string().optional(),
+      startsAt: z.string().min(1, t("manage.sessionForm.errors.startRequired")),
+      endsAt: z.string().min(1, t("manage.sessionForm.errors.endRequired")),
+      registrationClosesAt: z.string().optional(),
+      capacity: z
+        .number({ error: t("manage.sessionForm.errors.capacityNumber") })
+        .int()
+        .min(1, t("manage.sessionForm.errors.capacityMin")),
+      priceModel: z.enum(["free", "one_time", "subscription_only"]),
+      amount: z.number().optional(),
+      currency: z.enum(["KGS", "USD", "RUB"]),
+      language: z.enum(["ru", "ky", "en"]),
+      visibility: z.enum(["public", "unlisted", "private", "hidden"]),
+      oblast: z.string().optional(),
+      raion: z.string().optional(),
+      coverImage: z.string().optional(),
+    })
+    .refine((v) => new Date(v.endsAt) > new Date(v.startsAt), {
+      message: t("manage.sessionForm.errors.endAfterStart"),
+      path: ["endsAt"],
+    })
+    .refine((v) => v.format === "online" || Boolean(v.location?.trim()), {
+      message: t("manage.sessionForm.errors.locationRequired"),
+      path: ["location"],
+    })
+    .refine((v) => v.format === "onsite" || Boolean(v.meetingUrl?.trim()), {
+      message: t("manage.sessionForm.errors.meetingUrlRequired"),
+      path: ["meetingUrl"],
+    })
+    .refine((v) => v.priceModel === "free" || (v.amount ?? 0) > 0, {
+      message: t("manage.sessionForm.errors.amountAboveZero"),
+      path: ["amount"],
+    });
+
+type SessionSchemaType = ReturnType<typeof buildSessionSchema>;
+type FormState = z.input<SessionSchemaType>;
 
 const EMPTY_FORM: FormState = {
   title: "",
@@ -160,6 +167,7 @@ const Card = ({
 /* ---------------------------------- page ---------------------------------- */
 
 const SessionsCRUD = () => {
+  const { t } = useTranslation();
   const { slug } = useParams();
   const isNew = slug === "new";
   const navigate = useNavigate();
@@ -212,7 +220,7 @@ const SessionsCRUD = () => {
   }
 
   function buildPayload(
-    data: z.output<typeof SessionSchema>,
+    data: z.output<SessionSchemaType>,
     status: EntityStatus,
   ): Partial<Session> {
     return {
@@ -253,7 +261,7 @@ const SessionsCRUD = () => {
   }
 
   async function submit(status: EntityStatus) {
-    const parsed = SessionSchema.safeParse({
+    const parsed = buildSessionSchema(t).safeParse({
       ...form,
       capacity: Number(form.capacity),
       amount: form.amount === undefined ? undefined : Number(form.amount),
@@ -265,7 +273,7 @@ const SessionsCRUD = () => {
         fieldErrors[issue.path[0] as string] = issue.message;
       });
       setErrors(fieldErrors);
-      setBanner("Please fix the highlighted fields.");
+      setBanner(t("manage.sessionForm.fixFields"));
       return;
     }
 
@@ -282,7 +290,7 @@ const SessionsCRUD = () => {
       navigate("/manage/sessions");
     } catch (e) {
       setBanner(
-        e instanceof Error ? e.message : "Could not save the session.",
+        e instanceof Error ? e.message : t("manage.sessionForm.saveFailed"),
       );
     } finally {
       setSaving(false);
@@ -296,7 +304,9 @@ const SessionsCRUD = () => {
       await deleteSession(slug);
       navigate("/manage/sessions");
     } catch (e) {
-      setBanner(e instanceof Error ? e.message : "Could not delete session.");
+      setBanner(
+        e instanceof Error ? e.message : t("manage.sessionForm.deleteFailed"),
+      );
     }
   }
 
@@ -345,7 +355,7 @@ const SessionsCRUD = () => {
   if (!isNew && isLoading) {
     return (
       <div className="container mx-auto px-10 py-20 text-[#414844]">
-        Loading session…
+        {t("manage.sessionForm.loading")}
       </div>
     );
   }
@@ -359,15 +369,21 @@ const SessionsCRUD = () => {
               className="cursor-pointer hover:underline"
               onClick={() => navigate("/manage/sessions")}
             >
-              Session Management
+              {t("manage.sessions.title")}
             </span>
             <span className="mx-1">/</span>
             <span className="text-[#012D1D] font-semibold">
-              {isNew ? "New session" : "Edit"}
+              {isNew
+                ? t("manage.sessionForm.breadcrumbNew")
+                : t("manage.sessionForm.breadcrumbEdit")}
             </span>
           </nav>
           <h1 className="text-4xl lg:text-5xl text-[#012D1D] font-bold mt-2">
-            {isNew ? "Create new session" : `Editing: ${form.title || slug}`}
+            {isNew
+              ? t("manage.sessionForm.titleNew")
+              : t("manage.sessionForm.titleEdit", {
+                  title: form.title || slug,
+                })}
           </h1>
         </div>
 
@@ -380,7 +396,7 @@ const SessionsCRUD = () => {
               disabled={saving}
             >
               <Trash2 size={18} />
-              Delete
+              {t("common.delete")}
             </Button>
           )}
           <Button
@@ -389,7 +405,7 @@ const SessionsCRUD = () => {
             onClick={() => submit("draft")}
             disabled={saving}
           >
-            Save Draft
+            {t("manage.sessionForm.saveDraft")}
           </Button>
           {can("publishDirectly") ? (
             <Button
@@ -397,7 +413,7 @@ const SessionsCRUD = () => {
               onClick={() => submit("published")}
               disabled={saving}
             >
-              Publish
+              {t("manage.sessionForm.publish")}
             </Button>
           ) : (
             can("submitForReview") && (
@@ -407,7 +423,7 @@ const SessionsCRUD = () => {
                 disabled={saving}
               >
                 <SendHorizonal size={18} />
-                Submit For Review
+                {t("manage.sessionForm.submitForReview")}
               </Button>
             )
           )}
@@ -424,11 +440,11 @@ const SessionsCRUD = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-8">
         <div className="lg:col-span-2 flex flex-col gap-6">
           <Card
-            title="Session details"
-            description="What the session is and who it is for."
+            title={t("manage.sessionForm.detailsTitle")}
+            description={t("manage.sessionForm.detailsDescription")}
           >
             <div className="flex flex-col gap-5">
-              <Field label="Title" error={errors.title}>
+              <Field label={t("manage.sessionForm.title")} error={errors.title}>
                 <input
                   className={inputClass}
                   value={form.title}
@@ -436,30 +452,36 @@ const SessionsCRUD = () => {
                     set("title", e.target.value);
                     if (isNew) set("slug", slugify(e.target.value));
                   }}
-                  placeholder="Advanced Soil Regeneration Techniques"
+                  placeholder={t("manage.sessionForm.titlePlaceholder")}
                 />
               </Field>
 
-              <Field label="Slug" error={errors.slug}>
+              <Field label={t("manage.sessionForm.slug")} error={errors.slug}>
                 <input
                   className={inputClass}
                   value={form.slug}
                   onChange={(e) => set("slug", slugify(e.target.value))}
-                  placeholder="advanced-soil-regeneration-techniques"
+                  placeholder={t("manage.sessionForm.slugPlaceholder")}
                 />
               </Field>
 
-              <Field label="Description" error={errors.description}>
+              <Field
+                label={t("manage.sessionForm.description")}
+                error={errors.description}
+              >
                 <textarea
                   className={`${inputClass} h-32 py-3 resize-y`}
                   value={form.description}
                   onChange={(e) => set("description", e.target.value)}
-                  placeholder="What participants will learn and who should attend."
+                  placeholder={t("manage.sessionForm.descriptionPlaceholder")}
                 />
               </Field>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                <Field label="Session type" error={errors.sessionType}>
+                <Field
+                  label={t("manage.sessionForm.sessionType")}
+                  error={errors.sessionType}
+                >
                   <select
                     className={inputClass}
                     value={form.sessionType}
@@ -467,15 +489,18 @@ const SessionsCRUD = () => {
                       set("sessionType", e.target.value as SessionType)
                     }
                   >
-                    {SESSION_TYPES.map((t) => (
-                      <option key={t} value={t}>
-                        {SESSION_TYPE_LABELS[t]}
+                    {SESSION_TYPES.map((type) => (
+                      <option key={type} value={type}>
+                        {t(SESSION_TYPE_KEYS[type])}
                       </option>
                     ))}
                   </select>
                 </Field>
 
-                <Field label="Format" error={errors.format}>
+                <Field
+                  label={t("manage.sessionForm.format")}
+                  error={errors.format}
+                >
                   <select
                     className={inputClass}
                     value={form.format}
@@ -485,7 +510,7 @@ const SessionsCRUD = () => {
                   >
                     {SESSION_FORMATS.map((f) => (
                       <option key={f} value={f}>
-                        {SESSION_FORMAT_LABELS[f]}
+                        {t(SESSION_FORMAT_KEYS[f])}
                       </option>
                     ))}
                   </select>
@@ -494,50 +519,64 @@ const SessionsCRUD = () => {
 
               {needsLocation && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                  <Field label="Location" error={errors.location}>
+                  <Field
+                    label={t("manage.sessionForm.location")}
+                    error={errors.location}
+                  >
                     <input
                       className={inputClass}
                       value={form.location}
                       onChange={(e) => set("location", e.target.value)}
-                      placeholder="Naryn Agricultural Extension Center"
+                      placeholder={t("manage.sessionForm.locationPlaceholder")}
                     />
                   </Field>
-                  <Field label="Venue address" error={errors.venueAddress}>
+                  <Field
+                    label={t("manage.sessionForm.venueAddress")}
+                    error={errors.venueAddress}
+                  >
                     <input
                       className={inputClass}
                       value={form.venueAddress}
                       onChange={(e) => set("venueAddress", e.target.value)}
-                      placeholder="Lenin Street 45, Naryn, 722600"
+                      placeholder={t(
+                        "manage.sessionForm.venueAddressPlaceholder",
+                      )}
                     />
                   </Field>
                 </div>
               )}
 
               {needsMeetingUrl && (
-                <Field label="Meeting URL" error={errors.meetingUrl}>
+                <Field
+                  label={t("manage.sessionForm.meetingUrl")}
+                  error={errors.meetingUrl}
+                >
                   <input
                     className={inputClass}
                     value={form.meetingUrl}
                     onChange={(e) => set("meetingUrl", e.target.value)}
-                    placeholder="https://meet.tes-hub.kg/session"
+                    placeholder={t("manage.sessionForm.meetingUrlPlaceholder")}
                   />
                 </Field>
               )}
 
-              <Field label="Cover image URL" error={errors.coverImage}>
+              <Field
+                label={t("manage.sessionForm.coverImage")}
+                error={errors.coverImage}
+              >
                 <input
                   className={inputClass}
                   value={form.coverImage}
                   onChange={(e) => set("coverImage", e.target.value)}
-                  placeholder="/img/homepage/session-cover.jpg"
+                  placeholder={t("manage.sessionForm.coverImagePlaceholder")}
                 />
               </Field>
             </div>
           </Card>
 
           <Card
-            title="Schedule & agenda"
-            description="Break the session into blocks participants can scan."
+            title={t("manage.sessionForm.agendaTitle")}
+            description={t("manage.sessionForm.agendaDescription")}
           >
             <div className="flex flex-col gap-4">
               {agenda.map((item) => (
@@ -547,7 +586,9 @@ const SessionsCRUD = () => {
                 >
                   <div className="flex flex-wrap gap-3 items-end">
                     <label className="flex flex-col">
-                      <span className="text-xs text-[#6B7280]">Start</span>
+                      <span className="text-xs text-[#6B7280]">
+                        {t("manage.sessionForm.start")}
+                      </span>
                       <input
                         type="time"
                         className={`${inputClass} w-32`}
@@ -558,7 +599,9 @@ const SessionsCRUD = () => {
                       />
                     </label>
                     <label className="flex flex-col">
-                      <span className="text-xs text-[#6B7280]">End</span>
+                      <span className="text-xs text-[#6B7280]">
+                        {t("manage.sessionForm.end")}
+                      </span>
                       <input
                         type="time"
                         className={`${inputClass} w-32`}
@@ -569,19 +612,23 @@ const SessionsCRUD = () => {
                       />
                     </label>
                     <label className="flex flex-col flex-1 min-w-50">
-                      <span className="text-xs text-[#6B7280]">Title</span>
+                      <span className="text-xs text-[#6B7280]">
+                        {t("manage.sessionForm.agendaItemTitle")}
+                      </span>
                       <input
                         className={inputClass}
                         value={item.title}
                         onChange={(e) =>
                           patchAgendaItem(item.id, { title: e.target.value })
                         }
-                        placeholder="Fundamentals of Soil Biology"
+                        placeholder={t(
+                          "manage.sessionForm.agendaItemPlaceholder",
+                        )}
                       />
                     </label>
                     <button
                       type="button"
-                      aria-label="Remove agenda item"
+                      aria-label={t("manage.sessionForm.removeAgendaItem")}
                       className="p-2 rounded-md text-[#DC2626] hover:bg-[#FEE2E2] cursor-pointer"
                       onClick={() =>
                         setAgenda((a) => a.filter((i) => i.id !== item.id))
@@ -596,7 +643,9 @@ const SessionsCRUD = () => {
                     onChange={(e) =>
                       patchAgendaItem(item.id, { description: e.target.value })
                     }
-                    placeholder="Short description (optional)"
+                    placeholder={t(
+                      "manage.sessionForm.agendaDescriptionPlaceholder",
+                    )}
                   />
                 </div>
               ))}
@@ -607,14 +656,14 @@ const SessionsCRUD = () => {
                 className="flex items-center justify-center gap-2 border-2 border-dashed border-[#C1C8C2] rounded-lg py-3 text-sm text-[#414844] hover:border-[#012D1D] hover:text-[#012D1D] cursor-pointer"
               >
                 <Plus size={18} />
-                Add agenda block
+                {t("manage.sessionForm.addAgendaBlock")}
               </button>
             </div>
           </Card>
 
           <Card
-            title="Included materials"
-            description="Files unlocked for confirmed registrants."
+            title={t("manage.sessionForm.materialsTitle")}
+            description={t("manage.sessionForm.materialsDescription")}
           >
             <div className="flex flex-col gap-4">
               {materials.map((m) => (
@@ -623,18 +672,24 @@ const SessionsCRUD = () => {
                   className="flex flex-wrap gap-3 items-end border border-[#E5E7EB] rounded-lg p-4 bg-[#F9FAFB]"
                 >
                   <label className="flex flex-col flex-1 min-w-50">
-                    <span className="text-xs text-[#6B7280]">Name</span>
+                    <span className="text-xs text-[#6B7280]">
+                      {t("manage.sessionForm.materialName")}
+                    </span>
                     <input
                       className={inputClass}
                       value={m.name}
                       onChange={(e) =>
                         patchMaterial(m.id, { name: e.target.value })
                       }
-                      placeholder="Soil Sampling Guide"
+                      placeholder={t(
+                        "manage.sessionForm.materialNamePlaceholder",
+                      )}
                     />
                   </label>
                   <label className="flex flex-col">
-                    <span className="text-xs text-[#6B7280]">Kind</span>
+                    <span className="text-xs text-[#6B7280]">
+                      {t("manage.sessionForm.materialKind")}
+                    </span>
                     <select
                       className={`${inputClass} w-32`}
                       value={m.kind}
@@ -646,20 +701,24 @@ const SessionsCRUD = () => {
                     >
                       {MATERIAL_KINDS.map((k) => (
                         <option key={k} value={k}>
-                          {MATERIAL_KIND_LABELS[k]}
+                          {t(MATERIAL_KIND_KEYS[k])}
                         </option>
                       ))}
                     </select>
                   </label>
                   <label className="flex flex-col">
-                    <span className="text-xs text-[#6B7280]">Size</span>
+                    <span className="text-xs text-[#6B7280]">
+                      {t("manage.sessionForm.materialSize")}
+                    </span>
                     <input
                       className={`${inputClass} w-28`}
                       value={m.size ?? ""}
                       onChange={(e) =>
                         patchMaterial(m.id, { size: e.target.value })
                       }
-                      placeholder="2.4 MB"
+                      placeholder={t(
+                        "manage.sessionForm.materialSizePlaceholder",
+                      )}
                     />
                   </label>
                   <label className="flex items-center gap-2 h-11 text-sm text-[#414844]">
@@ -670,16 +729,14 @@ const SessionsCRUD = () => {
                         patchMaterial(m.id, { locked: e.target.checked })
                       }
                     />
-                    Locked
+                    {t("manage.sessionForm.locked")}
                   </label>
                   <button
                     type="button"
-                    aria-label="Remove material"
+                    aria-label={t("manage.sessionForm.removeMaterial")}
                     className="p-2 rounded-md text-[#DC2626] hover:bg-[#FEE2E2] cursor-pointer"
                     onClick={() =>
-                      setMaterials((list) =>
-                        list.filter((i) => i.id !== m.id),
-                      )
+                      setMaterials((list) => list.filter((i) => i.id !== m.id))
                     }
                   >
                     <Trash2 size={18} />
@@ -693,16 +750,19 @@ const SessionsCRUD = () => {
                 className="flex items-center justify-center gap-2 border-2 border-dashed border-[#C1C8C2] rounded-lg py-3 text-sm text-[#414844] hover:border-[#012D1D] hover:text-[#012D1D] cursor-pointer"
               >
                 <Plus size={18} />
-                Add material
+                {t("manage.sessionForm.addMaterial")}
               </button>
             </div>
           </Card>
         </div>
 
         <aside className="flex flex-col gap-6">
-          <Card title="When">
+          <Card title={t("manage.sessionForm.whenTitle")}>
             <div className="flex flex-col gap-5">
-              <Field label="Starts at" error={errors.startsAt}>
+              <Field
+                label={t("manage.sessionForm.startsAt")}
+                error={errors.startsAt}
+              >
                 <input
                   type="datetime-local"
                   className={inputClass}
@@ -710,7 +770,10 @@ const SessionsCRUD = () => {
                   onChange={(e) => set("startsAt", e.target.value)}
                 />
               </Field>
-              <Field label="Ends at" error={errors.endsAt}>
+              <Field
+                label={t("manage.sessionForm.endsAt")}
+                error={errors.endsAt}
+              >
                 <input
                   type="datetime-local"
                   className={inputClass}
@@ -719,7 +782,7 @@ const SessionsCRUD = () => {
                 />
               </Field>
               <Field
-                label="Registration closes"
+                label={t("manage.sessionForm.registrationCloses")}
                 error={errors.registrationClosesAt}
               >
                 <input
@@ -732,9 +795,12 @@ const SessionsCRUD = () => {
             </div>
           </Card>
 
-          <Card title="Capacity & pricing">
+          <Card title={t("manage.sessionForm.capacityTitle")}>
             <div className="flex flex-col gap-5">
-              <Field label="Capacity" error={errors.capacity}>
+              <Field
+                label={t("manage.sessionForm.capacity")}
+                error={errors.capacity}
+              >
                 <input
                   type="number"
                   min={1}
@@ -743,25 +809,34 @@ const SessionsCRUD = () => {
                   onChange={(e) => set("capacity", Number(e.target.value))}
                 />
               </Field>
-              <Field label="Price model" error={errors.priceModel}>
+              <Field
+                label={t("manage.sessionForm.priceModel")}
+                error={errors.priceModel}
+              >
                 <select
                   className={inputClass}
                   value={form.priceModel}
                   onChange={(e) =>
-                    set(
-                      "priceModel",
-                      e.target.value as FormState["priceModel"],
-                    )
+                    set("priceModel", e.target.value as FormState["priceModel"])
                   }
                 >
-                  <option value="free">Free</option>
-                  <option value="one_time">One-time payment</option>
-                  <option value="subscription_only">Subscription only</option>
+                  <option value="free">
+                    {t("manage.sessionForm.priceFree")}
+                  </option>
+                  <option value="one_time">
+                    {t("manage.sessionForm.priceOneTime")}
+                  </option>
+                  <option value="subscription_only">
+                    {t("manage.sessionForm.priceSubscription")}
+                  </option>
                 </select>
               </Field>
               {form.priceModel !== "free" && (
                 <div className="grid grid-cols-2 gap-3">
-                  <Field label="Amount" error={errors.amount}>
+                  <Field
+                    label={t("manage.sessionForm.amount")}
+                    error={errors.amount}
+                  >
                     <input
                       type="number"
                       min={0}
@@ -777,7 +852,10 @@ const SessionsCRUD = () => {
                       }
                     />
                   </Field>
-                  <Field label="Currency" error={errors.currency}>
+                  <Field
+                    label={t("manage.sessionForm.currency")}
+                    error={errors.currency}
+                  >
                     <select
                       className={inputClass}
                       value={form.currency}
@@ -795,9 +873,12 @@ const SessionsCRUD = () => {
             </div>
           </Card>
 
-          <Card title="Audience">
+          <Card title={t("manage.sessionForm.audienceTitle")}>
             <div className="flex flex-col gap-5">
-              <Field label="Language" error={errors.language}>
+              <Field
+                label={t("manage.sessionForm.language")}
+                error={errors.language}
+              >
                 <select
                   className={inputClass}
                   value={form.language}
@@ -805,12 +886,15 @@ const SessionsCRUD = () => {
                     set("language", e.target.value as FormState["language"])
                   }
                 >
-                  <option value="ru">Russian</option>
-                  <option value="ky">Kyrgyz</option>
-                  <option value="en">English</option>
+                  <option value="ru">{t("auth.language.ru")}</option>
+                  <option value="ky">{t("auth.language.ky")}</option>
+                  <option value="en">{t("auth.language.en")}</option>
                 </select>
               </Field>
-              <Field label="Visibility" error={errors.visibility}>
+              <Field
+                label={t("manage.sessionForm.visibility")}
+                error={errors.visibility}
+              >
                 <select
                   className={inputClass}
                   value={form.visibility}
@@ -818,48 +902,62 @@ const SessionsCRUD = () => {
                     set("visibility", e.target.value as FormState["visibility"])
                   }
                 >
-                  <option value="public">Public</option>
-                  <option value="unlisted">Unlisted</option>
-                  <option value="private">Private</option>
-                  <option value="hidden">Hidden</option>
+                  <option value="public">
+                    {t("manage.sessionForm.visibilityPublic")}
+                  </option>
+                  <option value="unlisted">
+                    {t("manage.sessionForm.visibilityUnlisted")}
+                  </option>
+                  <option value="private">
+                    {t("manage.sessionForm.visibilityPrivate")}
+                  </option>
+                  <option value="hidden">
+                    {t("manage.sessionForm.visibilityHidden")}
+                  </option>
                 </select>
               </Field>
               <div className="grid grid-cols-2 gap-3">
-                <Field label="Oblast" error={errors.oblast}>
+                <Field
+                  label={t("manage.sessionForm.oblast")}
+                  error={errors.oblast}
+                >
                   <input
                     className={inputClass}
                     value={form.oblast}
                     onChange={(e) => set("oblast", e.target.value)}
-                    placeholder="Chui"
+                    placeholder={t("manage.sessionForm.oblastPlaceholder")}
                   />
                 </Field>
-                <Field label="Raion" error={errors.raion}>
+                <Field
+                  label={t("manage.sessionForm.raion")}
+                  error={errors.raion}
+                >
                   <input
                     className={inputClass}
                     value={form.raion}
                     onChange={(e) => set("raion", e.target.value)}
-                    placeholder="Sokuluk"
+                    placeholder={t("manage.sessionForm.raionPlaceholder")}
                   />
                 </Field>
               </div>
 
               <div>
                 <span className="text-[#191C1B] text-sm font-semibold">
-                  Topic tags
+                  {t("manage.sessionForm.topicTags")}
                 </span>
                 <div className="flex flex-wrap gap-2 mt-2">
-                  {topicTags.map((t) => (
+                  {topicTags.map((tag) => (
                     <span
-                      key={t}
+                      key={tag}
                       className="bg-[#A4F792] text-[#267320] flex gap-1 items-center rounded-xs px-2 py-1 text-xs"
                     >
-                      {t}
+                      {tag}
                       <button
                         type="button"
-                        aria-label={`Remove ${t}`}
+                        aria-label={t("manage.sessionForm.removeTag", { tag })}
                         className="cursor-pointer"
                         onClick={() =>
-                          setTopicTags((list) => list.filter((x) => x !== t))
+                          setTopicTags((list) => list.filter((x) => x !== tag))
                         }
                       >
                         ×
@@ -877,7 +975,7 @@ const SessionsCRUD = () => {
                       addTag();
                     }
                   }}
-                  placeholder="Add tag and press Enter"
+                  placeholder={t("manage.sessionForm.tagPlaceholder")}
                 />
               </div>
             </div>
@@ -885,7 +983,7 @@ const SessionsCRUD = () => {
 
           {role === "guest" && (
             <p className="text-sm text-[#93000A]">
-              Sign in with a host account to save sessions.
+              {t("manage.sessionForm.guestNotice")}
             </p>
           )}
         </aside>
@@ -893,10 +991,12 @@ const SessionsCRUD = () => {
 
       <ConfirmDialog
         open={confirmingDelete}
-        title="Delete session"
-        message={`"${form.title || slug}" will be removed permanently. This cannot be undone.`}
-        confirmLabel="Delete session"
-        cancelLabel="Keep it"
+        title={t("manage.sessionForm.deleteTitle")}
+        message={t("manage.sessionForm.deleteMessage", {
+          title: form.title || slug,
+        })}
+        confirmLabel={t("manage.sessionForm.deleteTitle")}
+        cancelLabel={t("manage.sessionForm.keepIt")}
         onConfirm={handleDelete}
         onCancel={() => setConfirmingDelete(false)}
       />

@@ -1,60 +1,66 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CheckCircle2, Clock, Mail, MapPin, Phone } from "lucide-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { z } from "zod";
 
 import Button from "../../components/ui/button";
 import axiosInstance from "../../lib/api/apiClient";
 
+// Values are sent to the API, so they stay stable; only the labels are localised.
 const SUBJECTS = [
-  "General question",
-  "Account & access",
-  "Farmer verification",
-  "Content or course feedback",
-  "Report a problem",
-  "Partnership enquiry",
+  "general",
+  "account",
+  "verification",
+  "feedback",
+  "problem",
+  "partnership",
 ] as const;
 
-const ContactSchema = z.object({
-  name: z.string().min(2, "Please enter your full name."),
-  email: z.email("Invalid email format."),
-  subject: z.enum(SUBJECTS, "Please choose a subject."),
-  message: z
-    .string()
-    .min(20, "Please give us at least 20 characters so we can help.")
-    .max(2000, "Please keep your message under 2000 characters."),
-});
+const buildSchema = (t: (key: string) => string) =>
+  z.object({
+    name: z.string().min(2, t("contact.errors.name")),
+    email: z.email(t("contact.errors.email")),
+    subject: z.enum(SUBJECTS, t("contact.errors.subject")),
+    message: z
+      .string()
+      .min(20, t("contact.errors.messageMin"))
+      .max(2000, t("contact.errors.messageMax")),
+  });
 
-type SchemaProps = z.infer<typeof ContactSchema>;
-
-const DETAILS = [
-  {
-    icon: Mail,
-    title: "Email us",
-    lines: ["support@tesknowledgehub.org"],
-  },
-  {
-    icon: Phone,
-    title: "Call us",
-    lines: ["+996 (312) 00-00-00"],
-  },
-  {
-    icon: MapPin,
-    title: "Visit us",
-    lines: ["TES Knowledge Hub", "Bishkek, Kyrgyz Republic"],
-  },
-  {
-    icon: Clock,
-    title: "Support hours",
-    lines: ["Mon–Fri, 9am–5pm (KGT)", "We reply within 2 business days."],
-  },
-];
+type SchemaProps = z.infer<ReturnType<typeof buildSchema>>;
 
 const Contact = () => {
+  const { t } = useTranslation();
   const [serverError, setServerError] = useState("");
   const [isSent, setIsSent] = useState(false);
+
+  const schema = useMemo(() => buildSchema(t), [t]);
+
+  const DETAILS = [
+    {
+      icon: Mail,
+      title: t("contact.details.emailTitle"),
+      lines: ["support@tesknowledgehub.org"],
+    },
+    {
+      icon: Phone,
+      title: t("contact.details.phoneTitle"),
+      lines: ["+996 (312) 00-00-00"],
+    },
+    {
+      icon: MapPin,
+      title: t("contact.details.visitTitle"),
+      lines: [t("contact.details.visitLine1"), t("contact.details.visitLine2")],
+    },
+    {
+      icon: Clock,
+      title: t("contact.details.hoursTitle"),
+      lines: [t("contact.details.hoursLine1"), t("contact.details.hoursLine2")],
+    },
+  ];
 
   const {
     register,
@@ -62,7 +68,7 @@ const Contact = () => {
     reset,
     formState: { errors, isSubmitting },
   } = useForm<SchemaProps>({
-    resolver: zodResolver(ContactSchema),
+    resolver: zodResolver(schema),
   });
 
   const onSubmit: SubmitHandler<SchemaProps> = async (data) => {
@@ -72,10 +78,7 @@ const Contact = () => {
       reset();
       setIsSent(true);
     } catch (err: any) {
-      setServerError(
-        err.response?.data?.message ||
-          "Something went wrong. Please try again.",
-      );
+      setServerError(err.response?.data?.message || t("contact.genericError"));
     }
   };
 
@@ -88,11 +91,10 @@ const Contact = () => {
     <div className="container mx-auto py-5 px-6 md:px-10">
       <header>
         <h1 className="text-[#012D1D] font-bold text-4xl md:text-5xl">
-          Contact Us
+          {t("contact.title")}
         </h1>
         <p className="text-[#414844] text-lg mt-4 max-w-2xl">
-          Questions about your account, a course, or farmer verification? Send
-          us a message and our support team will get back to you.
+          {t("contact.description")}
         </p>
         <div className="h-px w-full bg-[#C1C8C2] mt-8"></div>
       </header>
@@ -103,11 +105,10 @@ const Contact = () => {
             <div className="flex flex-col items-center text-center py-10">
               <CheckCircle2 size={40} className="text-[#1B4332]" />
               <h2 className="text-[#012D1D] font-bold text-2xl mt-4">
-                Message sent
+                {t("contact.sentTitle")}
               </h2>
               <p className="text-[#414844] text-sm leading-6 mt-3 max-w-md">
-                Thank you for reaching out. A confirmation has been sent to your
-                email address, and our team will reply within 2 business days.
+                {t("contact.sentText")}
               </p>
               <Button
                 type="button"
@@ -115,16 +116,16 @@ const Contact = () => {
                 className="mt-6"
                 onClick={() => setIsSent(false)}
               >
-                Send another message
+                {t("contact.sendAnother")}
               </Button>
             </div>
           ) : (
             <>
               <h2 className="text-[#012D1D] font-bold text-2xl">
-                Send us a message
+                {t("contact.formTitle")}
               </h2>
               <p className="text-[#414844] text-sm leading-6 mt-2">
-                All fields are required.
+                {t("contact.formNote")}
               </p>
 
               <form
@@ -134,12 +135,12 @@ const Contact = () => {
                 <div className="flex flex-col md:flex-row gap-5">
                   <div className="flex flex-col flex-1">
                     <label htmlFor="name" className="text-[#414844]">
-                      Full Name
+                      {t("contact.name")}
                     </label>
                     <input
                       id="name"
                       type="text"
-                      placeholder="Aidai Karimova"
+                      placeholder={t("contact.namePlaceholder")}
                       {...register("name")}
                       className={fieldStyles(!!errors.name)}
                     />
@@ -152,12 +153,12 @@ const Contact = () => {
 
                   <div className="flex flex-col flex-1">
                     <label htmlFor="email" className="text-[#414844]">
-                      Email Address
+                      {t("contact.email")}
                     </label>
                     <input
                       id="email"
                       type="email"
-                      placeholder="farmer@example.com"
+                      placeholder={t("contact.emailPlaceholder")}
                       {...register("email")}
                       className={fieldStyles(!!errors.email)}
                     />
@@ -171,7 +172,7 @@ const Contact = () => {
 
                 <div className="flex flex-col">
                   <label htmlFor="subject" className="text-[#414844]">
-                    Subject
+                    {t("contact.subject")}
                   </label>
                   <select
                     id="subject"
@@ -180,11 +181,11 @@ const Contact = () => {
                     className={fieldStyles(!!errors.subject)}
                   >
                     <option value="" disabled>
-                      Choose a topic
+                      {t("contact.subjectPlaceholder")}
                     </option>
                     {SUBJECTS.map((subject) => (
                       <option key={subject} value={subject}>
-                        {subject}
+                        {t(`contact.subjects.${subject}`)}
                       </option>
                     ))}
                   </select>
@@ -197,12 +198,12 @@ const Contact = () => {
 
                 <div className="flex flex-col">
                   <label htmlFor="message" className="text-[#414844]">
-                    Message
+                    {t("contact.message")}
                   </label>
                   <textarea
                     id="message"
                     rows={7}
-                    placeholder="Tell us what you need help with…"
+                    placeholder={t("contact.messagePlaceholder")}
                     {...register("message")}
                     className={`${fieldStyles(!!errors.message)} resize-y`}
                   />
@@ -223,23 +224,23 @@ const Contact = () => {
                   className="w-full md:w-auto md:self-start"
                   disabled={isSubmitting}
                 >
-                  {isSubmitting ? "Sending..." : "Send Message"}
+                  {isSubmitting ? t("common.sending") : t("contact.send")}
                 </Button>
 
                 <p className="text-[#414844] text-sm leading-6">
-                  By sending this message you agree to our{" "}
+                  {t("contact.agreePrefix")}{" "}
                   <Link
                     to="/terms-of-service"
                     className="text-[#1F6D1A] font-semibold"
                   >
-                    Terms of Service
+                    {t("legal.nav.terms")}
                   </Link>{" "}
-                  and{" "}
+                  {t("contact.agreeMiddle")}{" "}
                   <Link
                     to="/privacy-policy"
                     className="text-[#1F6D1A] font-semibold"
                   >
-                    Privacy Policy
+                    {t("legal.nav.privacy")}
                   </Link>
                   .
                 </p>
@@ -251,7 +252,7 @@ const Contact = () => {
         <aside className="w-full lg:w-[35%] flex flex-col gap-6">
           <div className="p-6 border-2 border-[#C1C8C2] rounded-lg bg-white">
             <h2 className="text-[#191C1B] text-sm font-semibold tracking-wide">
-              CONTACT DETAILS
+              {t("contact.detailsTitle")}
             </h2>
 
             <div className="flex flex-col gap-5 mt-5">
@@ -275,30 +276,29 @@ const Contact = () => {
 
           <div className="p-6 border-2 border-[#C1C8C2] rounded-lg bg-white">
             <h2 className="text-[#191C1B] text-sm font-semibold tracking-wide">
-              BEFORE YOU WRITE
+              {t("contact.beforeTitle")}
             </h2>
             <p className="text-[#414844] text-sm leading-6 mt-3">
-              Many questions are already answered in our learning materials and
-              community forum — you may find a reply faster there.
+              {t("contact.beforeText")}
             </p>
             <div className="flex flex-col gap-2 mt-4">
               <Link
                 to="/community/questions"
                 className="text-[#414844] text-sm py-2 px-3 rounded-sm font-semibold hover:bg-[#f8faf8] transition-colors"
               >
-                Browse community questions
+                {t("contact.linkQuestions")}
               </Link>
               <Link
                 to="/academy"
                 className="text-[#414844] text-sm py-2 px-3 rounded-sm font-semibold hover:bg-[#f8faf8] transition-colors"
               >
-                Visit the Academy
+                {t("contact.linkAcademy")}
               </Link>
               <Link
                 to="/terms-of-service"
                 className="text-[#414844] text-sm py-2 px-3 rounded-sm font-semibold hover:bg-[#f8faf8] transition-colors"
               >
-                Read the Terms of Service
+                {t("contact.linkTerms")}
               </Link>
             </div>
           </div>

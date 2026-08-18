@@ -6,6 +6,7 @@ import { formatTag, regionLabel, toRichText } from "@/lib/utils/community";
 import { BadgeCheck, ChevronLeft, Lock, MapPin } from "lucide-react";
 import moment from "moment";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import Avatar from "../components/Avatar";
 import Discussion from "../components/Discussion";
@@ -21,6 +22,7 @@ const PREMIUM_ROLES = [
 ];
 
 const StoriesDetail = () => {
+  const { t } = useTranslation();
   const { slug } = useParams();
   const navigate = useNavigate();
 
@@ -45,17 +47,17 @@ const StoriesDetail = () => {
     return (
       <div className="container mx-auto px-4 sm:px-10 py-5 pt-12">
         <h1 className="text-[#191C1B] text-3xl font-semibold">
-          Story not found
+          {t("community.story.notFound")}
         </h1>
         <p className="text-[#414844] mt-2">
-          {error ?? "This story may have been removed or unpublished."}
+          {error ?? t("community.story.notFoundText")}
         </p>
         <button
           type="button"
           onClick={() => navigate("/community/stories")}
           className="border border-[#717973] mt-6 text-[#191C1B] py-2 px-5 text-sm rounded-xs cursor-pointer hover:shadow"
         >
-          Back to stories
+          {t("community.story.backToStories")}
         </button>
       </div>
     );
@@ -75,7 +77,7 @@ const StoriesDetail = () => {
         to="/community/stories"
         className="inline-flex items-center gap-1 text-[#414844] text-sm hover:text-[#012D1D]"
       >
-        <ChevronLeft size={16} /> Field stories
+        <ChevronLeft size={16} /> {t("community.story.fieldStories")}
       </Link>
 
       <div className="flex flex-col lg:flex-row gap-8 mt-4">
@@ -83,16 +85,18 @@ const StoriesDetail = () => {
           <div className="flex flex-wrap items-center gap-3 text-xs">
             {story.isVerifiedByTES && (
               <span className="flex items-center gap-1 text-[#267320] bg-[#E7F6E4] font-semibold py-1 px-2 rounded-full">
-                <BadgeCheck size={13} /> TES verified
+                <BadgeCheck size={13} /> {t("community.post.tesVerified")}
               </span>
             )}
             {story.isPremium && (
               <span className="flex items-center gap-1 text-[#B45309] bg-[#FEF3E2] font-semibold py-1 px-2 rounded-full">
-                <Lock size={12} /> Premium
+                <Lock size={12} /> {t("community.post.premium")}
               </span>
             )}
             <span className="text-[#414844]">
-              Posted {moment(story.publishedAt ?? story.createdAt).fromNow()}
+              {t("community.story.posted", {
+                time: moment(story.publishedAt ?? story.createdAt).fromNow(),
+              })}
             </span>
             {story.region?.oblast && (
               <span className="flex items-center gap-1 text-[#414844] ml-auto">
@@ -127,7 +131,8 @@ const StoriesDetail = () => {
                   )}
                 </span>
                 <span className="block text-[#414844] text-xs">
-                  {author?.bio?.split(".")[0] ?? "TES Hub contributor"}
+                  {author?.bio?.split(".")[0] ??
+                    t("community.story.contributor")}
                 </span>
               </span>
             </Link>
@@ -141,7 +146,9 @@ const StoriesDetail = () => {
                   : "border border-[#1F6D1A] text-[#1F6D1A] hover:bg-[#F2F7F2]"
               }`}
             >
-              {following ? "Following" : "Follow"}
+              {following
+                ? t("community.author.following")
+                : t("community.author.follow")}
             </button>
           </div>
 
@@ -156,32 +163,34 @@ const StoriesDetail = () => {
             <div className="mt-8">
               <div
                 className={`${styles.post_body} max-h-60 overflow-hidden relative`}
-                dangerouslySetInnerHTML={{ __html: sanitize(toRichText(story.body)) }}
+                dangerouslySetInnerHTML={{
+                  __html: sanitize(toRichText(story.body)),
+                }}
               />
               <div className="border border-[#C1C8C2] bg-[#F9FAF9] rounded-xl p-8 -mt-16 relative flex flex-col items-center text-center">
                 <div className="p-4 bg-[#FFDCC3] rounded-xl">
                   <Lock color="#3E1E00" />
                 </div>
                 <h2 className="text-[#191C1B] text-2xl font-semibold mt-4">
-                  This story is for verified farmers
+                  {t("community.story.lockedTitle")}
                 </h2>
                 <p className="text-[#414844] text-sm mt-2 max-w-md">
-                  Premium field stories carry full cost breakdowns and trial
-                  data. Verify your holding with the TES field office to read
-                  them in full.
+                  {t("community.story.lockedText")}
                 </p>
                 <Link
                   to="/settings"
                   className="bg-[#012D1D] text-white text-sm font-semibold py-2 px-5 rounded-lg mt-5 hover:bg-[#013d27] transition-colors"
                 >
-                  Get verified
+                  {t("community.story.getVerified")}
                 </Link>
               </div>
             </div>
           ) : (
             <div
               className={styles.post_body}
-              dangerouslySetInnerHTML={{ __html: sanitize(toRichText(story.body)) }}
+              dangerouslySetInnerHTML={{
+                __html: sanitize(toRichText(story.body)),
+              }}
             />
           )}
 

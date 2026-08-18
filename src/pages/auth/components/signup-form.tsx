@@ -1,36 +1,40 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { z } from "zod";
 import Button from "../../../components/ui/button";
 import axiosInstance from "../../../lib/api/apiClient";
 
-const SignupSchema = z
-  .object({
-    fullname: z.string().nonempty("Full name is required."),
-    username: z.string().nonempty("Username is required."),
-    email: z.string().email("Invalid email format."),
-    password: z.string().min(8, "Password must be at least 8 characters."),
-    confirmPassword: z.string().min(1, "Confirm password is required."),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords don't match.",
-    path: ["confirmPassword"],
-  });
+const buildSchema = (t: (key: string) => string) =>
+  z
+    .object({
+      fullname: z.string().nonempty(t("auth.errors.fullNameRequired")),
+      username: z.string().nonempty(t("auth.errors.usernameRequired")),
+      email: z.string().email(t("auth.errors.emailInvalid")),
+      password: z.string().min(8, t("auth.errors.passwordMin")),
+      confirmPassword: z.string().min(1, t("auth.errors.confirmRequired")),
+    })
+    .refine((data) => data.password === data.confirmPassword, {
+      message: t("auth.errors.passwordMismatch"),
+      path: ["confirmPassword"],
+    });
 
-type SchemaProps = z.infer<typeof SignupSchema>;
+type SchemaProps = z.infer<ReturnType<typeof buildSchema>>;
 
 const SignupForm = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [serverError, setServerError] = useState("");
+  const schema = useMemo(() => buildSchema(t), [t]);
 
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<SchemaProps>({
-    resolver: zodResolver(SignupSchema),
+    resolver: zodResolver(schema),
   });
 
   const onSubmit: SubmitHandler<SchemaProps> = async (data) => {
@@ -46,9 +50,7 @@ const SignupForm = () => {
         state: { flow: "signup", email: data.email },
       });
     } catch (err: any) {
-      setServerError(
-        err.response?.data?.message || "Sign up failed. Please try again.",
-      );
+      setServerError(err.response?.data?.message || t("auth.signupFailed"));
     }
   };
 
@@ -56,12 +58,12 @@ const SignupForm = () => {
     <form onSubmit={handleSubmit(onSubmit)}>
       <div className="flex flex-col mt-5">
         <label htmlFor="fullname" className="text-[#414844]">
-          Full Name
+          {t("auth.fullName")}
         </label>
         <input
           id="fullname"
           type="text"
-          placeholder="Ali Valiyev"
+          placeholder={t("auth.fullNamePlaceholder")}
           {...register("fullname")}
           className={`placeholder:text-[#6B7280] p-3 py-2 outline-none border mt-1 bg-white ${
             errors.fullname ? "border-red-500" : "border-[#6B7280]"
@@ -76,12 +78,12 @@ const SignupForm = () => {
 
       <div className="flex flex-col mt-5">
         <label htmlFor="username" className="text-[#414844]">
-          Username
+          {t("auth.username")}
         </label>
         <input
           id="username"
           type="text"
-          placeholder="AliValiyev"
+          placeholder={t("auth.usernamePlaceholder")}
           {...register("username")}
           className={`placeholder:text-[#6B7280] p-3 py-2 outline-none border mt-1 bg-white ${
             errors.username ? "border-red-500" : "border-[#6B7280]"
@@ -96,12 +98,12 @@ const SignupForm = () => {
 
       <div className="flex flex-col mt-5">
         <label htmlFor="email" className="text-[#414844]">
-          Email Address
+          {t("auth.email")}
         </label>
         <input
           id="email"
           type="email"
-          placeholder="farmer@example.com"
+          placeholder={t("auth.emailPlaceholder")}
           {...register("email")}
           className={`placeholder:text-[#6B7280] p-3 py-2 outline-none border mt-1 bg-white ${
             errors.email ? "border-red-500" : "border-[#6B7280]"
@@ -116,7 +118,7 @@ const SignupForm = () => {
 
       <div className="flex flex-col mt-5">
         <label htmlFor="password" className="text-[#414844]">
-          Password
+          {t("auth.password")}
         </label>
         <input
           id="password"
@@ -136,7 +138,7 @@ const SignupForm = () => {
 
       <div className="flex flex-col mt-5">
         <label htmlFor="confirmPassword" className="text-[#414844]">
-          Confirm Password
+          {t("auth.confirmPassword")}
         </label>
         <input
           id="confirmPassword"
@@ -164,7 +166,7 @@ const SignupForm = () => {
         variant="filled"
         disabled={isSubmitting}
       >
-        {isSubmitting ? "Creating account..." : "Sign up"}
+        {isSubmitting ? t("auth.creatingAccount") : t("auth.signUp")}
       </Button>
     </form>
   );

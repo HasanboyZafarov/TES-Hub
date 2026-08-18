@@ -26,6 +26,7 @@ import Academy from "../pages/academy";
 import AcademyArticles from "../pages/academy/articles/AcademyArticles";
 import ArticlesDetail from "../pages/academy/articles/ArticlesDetail";
 import AcademyCourses from "../pages/academy/courses/AcademyCourses";
+import CertificateVerify from "../pages/academy/courses/CertificateVerify";
 import CourseCertificate from "../pages/academy/courses/CourseCertificate";
 import CourseLearn from "../pages/academy/courses/CourseLearn";
 import CourseLessonDetail from "../pages/academy/courses/CourseLessonDetail";
@@ -78,6 +79,8 @@ const TOP_ROUTES = [
 const PUBLIC_ROUTES = [
   { path: "/community", element: <Community /> },
   { path: "/academy", element: <Academy /> },
+  // The library itself is public; member-only files gate at the download button.
+  { path: "/resources", element: <Resources /> },
 ];
 
 const AUTH_ROUTES = [
@@ -108,6 +111,9 @@ const ACADEMY_ROUTES = [
     path: "/academy/courses/:slug/certificate",
     element: <CourseCertificate />,
   },
+
+  // Public credential check — no account needed.
+  { path: "/certificates/verify/:code", element: <CertificateVerify /> },
 ];
 
 const COMMUNITY_ROUTES = [
@@ -152,7 +158,6 @@ const PRIVATE_ROUTES = [
     element: <PrivateRoutes />,
     children: [
       { path: "/settings", element: <Settings /> },
-      { path: "/resources", element: <Resources /> },
     ],
   },
 ];

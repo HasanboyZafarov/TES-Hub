@@ -14,10 +14,11 @@ import {
   Video,
 } from "lucide-react";
 import { useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { inputClass } from "./composerUI";
 import {
   formatDuration,
-  LESSON_TYPE_LABELS,
+  LESSON_TYPE_KEYS,
   newLesson,
   newSection,
 } from "./courseDraft";
@@ -42,6 +43,7 @@ interface Props {
 }
 
 const StepCurriculum = ({ sections, onChange, error }: Props) => {
+  const { t } = useTranslation();
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
   const [renaming, setRenaming] = useState<string | null>(null);
   const drag = useRef<DragPayload | null>(null);
@@ -67,7 +69,8 @@ const StepCurriculum = ({ sections, onChange, error }: Props) => {
       ),
     );
 
-  const addSection = () => onChange([...sections, newSection(sections.length + 1)]);
+  const addSection = () =>
+    onChange([...sections, newSection(sections.length + 1)]);
 
   const removeSection = (id: string) =>
     onChange(sections.filter((s) => s.id !== id));
@@ -176,25 +179,32 @@ const StepCurriculum = ({ sections, onChange, error }: Props) => {
                     }
                     onBlur={() => setRenaming(null)}
                     onKeyDown={(e) => e.key === "Enter" && setRenaming(null)}
-                    placeholder="e.g., Foundations of Soil Health"
+                    placeholder={t("composer.curriculum.modulePlaceholder")}
                   />
                 ) : (
                   <>
                     <h3 className="text-[#012D1D] font-semibold truncate">
-                      Module {index + 1}
-                      {section.title && `: ${section.title}`}
+                      {section.title
+                        ? t("composer.curriculum.moduleWithTitle", {
+                            number: index + 1,
+                            title: section.title,
+                          })
+                        : t("composer.curriculum.module", {
+                            number: index + 1,
+                          })}
                     </h3>
                     <p className="text-[#414844] text-xs mt-0.5">
-                      {section.lessons.length} Lesson
-                      {section.lessons.length === 1 ? "" : "s"} •{" "}
-                      {formatDuration(minutes)}
+                      {t("composer.curriculum.lessonCount", {
+                        count: section.lessons.length,
+                      })}{" "}
+                      • {formatDuration(minutes)}
                     </p>
                   </>
                 )}
               </div>
               <button
                 type="button"
-                aria-label="Rename module"
+                aria-label={t("composer.curriculum.renameModule")}
                 onClick={() =>
                   setRenaming(renaming === section.id ? null : section.id)
                 }
@@ -204,7 +214,7 @@ const StepCurriculum = ({ sections, onChange, error }: Props) => {
               </button>
               <button
                 type="button"
-                aria-label="Delete module"
+                aria-label={t("composer.curriculum.deleteModule")}
                 onClick={() => removeSection(section.id)}
                 className="p-2 rounded-md text-[#DC2626] hover:bg-[#FEE2E2] cursor-pointer"
               >
@@ -212,7 +222,11 @@ const StepCurriculum = ({ sections, onChange, error }: Props) => {
               </button>
               <button
                 type="button"
-                aria-label={isCollapsed ? "Expand module" : "Collapse module"}
+                aria-label={
+                  isCollapsed
+                    ? t("composer.curriculum.expandModule")
+                    : t("composer.curriculum.collapseModule")
+                }
                 onClick={() =>
                   setCollapsed((c) => ({ ...c, [section.id]: !c[section.id] }))
                 }
@@ -267,11 +281,11 @@ const StepCurriculum = ({ sections, onChange, error }: Props) => {
                               title: e.target.value,
                             })
                           }
-                          placeholder="Lesson title"
+                          placeholder={t("composer.curriculum.lessonTitle")}
                         />
                         <button
                           type="button"
-                          aria-label="Delete lesson"
+                          aria-label={t("composer.curriculum.deleteLesson")}
                           onClick={() => removeLesson(section.id, lesson.id)}
                           className="p-2 rounded-md text-[#DC2626] hover:bg-[#FEE2E2] cursor-pointer"
                         >
@@ -281,7 +295,7 @@ const StepCurriculum = ({ sections, onChange, error }: Props) => {
 
                       <div className="flex flex-wrap items-center gap-3 mt-3 pl-11">
                         <select
-                          aria-label="Lesson type"
+                          aria-label={t("composer.curriculum.lessonType")}
                           className={cn(inputClass, "w-40")}
                           value={lesson.type}
                           onChange={(e) =>
@@ -291,10 +305,10 @@ const StepCurriculum = ({ sections, onChange, error }: Props) => {
                           }
                         >
                           {(
-                            Object.keys(LESSON_TYPE_LABELS) as Lesson["type"][]
-                          ).map((t) => (
-                            <option key={t} value={t}>
-                              {LESSON_TYPE_LABELS[t]}
+                            Object.keys(LESSON_TYPE_KEYS) as Lesson["type"][]
+                          ).map((type) => (
+                            <option key={type} value={type}>
+                              {t(LESSON_TYPE_KEYS[type])}
                             </option>
                           ))}
                         </select>
@@ -310,7 +324,7 @@ const StepCurriculum = ({ sections, onChange, error }: Props) => {
                               })
                             }
                           />
-                          min
+                          {t("composer.curriculum.minutes")}
                         </label>
                         <label className="flex items-center gap-2 text-sm text-[#414844]">
                           <input
@@ -322,7 +336,7 @@ const StepCurriculum = ({ sections, onChange, error }: Props) => {
                               })
                             }
                           />
-                          Free preview
+                          {t("composer.curriculum.freePreview")}
                         </label>
                       </div>
                     </div>
@@ -335,7 +349,7 @@ const StepCurriculum = ({ sections, onChange, error }: Props) => {
                   className="self-start flex items-center gap-2 border border-[#C1C8C2] rounded-md px-3 py-2 text-sm text-[#414844] hover:border-[#012D1D] hover:text-[#012D1D] cursor-pointer"
                 >
                   <Plus size={16} />
-                  Add Lesson
+                  {t("composer.curriculum.addLesson")}
                 </button>
               </div>
             )}
@@ -349,7 +363,7 @@ const StepCurriculum = ({ sections, onChange, error }: Props) => {
         className="flex flex-col items-center justify-center gap-1 border-2 border-dashed border-[#C1C8C2] rounded-xl py-8 text-sm text-[#414844] hover:border-[#012D1D] hover:text-[#012D1D] cursor-pointer"
       >
         <Plus size={20} />
-        Add New Module
+        {t("composer.curriculum.addModule")}
       </button>
     </div>
   );

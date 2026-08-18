@@ -11,6 +11,7 @@ import {
   ThumbsUp,
 } from "lucide-react";
 import moment from "moment";
+import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router-dom";
 import Avatar from "./Avatar";
 import PostImage from "./PostImage";
@@ -23,6 +24,7 @@ const plainText = (html: string) => html.replace(/<[^>]*>/g, " ");
 
 const PostCard = ({ post }: Props) => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { user } = useUser(post.authorId);
 
   const question = isQuestion(post);
@@ -30,8 +32,11 @@ const PostCard = ({ post }: Props) => {
     ? `/community/questions/${post.slug}`
     : `/community/stories/${post.slug}`;
 
-  const authorName = user?.displayName ?? (question ? "Community member" : post.author.name);
-  const authorAvatar = user?.avatar ?? (question ? undefined : post.author.avatar);
+  const authorName =
+    user?.displayName ??
+    (question ? t("community.post.communityMember") : post.author.name);
+  const authorAvatar =
+    user?.avatar ?? (question ? undefined : post.author.avatar);
   const isVerified = question
     ? user?.role === "verified_farmer" || user?.role === "spac_consultant"
     : post.author.isVerified;
@@ -51,7 +56,9 @@ const PostCard = ({ post }: Props) => {
           <div>
             <div className="flex items-center gap-1 text-[#191C1B] text-sm font-semibold">
               {authorName}
-              {isVerified && <BadgeCheck size={15} className="text-[#1F6D1A]" />}
+              {isVerified && (
+                <BadgeCheck size={15} className="text-[#1F6D1A]" />
+              )}
             </div>
             <p className="text-[#414844] text-xs">
               {moment(post.publishedAt ?? post.createdAt).fromNow()}
@@ -64,23 +71,23 @@ const PostCard = ({ post }: Props) => {
           {question ? (
             post.isSolved ? (
               <span className="flex items-center gap-1 text-[#267320] bg-[#E7F6E4] text-xs font-semibold py-1 px-2 rounded-full">
-                <CheckCircle2 size={12} /> Solved
+                <CheckCircle2 size={12} /> {t("community.post.solved")}
               </span>
             ) : (
               <span className="flex items-center gap-1 text-[#1E3A8A] bg-[#DBEAFE] text-xs font-semibold py-1 px-2 rounded-full">
-                <HelpCircle size={12} /> Question
+                <HelpCircle size={12} /> {t("community.post.question")}
               </span>
             )
           ) : (
             <>
               {post.isVerifiedByTES && (
                 <span className="flex items-center gap-1 text-[#267320] bg-[#E7F6E4] text-xs font-semibold py-1 px-2 rounded-full">
-                  <BadgeCheck size={12} /> TES verified
+                  <BadgeCheck size={12} /> {t("community.post.tesVerified")}
                 </span>
               )}
               {post.isPremium && (
                 <span className="flex items-center gap-1 text-[#B45309] bg-[#FEF3E2] text-xs font-semibold py-1 px-2 rounded-full">
-                  <Lock size={12} /> Premium
+                  <Lock size={12} /> {t("community.post.premium")}
                 </span>
               )}
             </>
@@ -88,7 +95,9 @@ const PostCard = ({ post }: Props) => {
         </div>
       </div>
 
-      <h2 className="text-[#012D1D] text-xl font-semibold mt-4">{post.title}</h2>
+      <h2 className="text-[#012D1D] text-xl font-semibold mt-4">
+        {post.title}
+      </h2>
       <p className="text-[#414844] text-sm mt-2 line-clamp-3">{summary}</p>
 
       {!question && (
@@ -121,7 +130,9 @@ const PostCard = ({ post }: Props) => {
         <span className="flex items-center gap-1">
           <MessageSquare size={16} />
           {formatCount(question ? post.answerCount : post.stats.comments)}
-          {question ? " answers" : " comments"}
+          {question
+            ? ` ${t("community.post.answers")}`
+            : ` ${t("community.post.comments")}`}
         </span>
         <span className="flex items-center gap-1">
           <Eye size={16} /> {formatCount(post.stats.views)}

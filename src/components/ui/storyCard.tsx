@@ -1,5 +1,6 @@
 import { BadgeCheck, Lock, MessageCircle, ThumbsUp } from "lucide-react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import type Story from "@/types/story";
 
@@ -9,6 +10,7 @@ interface Props {
 
 const StoryCard = ({ story: s }: Props) => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [avatarFailed, setAvatarFailed] = useState(false);
 
   return (
@@ -38,13 +40,15 @@ const StoryCard = ({ story: s }: Props) => {
               )}
             </div>
             {s.region?.oblast && (
-              <p className="text-[#414844] text-xs">{s.region.oblast} Oblast</p>
+              <p className="text-[#414844] text-xs">
+                {t("ui.oblast", { name: s.region.oblast })}
+              </p>
             )}
           </div>
         </div>
         {s.isPremium && (
           <div className="flex items-center gap-1 text-[#B45309] bg-[#FEF3E2] text-xs font-semibold py-1 px-2 rounded-full">
-            <Lock size={12} /> Premium
+            <Lock size={12} /> {t("ui.premium")}
           </div>
         )}
       </div>

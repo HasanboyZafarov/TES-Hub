@@ -4,7 +4,7 @@ import {
   capacityPercent,
   getLifecycle,
   priceLabel,
-  SESSION_TYPE_LABELS,
+  SESSION_TYPE_KEYS,
 } from "@/lib/utils/session";
 import type Session from "@/types/session";
 import { SESSION_FORMATS, type SessionFormat } from "@/types/session";
@@ -18,16 +18,11 @@ import {
 } from "lucide-react";
 import moment from "moment";
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 
 type PriceFilter = "any" | "free" | "paid";
 type View = "list" | "calendar";
-
-const FORMAT_LABELS: Record<SessionFormat, string> = {
-  online: "Online (Webinar)",
-  onsite: "Offline (In-Person)",
-  hybrid: "Hybrid",
-};
 
 interface FilterProps {
   formats: SessionFormat[];
@@ -49,86 +44,100 @@ const FilterPanel = ({
   setPrice,
   regions,
   onClear,
-}: FilterProps) => (
-  <aside className="border border-[#C1C8C2] rounded-xl bg-white p-6 h-max lg:sticky lg:top-30">
-    <div className="flex items-center justify-between">
-      <h3 className="text-[#012D1D] text-xl font-bold">Filters</h3>
-      <button
-        onClick={onClear}
-        className="text-sm text-[#414844] underline cursor-pointer hover:text-[#012D1D]"
-      >
-        Clear All
-      </button>
-    </div>
+}: FilterProps) => {
+  const { t } = useTranslation();
 
-    <div className="mt-6">
-      <h4 className="text-[#191C1B] text-sm font-semibold">Format</h4>
-      <div className="flex flex-col gap-3 mt-3">
-        {SESSION_FORMATS.map((f) => (
-          <label
-            key={f}
-            className="flex items-center gap-3 text-sm text-[#414844] cursor-pointer"
-          >
-            <input
-              type="checkbox"
-              checked={formats.includes(f)}
-              onChange={() => toggleFormat(f)}
-              className="h-4 w-4 accent-[#012D1D]"
-            />
-            {FORMAT_LABELS[f]}
-          </label>
-        ))}
+  return (
+    <aside className="border border-[#C1C8C2] rounded-xl bg-white p-6 h-max lg:sticky lg:top-30">
+      <div className="flex items-center justify-between">
+        <h3 className="text-[#012D1D] text-xl font-bold">
+          {t("session.filters.title")}
+        </h3>
+        <button
+          onClick={onClear}
+          className="text-sm text-[#414844] underline cursor-pointer hover:text-[#012D1D]"
+        >
+          {t("session.filters.clearAll")}
+        </button>
       </div>
-    </div>
 
-    <div className="mt-6">
-      <h4 className="text-[#191C1B] text-sm font-semibold">Region</h4>
-      <select
-        value={region}
-        onChange={(e) => setRegion(e.target.value)}
-        className="w-full mt-3 border border-[#C1C8C2] rounded-md h-11 px-3 text-sm outline-none bg-white"
-      >
-        <option value="all">All Regions</option>
-        {regions.map((r) => (
-          <option key={r} value={r}>
-            {r}
-          </option>
-        ))}
-      </select>
-    </div>
-
-    <div className="mt-6">
-      <h4 className="text-[#191C1B] text-sm font-semibold">Price</h4>
-      <div className="flex flex-col gap-3 mt-3">
-        {(
-          [
-            ["any", "Any Price"],
-            ["free", "Free"],
-            ["paid", "Paid"],
-          ] as [PriceFilter, string][]
-        ).map(([value, label]) => (
-          <label
-            key={value}
-            className="flex items-center gap-3 text-sm text-[#414844] cursor-pointer"
-          >
-            <input
-              type="radio"
-              name="price"
-              checked={price === value}
-              onChange={() => setPrice(value)}
-              className="h-4 w-4 accent-[#012D1D]"
-            />
-            {label}
-          </label>
-        ))}
+      <div className="mt-6">
+        <h4 className="text-[#191C1B] text-sm font-semibold">
+          {t("session.filters.format")}
+        </h4>
+        <div className="flex flex-col gap-3 mt-3">
+          {SESSION_FORMATS.map((f) => (
+            <label
+              key={f}
+              className="flex items-center gap-3 text-sm text-[#414844] cursor-pointer"
+            >
+              <input
+                type="checkbox"
+                checked={formats.includes(f)}
+                onChange={() => toggleFormat(f)}
+                className="h-4 w-4 accent-[#012D1D]"
+              />
+              {t(`session.format.${f}`)}
+            </label>
+          ))}
+        </div>
       </div>
-    </div>
-  </aside>
-);
+
+      <div className="mt-6">
+        <h4 className="text-[#191C1B] text-sm font-semibold">
+          {t("session.filters.region")}
+        </h4>
+        <select
+          value={region}
+          onChange={(e) => setRegion(e.target.value)}
+          className="w-full mt-3 border border-[#C1C8C2] rounded-md h-11 px-3 text-sm outline-none bg-white"
+        >
+          <option value="all">{t("session.filters.allRegions")}</option>
+          {regions.map((r) => (
+            <option key={r} value={r}>
+              {r}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div className="mt-6">
+        <h4 className="text-[#191C1B] text-sm font-semibold">
+          {t("session.filters.price")}
+        </h4>
+        <div className="flex flex-col gap-3 mt-3">
+          {(
+            [
+              ["any", t("session.filters.anyPrice")],
+              ["free", t("session.filters.free")],
+              ["paid", t("session.filters.paid")],
+            ] as [PriceFilter, string][]
+          ).map(([value, label]) => (
+            <label
+              key={value}
+              className="flex items-center gap-3 text-sm text-[#414844] cursor-pointer"
+            >
+              <input
+                type="radio"
+                name="price"
+                checked={price === value}
+                onChange={() => setPrice(value)}
+                className="h-4 w-4 accent-[#012D1D]"
+              />
+              {label}
+            </label>
+          ))}
+        </div>
+      </div>
+    </aside>
+  );
+};
 
 const HostLine = ({ session }: { session: Session }) => {
+  const { t } = useTranslation();
   const { user } = useUser(session.hostId);
-  const prefix = session.sessionType === "webinar" ? "Guest Expert:" : "";
+  const prefix =
+    session.sessionType === "webinar" ? t("session.guestExpert") : "";
 
   return (
     <div className="flex items-center gap-2">
@@ -144,7 +153,7 @@ const HostLine = ({ session }: { session: Session }) => {
         </div>
       )}
       <span className="text-sm text-[#414844]">
-        {prefix} {user?.displayName ?? "TES Expert"}
+        {prefix} {user?.displayName ?? t("session.tesExpert")}
       </span>
     </div>
   );
@@ -152,6 +161,7 @@ const HostLine = ({ session }: { session: Session }) => {
 
 const SessionRow = ({ session }: { session: Session }) => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const percent = capacityPercent(session.registeredCount, session.capacity);
   const isAlmostFull = percent >= 85;
   const isFull = percent >= 100;
@@ -172,7 +182,7 @@ const SessionRow = ({ session }: { session: Session }) => {
           </div>
         )}
         <span className="absolute top-3 left-3 bg-[#012D1D] text-white text-xs px-3 py-1 rounded-full">
-          {SESSION_TYPE_LABELS[session.sessionType]}
+          {t(SESSION_TYPE_KEYS[session.sessionType])}
         </span>
       </div>
 
@@ -191,7 +201,7 @@ const SessionRow = ({ session }: { session: Session }) => {
                 : "border-[#C1C8C2] text-[#191C1B]"
             }`}
           >
-            {priceLabel(session.pricing)}
+            {priceLabel(session.pricing, t)}
           </span>
         </div>
 
@@ -213,12 +223,14 @@ const SessionRow = ({ session }: { session: Session }) => {
             {session.format === "online" ? (
               <>
                 <Video size={16} />
-                Online
+                {t("session.online")}
               </>
             ) : (
               <>
                 <MapPin size={16} />
-                {session.location ?? session.region?.oblast ?? "In-person"}
+                {session.location ??
+                  session.region?.oblast ??
+                  t("session.inPerson")}
               </>
             )}
           </span>
@@ -227,7 +239,10 @@ const SessionRow = ({ session }: { session: Session }) => {
         <div className="mt-4">
           <div className="flex items-center justify-between text-sm">
             <span className="text-[#414844]">
-              Capacity: {session.registeredCount}/{session.capacity} Filled
+              {t("session.capacityFilled", {
+                registered: session.registeredCount,
+                capacity: session.capacity,
+              })}
             </span>
             <span
               className={`font-semibold ${
@@ -238,7 +253,11 @@ const SessionRow = ({ session }: { session: Session }) => {
                     : "text-[#15803D]"
               }`}
             >
-              {isFull ? "Full" : isAlmostFull ? "Almost Full" : "Available"}
+              {isFull
+                ? t("session.full")
+                : isAlmostFull
+                  ? t("session.almostFull")
+                  : t("session.available")}
             </span>
           </div>
           <div className="w-full rounded-xl bg-[#E6E9E7] h-2 overflow-hidden mt-2">
@@ -258,14 +277,14 @@ const SessionRow = ({ session }: { session: Session }) => {
               onClick={() => navigate(`/sessions/${session.slug}`)}
               className="border-2 border-[#012D1D] text-[#012D1D] px-5 py-2 rounded-md text-sm font-semibold cursor-pointer"
             >
-              View Details
+              {t("session.viewDetails")}
             </button>
           ) : (
             <button
               onClick={() => navigate(`/sessions/${session.slug}/register`)}
               className="bg-[#012D1D] text-white px-5 py-2 rounded-md text-sm font-semibold cursor-pointer hover:opacity-90"
             >
-              Register Now
+              {t("session.registerNow")}
             </button>
           )}
         </div>
@@ -276,6 +295,7 @@ const SessionRow = ({ session }: { session: Session }) => {
 
 const CalendarView = ({ sessions }: { sessions: Session[] }) => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [cursor, setCursor] = useState(moment().startOf("month"));
 
   const start = cursor.clone().startOf("month").startOf("isoWeek");
@@ -302,7 +322,7 @@ const CalendarView = ({ sessions }: { sessions: Session[] }) => {
           onClick={() => setCursor(cursor.clone().subtract(1, "month"))}
           className="px-3 py-1.5 border border-[#C1C8C2] rounded-md text-sm cursor-pointer hover:bg-[#F9FAFB]"
         >
-          Prev
+          {t("session.calendar.prev")}
         </button>
         <h3 className="text-[#012D1D] text-lg font-bold">
           {cursor.format("MMMM YYYY")}
@@ -311,14 +331,14 @@ const CalendarView = ({ sessions }: { sessions: Session[] }) => {
           onClick={() => setCursor(cursor.clone().add(1, "month"))}
           className="px-3 py-1.5 border border-[#C1C8C2] rounded-md text-sm cursor-pointer hover:bg-[#F9FAFB]"
         >
-          Next
+          {t("session.calendar.next")}
         </button>
       </div>
 
       <div className="grid grid-cols-7 gap-px mt-6 text-xs text-[#6B7280] font-semibold">
-        {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((d) => (
+        {["mon", "tue", "wed", "thu", "fri", "sat", "sun"].map((d) => (
           <div key={d} className="p-2 text-center">
-            {d}
+            {t(`session.calendar.${d}`)}
           </div>
         ))}
       </div>
@@ -356,6 +376,7 @@ const CalendarView = ({ sessions }: { sessions: Session[] }) => {
 };
 
 const Sessions = () => {
+  const { t } = useTranslation();
   const { published, isLoading, error } = useSessions();
 
   const [view, setView] = useState<View>("list");
@@ -413,11 +434,10 @@ const Sessions = () => {
       <header className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
         <div>
           <h1 className="text-[#012D1D] text-4xl lg:text-5xl font-bold">
-            Upcoming Sessions
+            {t("session.listTitle")}
           </h1>
           <p className="text-[#414844] mt-3 max-w-xl">
-            Discover workshops, field days, and online seminars led by TES
-            Experts to advance your agricultural practice.
+            {t("session.listSubtitle")}
           </p>
         </div>
 
@@ -431,7 +451,7 @@ const Sessions = () => {
             }`}
           >
             <LayoutList size={16} />
-            List
+            {t("session.viewList")}
           </button>
           <button
             onClick={() => setView("calendar")}
@@ -442,7 +462,7 @@ const Sessions = () => {
             }`}
           >
             <CalendarDays size={16} />
-            Calendar
+            {t("session.viewCalendar")}
           </button>
         </div>
       </header>
@@ -460,9 +480,13 @@ const Sessions = () => {
         />
 
         <div className="flex flex-col gap-6">
-          {isLoading && <p className="text-[#414844]">Loading sessions…</p>}
+          {isLoading && (
+            <p className="text-[#414844]">{t("session.loading")}</p>
+          )}
           {error && (
-            <p className="text-[#93000A]">Could not load sessions: {error}</p>
+            <p className="text-[#93000A]">
+              {t("session.loadError", { error })}
+            </p>
           )}
 
           {!isLoading &&
@@ -472,7 +496,7 @@ const Sessions = () => {
                 filtered.map((s) => <SessionRow key={s.id} session={s} />)
               ) : (
                 <p className="text-[#414844] border border-dashed border-[#C1C8C2] rounded-xl p-10 text-center">
-                  No sessions match these filters.
+                  {t("session.noMatches")}
                 </p>
               )
             ) : (

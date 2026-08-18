@@ -1,5 +1,6 @@
 import { useRef, type KeyboardEvent } from "react";
 import { X } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export interface Tag {
   id: number;
@@ -12,6 +13,7 @@ interface Props {
 }
 
 const Tags = ({ tags, setTags }: Props) => {
+  const { t } = useTranslation();
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleDeleteTag = (id: number) => {
@@ -36,7 +38,9 @@ const Tags = ({ tags, setTags }: Props) => {
 
   return (
     <div className="flex flex-col">
-      <h3 className="text-[#012D1D] text-sm font-semibold mt-8">Tags</h3>
+      <h3 className="text-[#012D1D] text-sm font-semibold mt-8">
+        {t("ui.tags")}
+      </h3>
       <div className="bg-white border-2 mt-2 border-[#717973] p-3 min-h-30">
         <div
           className={`flex items-center flex-wrap gap-2 ${tags.length >= 1 ? "mb-2" : ""}`}
@@ -58,7 +62,7 @@ const Tags = ({ tags, setTags }: Props) => {
         <input
           ref={inputRef}
           type="text"
-          placeholder="Add tags..."
+          placeholder={t("ui.addTags")}
           className="placeholder:text-[#C1C8C2] placeholder:text-sm text-sm outline-none"
           defaultValue=""
           onKeyDown={handleKeyDown}

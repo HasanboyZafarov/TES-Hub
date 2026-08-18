@@ -4,9 +4,9 @@ import useSession from "@/lib/service/useSession";
 import {
   capacityPercent,
   getLifecycle,
-  MATERIAL_KIND_LABELS,
+  MATERIAL_KIND_KEYS,
   priceLabel,
-  SESSION_TYPE_LABELS,
+  SESSION_TYPE_KEYS,
 } from "@/lib/utils/session";
 import type Session from "@/types/session";
 import type { SessionMaterial } from "@/types/session";
@@ -30,6 +30,7 @@ import {
   Video,
 } from "lucide-react";
 import moment from "moment";
+import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
 
 const MATERIAL_ICONS = {
@@ -42,6 +43,7 @@ const MATERIAL_ICONS = {
 /* -------------------------------- sections -------------------------------- */
 
 const Instructor = ({ hostId }: { hostId: string }) => {
+  const { t } = useTranslation();
   const { user } = useUser(hostId);
   const navigate = useNavigate();
 
@@ -49,7 +51,7 @@ const Instructor = ({ hostId }: { hostId: string }) => {
     <section className="border border-[#C1C8C2] rounded-xl bg-white p-6">
       <h2 className="flex items-center gap-2 text-[#012D1D] text-xl font-bold">
         <GraduationCap size={22} />
-        Instructor
+        {t("session.detail.instructor")}
       </h2>
 
       <div className="flex gap-4 mt-5">
@@ -72,16 +74,16 @@ const Instructor = ({ hostId }: { hostId: string }) => {
               user && navigate(`/community/author/${user.username}`)
             }
           >
-            {user?.displayName ?? "TES Expert"}
+            {user?.displayName ?? t("session.tesExpert")}
           </p>
           <p className="text-[#414844] text-sm">
             {user?.role === "spac_consultant"
-              ? "Senior Soil Scientist, TES Expert"
-              : "TES Expert"}
+              ? t("session.detail.seniorSoilScientist")
+              : t("session.tesExpert")}
           </p>
           <span className="inline-flex items-center gap-1.5 mt-2 text-xs text-[#15803D] bg-[#DCFCE7] rounded-full px-3 py-1">
             <BadgeCheck size={14} />
-            TES Expert
+            {t("session.tesExpert")}
           </span>
           {user?.bio && (
             <p className="text-[#414844] text-sm mt-3">{user.bio}</p>
@@ -93,13 +95,14 @@ const Instructor = ({ hostId }: { hostId: string }) => {
 };
 
 const Agenda = ({ session }: { session: Session }) => {
+  const { t } = useTranslation();
   if (!session.agenda?.length) return null;
 
   return (
     <section className="border border-[#C1C8C2] rounded-xl bg-white p-6">
       <h2 className="flex items-center gap-2 text-[#012D1D] text-xl font-bold">
         <ListChecks size={22} />
-        Schedule &amp; Agenda
+        {t("session.detail.agenda")}
       </h2>
 
       <div className="mt-5 flex flex-col">
@@ -129,6 +132,7 @@ const Agenda = ({ session }: { session: Session }) => {
 };
 
 const Materials = ({ materials }: { materials: SessionMaterial[] }) => {
+  const { t } = useTranslation();
   if (!materials.length) return null;
   const anyLocked = materials.some((m) => m.locked);
 
@@ -136,7 +140,7 @@ const Materials = ({ materials }: { materials: SessionMaterial[] }) => {
     <section className="border border-[#C1C8C2] rounded-xl bg-white p-6">
       <h2 className="flex items-center gap-2 text-[#012D1D] text-lg font-bold">
         <PackageOpen size={20} />
-        Included Materials
+        {t("session.detail.materials")}
       </h2>
 
       <div className="flex flex-col gap-3 mt-4">
@@ -150,7 +154,7 @@ const Materials = ({ materials }: { materials: SessionMaterial[] }) => {
               <div className="flex-1">
                 <p className="text-[#191C1B] text-sm font-medium">{m.name}</p>
                 <p className="text-[#6B7280] text-xs">
-                  {MATERIAL_KIND_LABELS[m.kind]}
+                  {t(MATERIAL_KIND_KEYS[m.kind])}
                   {m.size ? ` • ${m.size}` : ""}
                 </p>
               </div>
@@ -161,7 +165,7 @@ const Materials = ({ materials }: { materials: SessionMaterial[] }) => {
                   href={m.url ?? "#"}
                   className="text-xs text-[#012D1D] underline"
                 >
-                  Open
+                  {t("common.open")}
                 </a>
               )}
             </div>
@@ -172,7 +176,7 @@ const Materials = ({ materials }: { materials: SessionMaterial[] }) => {
       {anyLocked && (
         <p className="flex gap-2 items-start text-xs text-[#414844] bg-[#F9FAFB] border border-[#E5E7EB] rounded-md p-3 mt-4">
           <Info size={14} className="shrink-0 mt-0.5" />
-          Materials will be unlocked upon registration confirmation.
+          {t("session.detail.materialsLocked")}
         </p>
       )}
     </section>
@@ -180,6 +184,8 @@ const Materials = ({ materials }: { materials: SessionMaterial[] }) => {
 };
 
 const LocationCard = ({ session }: { session: Session }) => {
+  const { t } = useTranslation();
+
   if (session.format === "online") {
     return (
       <section className="border border-[#C1C8C2] rounded-xl bg-white overflow-hidden">
@@ -189,10 +195,10 @@ const LocationCard = ({ session }: { session: Session }) => {
         <div className="p-6">
           <h3 className="flex items-center gap-2 text-[#191C1B] font-semibold text-sm">
             <Video size={16} />
-            Online session
+            {t("session.detail.onlineSession")}
           </h3>
           <p className="text-[#414844] text-sm mt-1">
-            The joining link is sent to registrants by email.
+            {t("session.detail.onlineSessionText")}
           </p>
         </div>
       </section>
@@ -211,7 +217,7 @@ const LocationCard = ({ session }: { session: Session }) => {
       <div className="p-6">
         <h3 className="flex items-center gap-2 text-[#191C1B] font-semibold text-sm">
           <MapPin size={16} />
-          Location
+          {t("session.detail.location")}
         </h3>
         <p className="text-[#191C1B] text-sm mt-2 font-medium">
           {session.location ?? session.region?.oblast}
@@ -226,7 +232,7 @@ const LocationCard = ({ session }: { session: Session }) => {
           className="flex items-center justify-center gap-2 border border-[#C1C8C2] rounded-md py-2 mt-4 text-sm text-[#191C1B] hover:bg-[#F9FAFB]"
         >
           <Navigation size={16} />
-          Get Directions
+          {t("session.detail.getDirections")}
         </a>
       </div>
     </section>
@@ -236,6 +242,7 @@ const LocationCard = ({ session }: { session: Session }) => {
 /* ---------------------------------- page ---------------------------------- */
 
 const SessionDetail = () => {
+  const { t } = useTranslation();
   const { slug } = useParams();
   const navigate = useNavigate();
   const { isGuest } = usePermissions();
@@ -244,7 +251,7 @@ const SessionDetail = () => {
   if (isLoading) {
     return (
       <div className="container mx-auto px-10 py-20 text-[#414844]">
-        Loading session…
+        {t("session.detail.loading")}
       </div>
     );
   }
@@ -252,16 +259,18 @@ const SessionDetail = () => {
   if (error || !session) {
     return (
       <div className="container mx-auto px-10 py-10">
-        <h1 className="text-[#012D1D] text-3xl font-bold">Session not found</h1>
+        <h1 className="text-[#012D1D] text-3xl font-bold">
+          {t("session.detail.notFound")}
+        </h1>
         <p className="text-[#414844] mt-2">
-          This session may have been removed or is not public.
+          {t("session.detail.notFoundText")}
         </p>
         <button
           onClick={() => navigate(-1)}
           className="flex items-center gap-2 mt-6 text-[#012D1D] font-semibold cursor-pointer"
         >
           <ChevronLeft size={18} />
-          Go back
+          {t("session.detail.goBack")}
         </button>
       </div>
     );
@@ -279,16 +288,16 @@ const SessionDetail = () => {
       : false);
 
   const registerLabel = session.isCanceled
-    ? "Session canceled"
+    ? t("session.detail.register.canceled")
     : lifecycle === "completed"
-      ? "Session ended"
+      ? t("session.detail.register.ended")
       : isFull
-        ? "Session full"
+        ? t("session.detail.register.full")
         : closed
-          ? "Registration closed"
+          ? t("session.detail.register.closed")
           : isGuest
-            ? "Sign up to register"
-            : "Register Now";
+            ? t("session.detail.register.guest")
+            : t("session.detail.register.open");
 
   const goRegister = () =>
     navigate(isGuest ? "/auth" : `/sessions/${session.slug}/register`);
@@ -300,7 +309,7 @@ const SessionDetail = () => {
         className="flex items-center gap-1 text-sm text-[#414844] hover:text-[#012D1D] cursor-pointer"
       >
         <ChevronLeft size={16} />
-        All sessions
+        {t("session.detail.allSessions")}
       </button>
 
       {/* hero */}
@@ -309,7 +318,7 @@ const SessionDetail = () => {
           <div className="flex flex-wrap items-center gap-3">
             <span className="inline-flex items-center gap-1.5 bg-[#FEF3C7] text-[#B45309] text-xs px-3 py-1 rounded-full">
               <UserPlus size={14} />
-              {SESSION_TYPE_LABELS[session.sessionType]}
+              {t(SESSION_TYPE_KEYS[session.sessionType])}
             </span>
             <span className="inline-flex items-center gap-1.5 text-xs text-[#414844]">
               <CalendarDays size={14} />
@@ -339,7 +348,7 @@ const SessionDetail = () => {
             </button>
             <button className="flex items-center gap-2 border border-[#C1C8C2] text-[#191C1B] px-6 py-3 rounded-md font-semibold cursor-pointer hover:bg-[#F9FAFB]">
               <Bookmark size={18} />
-              Save for later
+              {t("session.detail.saveForLater")}
             </button>
           </div>
         </div>
@@ -378,16 +387,23 @@ const SessionDetail = () => {
 
           <section className="bg-[#012D1D] rounded-xl p-6 text-center">
             <h3 className="text-white font-semibold">
-              {isFull ? "Session Full" : "Limited Spots Available"}
+              {isFull
+                ? t("session.detail.sessionFull")
+                : t("session.detail.limitedSpots")}
             </h3>
             <p className="text-[#A7C3B4] text-sm mt-1">
               {session.isCanceled
-                ? "This session was canceled."
+                ? t("session.detail.wasCanceled")
                 : session.registrationClosesAt
-                  ? `Registration closes on ${moment(
-                      session.registrationClosesAt,
-                    ).format("MMM D")}.`
-                  : `${spotsLeft} of ${session.capacity} spots left.`}
+                  ? t("session.detail.registrationCloses", {
+                      date: moment(session.registrationClosesAt).format(
+                        "MMM D",
+                      ),
+                    })
+                  : t("session.detail.spotsLeft", {
+                      left: spotsLeft,
+                      capacity: session.capacity,
+                    })}
             </p>
             <div className="w-full rounded-xl bg-[#0b3d2a] h-2 overflow-hidden mt-4">
               <div
@@ -403,7 +419,7 @@ const SessionDetail = () => {
               {registerLabel}
             </button>
             <p className="text-[#A7C3B4] text-xs mt-3">
-              {priceLabel(session.pricing)}
+              {priceLabel(session.pricing, t)}
             </p>
           </section>
         </aside>

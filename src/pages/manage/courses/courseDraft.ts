@@ -7,24 +7,25 @@ import type Pricing from "@/types/pricing";
 import type { EntityStatus } from "@/types/status";
 import { slugify } from "@/lib/utils/session";
 
-export const LEVEL_LABELS: Record<CourseLevel, string> = {
-  beginner: "Beginner",
-  intermediate: "Intermediate",
-  advanced: "Advanced",
+// Values are i18n keys — render them through `t()`.
+export const LEVEL_KEYS: Record<CourseLevel, string> = {
+  beginner: "course.level.beginner",
+  intermediate: "course.level.intermediate",
+  advanced: "course.level.advanced",
 };
 
-export const LESSON_TYPE_LABELS: Record<Lesson["type"], string> = {
-  article: "Article",
-  video: "Video",
-  pdf: "Document",
-  quiz: "Quiz",
-  external_link: "External link",
+export const LESSON_TYPE_KEYS: Record<Lesson["type"], string> = {
+  article: "course.lessonType.article",
+  video: "course.lessonType.video",
+  pdf: "course.lessonType.pdf",
+  quiz: "course.lessonType.quiz",
+  external_link: "course.lessonType.external_link",
 };
 
-export const PERK_LABELS: Record<CoursePerk, string> = {
-  lifetime_access: "Lifetime Access",
-  expert_forum: "Access to Private Expert Forum",
-  downloadable_resources: "Downloadable Resources (PDFs, Templates)",
+export const PERK_KEYS: Record<CoursePerk, string> = {
+  lifetime_access: "course.perk.lifetime_access",
+  expert_forum: "course.perk.expert_forum",
+  downloadable_resources: "course.perk.downloadable_resources",
 };
 
 export interface CourseDraft {

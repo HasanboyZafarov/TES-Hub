@@ -1,5 +1,8 @@
+import { useTranslation } from "react-i18next";
+
 const Admin = () => {
-  return <div>Admin</div>;
+  const { t } = useTranslation();
+  return <div>{t("admin.title")}</div>;
 };
 
 export default Admin;

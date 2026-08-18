@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import moment from "moment";
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import Avatar from "./Avatar";
 
@@ -25,17 +26,23 @@ interface Props {
 }
 
 const RoleChip = ({ role }: { role?: string }) => {
+  const { t } = useTranslation();
+
   if (role === "verified_farmer") {
     return (
       <span className="flex items-center gap-1 text-[#267320] bg-[#E7F6E4] text-[10px] font-semibold py-0.5 px-1.5 rounded-full">
-        <Leaf size={10} /> verified
+        <Leaf size={10} /> {t("community.discussion.verified")}
       </span>
     );
   }
-  if (role === "spac_consultant" || role === "tes_author" || role === "tes_admin") {
+  if (
+    role === "spac_consultant" ||
+    role === "tes_author" ||
+    role === "tes_admin"
+  ) {
     return (
       <span className="flex items-center gap-1 text-[#1E3A8A] bg-[#DBEAFE] text-[10px] font-semibold py-0.5 px-1.5 rounded-full">
-        <BadgeCheck size={10} /> expert
+        <BadgeCheck size={10} /> {t("community.discussion.expert")}
       </span>
     );
   }
@@ -57,6 +64,7 @@ const CommentRow = ({
   onReply,
   isReply = false,
 }: RowProps) => {
+  const { t } = useTranslation();
   const { user } = useUser(comment.authorId);
 
   return (
@@ -73,7 +81,7 @@ const CommentRow = ({
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-1.5 flex-wrap">
               <span className="text-[#191C1B] text-xs font-semibold">
-                {user?.displayName ?? "Community member"}
+                {user?.displayName ?? t("community.post.communityMember")}
               </span>
               <RoleChip role={user?.role} />
               <span className="text-[#717973] text-[10px] ml-auto shrink-0">
@@ -83,7 +91,8 @@ const CommentRow = ({
 
             {comment.isAcceptedAnswer && (
               <p className="flex items-center gap-1 text-[#267320] text-[10px] font-semibold mt-1">
-                <CheckCircle2 size={11} /> Accepted answer
+                <CheckCircle2 size={11} />{" "}
+                {t("community.discussion.acceptedAnswer")}
               </p>
             )}
 
@@ -104,7 +113,7 @@ const CommentRow = ({
                 onClick={() => onReply(comment)}
                 className="text-[#717973] text-[11px] cursor-pointer hover:text-[#012D1D]"
               >
-                Reply
+                {t("community.discussion.reply")}
               </button>
             </div>
           </div>
@@ -127,10 +136,11 @@ const CommentRow = ({
 
 const Discussion = ({
   contentId,
-  title = "Discussion",
+  title,
   variant = "comments",
   className = "",
 }: Props) => {
+  const { t } = useTranslation();
   const { comments, error, isLoading, isPosting, addComment, like } =
     useComments(contentId);
   const auth = useAuth();
@@ -163,7 +173,8 @@ const Discussion = ({
     return { roots, repliesOf };
   }, [comments, variant]);
 
-  const noun = variant === "answers" ? "answer" : "comment";
+  const isAnswers = variant === "answers";
+  const heading = title ?? t("community.discussion.title");
 
   const submit = async () => {
     if (!draft.trim()) return;
@@ -180,21 +191,27 @@ const Discussion = ({
     >
       <h2 className="flex items-center gap-2 text-[#012D1D] font-semibold">
         <MessageSquare size={18} />
-        {title}
-        {!isLoading && !error && ` (${comments.length})`}
+        {isLoading || error
+          ? heading
+          : t("community.discussion.titleWithCount", {
+              title: heading,
+              count: comments.length,
+            })}
       </h2>
 
       {can("comment") ? (
         <div className="mt-4">
           {replyTo && (
             <p className="text-[#414844] text-xs mb-2">
-              Replying to a {noun}.{" "}
+              {isAnswers
+                ? t("community.discussion.replyingAnswer")
+                : t("community.discussion.replyingComment")}{" "}
               <button
                 type="button"
                 onClick={() => setReplyTo(null)}
                 className="text-[#012D1D] underline cursor-pointer"
               >
-                Cancel
+                {t("common.cancel")}
               </button>
             </p>
           )}
@@ -205,9 +222,9 @@ const Discussion = ({
               onChange={(e) => setDraft(e.target.value)}
               rows={3}
               placeholder={
-                variant === "answers"
-                  ? "Share what worked for you…"
-                  : "Add your insight or ask a question…"
+                isAnswers
+                  ? t("community.discussion.placeholderAnswer")
+                  : t("community.discussion.placeholderComment")
               }
               className="w-full text-xs text-[#191C1B] placeholder:text-[#8A928C] bg-[#F6F8F6] border border-[#E1E3E1] rounded-lg p-2.5 outline-none focus:border-[#717973] resize-y"
             />
@@ -218,21 +235,27 @@ const Discussion = ({
             disabled={!draft.trim() || isPosting}
             className="mt-2 w-full bg-[#012D1D] text-white text-xs font-semibold py-2 rounded-lg cursor-pointer disabled:opacity-40 disabled:cursor-default hover:bg-[#013d27] transition-colors"
           >
-            {isPosting ? "Posting…" : `Post ${noun}`}
+            {isPosting
+              ? t("community.discussion.posting")
+              : isAnswers
+                ? t("community.discussion.postAnswer")
+                : t("community.discussion.postComment")}
           </button>
         </div>
       ) : (
         <p className="text-[#414844] text-xs bg-[#F6F8F6] border border-[#E1E3E1] rounded-lg p-3 mt-4">
           <Link to="/auth" className="text-[#012D1D] font-semibold underline">
-            Sign in
+            {t("community.discussion.signInPrefix")}
           </Link>{" "}
-          to join the discussion.
+          {t("community.discussion.signInSuffix")}
         </p>
       )}
 
       <div className="mt-2">
         {isLoading && (
-          <p className="text-[#414844] text-xs py-4">Loading discussion…</p>
+          <p className="text-[#414844] text-xs py-4">
+            {t("community.discussion.loading")}
+          </p>
         )}
 
         {!isLoading && error && (
@@ -241,7 +264,9 @@ const Discussion = ({
 
         {!isLoading && !error && roots.length === 0 && (
           <p className="text-[#414844] text-xs py-4">
-            No {noun}s yet. Be the first to share your experience.
+            {isAnswers
+              ? t("community.discussion.emptyAnswers")
+              : t("community.discussion.emptyComments")}
           </p>
         )}
 

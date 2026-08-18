@@ -1,6 +1,8 @@
 import { Clock } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import type Article from "@/types/article";
+import { CATEGORY_KEYS } from "@/types/category";
 
 interface Props {
   article: Article;
@@ -8,6 +10,7 @@ interface Props {
 
 const ArticleCard = ({ article: a }: Props) => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   return (
     <div
@@ -19,17 +22,17 @@ const ArticleCard = ({ article: a }: Props) => {
         style={{ backgroundImage: `url("${a.coverImage}")` }}
       >
         <div className="capitalize text-[#191C1B] bg-white w-max p-1 px-4 rounded-full">
-          {a.surface}
+          {t(`course.surface.${a.surface}`)}
         </div>
       </header>
       <div className="flex-1 p-6 flex flex-col justify-between gap-3">
         <div className="flex justify-between items-center">
           <div className="bg-[#1b43321a] capitalize w-max text-xs text-[#012D1D] py-1 px-2 rounded-xs">
-            {a.category}
+            {t(CATEGORY_KEYS[a.category])}
           </div>
           <div className="text-[#414844] text-sm flex items-center gap-1">
             <Clock size={16} />
-            {a.readTimeMinutes} min read
+            {t("course.minRead", { count: a.readTimeMinutes })}
           </div>
         </div>
         <div>
@@ -41,7 +44,7 @@ const ArticleCard = ({ article: a }: Props) => {
           <p
             className={`capitalize ${a.pricing.amount ? "text-[#191C1B]" : "text-[#1F6D1A]"}`}
           >
-            {a.pricing.amount || a.pricing.model}{" "}
+            {a.pricing.amount || t("course.free")}{" "}
             {a.pricing.amount ? a.pricing.currency : ""}
           </p>
         </div>
