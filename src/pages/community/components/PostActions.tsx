@@ -11,10 +11,6 @@ interface Props {
   className?: string;
 }
 
-/**
- * Like / save are optimistic and local to the session — the mock API has no
- * per-user engagement record, so the button state lives here.
- */
 const PostActions = ({ post, onCommentClick, className = "" }: Props) => {
   const { t } = useTranslation();
   const [liked, setLiked] = useState(false);

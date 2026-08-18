@@ -87,7 +87,6 @@ const CourseLessonDetail = () => {
 
   const toggleComplete = async () => {
     const updated = await setLessonComplete(lesson.id, !done);
-    // Finishing a lesson mid-course walks the learner straight to the next one.
     if (updated && !done && next) {
       navigate(`/academy/courses/${slug}/learn/${next.id}`);
     }

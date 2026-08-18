@@ -3,7 +3,7 @@ import type BaseContent from "./base-content";
 export interface StoryAuthor {
   name: string;
   avatar?: string;
-  isVerified: boolean; // verified_farmer badge on the author
+  isVerified: boolean;
 }
 
 export default interface Story extends BaseContent {
@@ -11,7 +11,7 @@ export default interface Story extends BaseContent {
   body: string;
   excerpt: string;
   surface: "community";
-  isVerifiedByTES: boolean; // can be stamped by TES Expert
-  isPremium: boolean; // gated to verified farmers
+  isVerifiedByTES: boolean;
+  isPremium: boolean;
   author: StoryAuthor;
 }

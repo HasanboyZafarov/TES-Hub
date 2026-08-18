@@ -28,7 +28,6 @@ const useResources = () => {
     };
   }, []);
 
-  /** Optimistic bump so the counter moves the moment the file starts. */
   const registerDownload = (id: string) => {
     setResources((current) =>
       current.map((resource) =>

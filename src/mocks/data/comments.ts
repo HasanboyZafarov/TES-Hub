@@ -16,7 +16,7 @@ const comments: Comment[] = [
     authorId: "user-member-1",
     body: "Buy cheap frost blankets at [link removed] best price!!!",
     createdAt: "2026-05-22T10:00:00.000Z",
-    likes: 0, 
+    likes: 0,
     isHidden: true,
   },
 

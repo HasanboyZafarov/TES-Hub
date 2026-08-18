@@ -1,10 +1,8 @@
 import type Region from "@/types/region";
 
-/** "climate-resilience" → "Climate resilience" */
 export const formatTag = (tag: string) =>
   tag.replace(/-/g, " ").replace(/^./, (c) => c.toUpperCase());
 
-/** "climate-resilience" → "#ClimateResilience" */
 export const toHashtag = (tag: string) =>
   "#" +
   tag
@@ -12,7 +10,6 @@ export const toHashtag = (tag: string) =>
     .map((part) => part.replace(/^./, (c) => c.toUpperCase()))
     .join("");
 
-/** "Climate resilience" / "#ClimateResilience" → "climate-resilience" */
 export const toTagSlug = (value: string) =>
   value
     .replace(/^#/, "")
@@ -36,10 +33,6 @@ export const initialsOf = (name?: string) =>
     .join("")
     .toUpperCase();
 
-/**
- * Village, raion and oblast often repeat a name (Talas raion in Talas oblast),
- * so identical parts collapse to one.
- */
 export const regionLabel = (region?: Region) => {
   if (!region) return "";
   const parts = [region.village, region.raion, region.oblast].filter(
@@ -51,14 +44,9 @@ export const regionLabel = (region?: Region) => {
 export const regionSlug = (oblast: string) =>
   oblast.trim().toLowerCase().replace(/\s+/g, "-");
 
-/** Recovers the oblast name from a region slug, e.g. "issyk-kul" → "Issyk-Kul". */
 export const oblastFromSlug = (slug: string, known: string[]) =>
   known.find((o) => regionSlug(o) === slug.toLowerCase()) ?? null;
 
-/**
- * Community posts predate the rich-text editor, so some bodies are plain text.
- * Those get wrapped in paragraphs; markup passes through to the sanitizer as is.
- */
 export const toRichText = (body: string) => {
   if (/<[a-z][\s\S]*>/i.test(body)) return body;
   return body

@@ -1,7 +1,6 @@
 interface Props {
   percent: number;
   className?: string;
-  /** `light` sits on the dark player header, `dark` on white cards. */
   tone?: "light" | "dark";
 }
 

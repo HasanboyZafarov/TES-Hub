@@ -33,8 +33,6 @@ import { formatDuration, LEVEL_KEYS, totalLessons } from "./courseDraft";
 
 const PAGE_SIZE = 8;
 
-/* -------------------------------- stat cards ------------------------------- */
-
 interface StatCardProps {
   label: string;
   value: string;
@@ -75,7 +73,6 @@ const StatCard = ({
 
 const StatCards = ({ courses }: { courses: Course[] }) => {
   const { t } = useTranslation();
-  // Read the clock once, outside render, so the stats stay a pure derivation.
   const [thirtyDaysAgo] = useState(() => Date.now() - 30 * 24 * 60 * 60 * 1000);
 
   const stats = useMemo(() => {
@@ -146,8 +143,6 @@ const StatCards = ({ courses }: { courses: Course[] }) => {
   );
 };
 
-/* --------------------------------- filters -------------------------------- */
-
 interface FiltersProps {
   search: string;
   onSearch: (v: string) => void;
@@ -206,8 +201,6 @@ const AdvancedFilters = ({
     </div>
   );
 };
-
-/* --------------------------------- workflow -------------------------------- */
 
 interface ActionDef {
   icon: typeof Send;
@@ -286,8 +279,6 @@ const IconButton = ({
     <Icon size={18} />
   </button>
 );
-
-/* ---------------------------------- rows ---------------------------------- */
 
 const AuthorCell = ({ authorId }: { authorId: string }) => {
   const { user } = useUser(authorId);
@@ -408,8 +399,6 @@ const TableRow = ({ course, canModerate, onStatus, onDelete }: RowProps) => {
   );
 };
 
-/* ------------------------------- pagination ------------------------------- */
-
 interface PaginationProps {
   page: number;
   totalPages: number;
@@ -466,8 +455,6 @@ const Pagination = ({ page, totalPages, onPage }: PaginationProps) => {
   );
 };
 
-/* ---------------------------------- page ---------------------------------- */
-
 const ManageCourses = () => {
   const { t } = useTranslation();
   const { courses, isLoading, error } = useCourses();
@@ -476,8 +463,6 @@ const ManageCourses = () => {
   const canCreate = can("createCourse");
   const navigate = useNavigate();
 
-  // Optimistic edits layered over the fetched list, so nothing has to be
-  // copied into state on load.
   const [patches, setPatches] = useState<Record<string, Partial<Course>>>({});
   const [removed, setRemoved] = useState<string[]>([]);
 

@@ -15,9 +15,6 @@ const RegionalFeed = () => {
   const { regionSlug: slug = "" } = useParams();
   const [sort, setSort] = useState<FeedSort>("latest");
 
-  // The oblast list is derived from the feed itself, so the slug is resolved
-  // against what has actually been posted rather than a hardcoded table — which
-  // means the filter has to happen after the fetch, not as a hook argument.
   const {
     posts: allPosts,
     topics,

@@ -2,7 +2,6 @@ import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 import LanguageDetector from "i18next-browser-languagedetector";
 import moment from "moment";
-// Registers the locales `moment().locale(lng)` needs; English ships by default.
 import "moment/dist/locale/ru";
 import "moment/dist/locale/ky";
 
@@ -33,7 +32,6 @@ i18n
     },
     fallbackLng: DEFAULT_LANGUAGE,
     supportedLngs: SUPPORTED_LANGUAGES.map((l) => l.code),
-    // "ru-RU" and "ru" should both resolve to the `ru` bundle.
     load: "languageOnly",
     nonExplicitSupportedLngs: true,
     detection: {

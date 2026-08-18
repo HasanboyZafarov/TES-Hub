@@ -14,8 +14,8 @@ export default interface User {
   bio?: string;
   region?: Region;
   languages: ("ru" | "ky" | "en")[];
-  interests: string[]; // tag IDs
-  createdAt: string; // ISO
+  interests: string[];
+  createdAt: string;
   isEmailVerified: boolean;
   isBanned: boolean;
   badges?: Badge[];

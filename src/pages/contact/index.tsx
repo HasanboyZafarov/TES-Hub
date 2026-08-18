@@ -9,7 +9,6 @@ import { z } from "zod";
 import Button from "../../components/ui/button";
 import axiosInstance from "../../lib/api/apiClient";
 
-// Values are sent to the API, so they stay stable; only the labels are localised.
 const SUBJECTS = [
   "general",
   "account",

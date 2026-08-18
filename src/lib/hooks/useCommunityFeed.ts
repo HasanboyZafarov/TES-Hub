@@ -26,10 +26,6 @@ interface Options {
   authorId?: string | null;
 }
 
-/**
- * The community feed is stories and questions merged into one timeline —
- * every community surface (hub, topic, region, author) is this list narrowed.
- */
 const useCommunityFeed = ({
   kind = "all",
   sort = "latest",

@@ -9,10 +9,6 @@ interface NotReady {
   requiredPercent: number;
 }
 
-/**
- * The learner's certificate for one course. A 409 means the course is not
- * finished yet and carries the progress needed to explain why.
- */
 const useCertificate = (slug: string) => {
   const user = useAuth();
   const userId = user?.id;

@@ -20,7 +20,6 @@ import Avatar from "./Avatar";
 interface Props {
   contentId: string;
   title?: string;
-  /** Q&A threads label their entries "answers" and float the accepted one. */
   variant?: "comments" | "answers";
   className?: string;
 }
