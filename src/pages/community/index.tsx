@@ -4,6 +4,7 @@ import usePermissions from "@/lib/hooks/usePermissions";
 import { formatCount } from "@/lib/utils/community";
 import { HelpCircle, Images, PenLine, Tags } from "lucide-react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import FeedTabs from "./components/FeedTabs";
 import PostList from "./components/PostList";
@@ -15,19 +16,11 @@ import {
 
 type Kind = "all" | "story" | "question";
 
-const KIND_TABS: { value: Kind; label: string }[] = [
-  { value: "all", label: "All posts" },
-  { value: "story", label: "Stories" },
-  { value: "question", label: "Questions" },
-];
-
-const SORT_TABS: { value: FeedSort; label: string }[] = [
-  { value: "latest", label: "Latest" },
-  { value: "popular", label: "Popular" },
-  { value: "unanswered", label: "Needs replies" },
-];
+const KIND_VALUES: Kind[] = ["all", "story", "question"];
+const SORT_VALUES: FeedSort[] = ["latest", "popular", "unanswered"];
 
 const Community = () => {
+  const { t } = useTranslation();
   const [kind, setKind] = useState<Kind>("all");
   const [sort, setSort] = useState<FeedSort>("latest");
   const [search, setSearch] = useState("");
@@ -45,27 +38,33 @@ const Community = () => {
   const storyCount = all.filter((p) => p.type === "story").length;
   const questionCount = all.filter((p) => p.type === "question").length;
 
+  const kindTabs = KIND_VALUES.map((value) => ({
+    value,
+    label: t(`community.kind.${value}`),
+  }));
+
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-10 pt-6 sm:pt-10 pb-20">
       <header className="flex flex-col lg:flex-row lg:justify-between lg:items-end gap-6">
         <div>
           <h1 className="text-[#012D1D] text-3xl sm:text-4xl lg:text-5xl font-bold">
-            Community
+            {t("community.title")}
           </h1>
           <p className="text-[#414844] text-base sm:text-lg mt-3 max-w-2xl">
-            Field notes, hard questions and honest answers from farmers and
-            agronomists across Kyrgyzstan.
+            {t("community.subtitle")}
           </p>
           <p className="text-[#414844] text-sm mt-3">
-            {formatCount(storyCount)} stories · {formatCount(questionCount)}{" "}
-            questions
+            {t("community.counts", {
+              stories: formatCount(storyCount),
+              questions: formatCount(questionCount),
+            })}
           </p>
         </div>
 
         <div className="w-full lg:w-90">
           <SearchInput
             onChange={setSearch}
-            placeholder="Search the community..."
+            placeholder={t("community.searchPlaceholder")}
           />
         </div>
       </header>
@@ -78,10 +77,10 @@ const Community = () => {
           <HelpCircle size={20} className="text-[#012D1D]" />
           <span>
             <span className="block text-[#191C1B] font-semibold text-sm">
-              Ask the community
+              {t("community.askTitle")}
             </span>
             <span className="block text-[#414844] text-xs">
-              Q&amp;A with verified experts
+              {t("community.askText")}
             </span>
           </span>
         </Link>
@@ -92,10 +91,10 @@ const Community = () => {
           <Images size={20} className="text-[#012D1D]" />
           <span>
             <span className="block text-[#191C1B] font-semibold text-sm">
-              Photo wall
+              {t("community.photoTitle")}
             </span>
             <span className="block text-[#414844] text-xs">
-              What the fields look like right now
+              {t("community.photoText")}
             </span>
           </span>
         </Link>
@@ -106,10 +105,10 @@ const Community = () => {
           <Tags size={20} className="text-[#012D1D]" />
           <span>
             <span className="block text-[#191C1B] font-semibold text-sm">
-              Topics
+              {t("community.topicsTitle")}
             </span>
             <span className="block text-[#414844] text-xs">
-              Follow the subjects you work on
+              {t("community.topicsText")}
             </span>
           </span>
         </Link>
@@ -118,30 +117,30 @@ const Community = () => {
       <div className="flex flex-col lg:flex-row gap-8 mt-10">
         <div className="w-full lg:w-[70%]">
           <div className="flex flex-wrap items-center justify-between gap-4">
-            <FeedTabs tabs={KIND_TABS} value={kind} onChange={setKind} />
+            <FeedTabs tabs={kindTabs} value={kind} onChange={setKind} />
             {can("createStory") && (
               <Link
                 to="/community/stories"
                 className="flex items-center gap-2 bg-[#012D1D] text-white text-sm font-semibold py-2 px-4 rounded-lg hover:bg-[#013d27] transition-colors"
               >
-                <PenLine size={16} /> Share a story
+                <PenLine size={16} /> {t("community.shareStory")}
               </Link>
             )}
           </div>
 
           <div className="flex flex-wrap items-center gap-3 mt-5">
-            {SORT_TABS.map((s) => (
+            {SORT_VALUES.map((s) => (
               <button
-                key={s.value}
+                key={s}
                 type="button"
-                onClick={() => setSort(s.value)}
+                onClick={() => setSort(s)}
                 className={`text-xs font-semibold py-1.5 px-3 rounded-full cursor-pointer ${
-                  sort === s.value
+                  sort === s
                     ? "bg-[#012D1D] text-white"
                     : "bg-[#F2F4F2] text-[#414844] hover:bg-[#E4E9E4]"
                 }`}
               >
-                {s.label}
+                {t(`community.sort.${s}`)}
               </button>
             ))}
 
@@ -160,7 +159,7 @@ const Community = () => {
             posts={posts}
             isLoading={isLoading}
             error={error}
-            emptyMessage="No posts match your filters yet."
+            emptyMessage={t("community.emptyFeed")}
           />
         </div>
 

@@ -1,6 +1,7 @@
 import type { CommunityPost } from "@/lib/hooks/useCommunityFeed";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import PostCard from "./PostCard";
 
 interface Props {
@@ -30,9 +31,10 @@ const PostList = ({
   posts,
   isLoading = false,
   error = null,
-  emptyMessage = "Nothing here yet.",
+  emptyMessage,
   pageSize = 6,
 }: Props) => {
+  const { t } = useTranslation();
   const [page, setPage] = useState(1);
 
   // A changed filter reshapes the list underneath the current page, so reset to
@@ -52,7 +54,9 @@ const PostList = ({
 
   if (error) {
     return (
-      <p className="text-[#C1292E] mt-6">Couldn't load the feed: {error}</p>
+      <p className="text-[#C1292E] mt-6">
+        {t("community.list.loadError", { error })}
+      </p>
     );
   }
 
@@ -67,7 +71,11 @@ const PostList = ({
   }
 
   if (posts.length === 0) {
-    return <p className="text-[#414844] mt-8">{emptyMessage}</p>;
+    return (
+      <p className="text-[#414844] mt-8">
+        {emptyMessage ?? t("community.list.empty")}
+      </p>
+    );
   }
 
   return (
@@ -82,7 +90,7 @@ const PostList = ({
         <div className="flex flex-wrap justify-center items-center gap-2 mt-10">
           <button
             type="button"
-            aria-label="Previous page"
+            aria-label={t("community.list.prevPage")}
             disabled={currentPage === 1}
             onClick={() => setPage(currentPage - 1)}
             className="p-2 rounded-sm border border-[#C1C8C2] disabled:opacity-40 cursor-pointer disabled:cursor-default"
@@ -106,7 +114,7 @@ const PostList = ({
           ))}
           <button
             type="button"
-            aria-label="Next page"
+            aria-label={t("community.list.nextPage")}
             disabled={currentPage === pageCount}
             onClick={() => setPage(currentPage + 1)}
             className="p-2 rounded-sm border border-[#C1C8C2] disabled:opacity-40 cursor-pointer disabled:cursor-default"

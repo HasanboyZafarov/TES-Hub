@@ -36,6 +36,20 @@ const courses: Course[] = [
             type: "article",
             durationMinutes: 8,
             isFreePreview: true,
+            summary: "Where the water actually goes on a furrow-irrigated plot.",
+            content: {
+              kind: "article",
+              body: `
+                <p>Furrow irrigation delivers roughly 45–60% of the water you pump to the root zone. The rest is lost to deep percolation below the roots, to evaporation off the wetted surface, and to tail-water running off the end of the row.</p>
+                <p>A correctly sized drip system delivers 85–95%. On a one-hectare plot in Issyk-Kul that is the difference between 6,000 and 2,400 cubic metres over a season — and it arrives at the plant slowly enough that the soil never saturates.</p>
+                <h3>What you gain besides water</h3>
+                <ul>
+                  <li>Fertiliser goes through the same line, exactly where the roots are.</li>
+                  <li>The area between rows stays dry, so weed pressure drops sharply.</li>
+                  <li>Leaves stay dry, which cuts fungal disease on tomato and cucumber.</li>
+                </ul>
+              `,
+            },
           },
         ],
       },
@@ -87,6 +101,20 @@ const courses: Course[] = [
             type: "article",
             durationMinutes: 12,
             isFreePreview: true,
+            summary: "The twelve-month calendar for a mixed dairy-beef herd.",
+            content: {
+              kind: "article",
+              body: `
+                <p>Календарь строится вокруг двух опорных точек: весенний выгон на пастбище и осенний возврат в стойло. Всё остальное привязывается к ним.</p>
+                <h3>Ключевые сроки</h3>
+                <ul>
+                  <li><strong>За 4 недели до выгона</strong> — сибирская язва, эмфизематозный карбункул.</li>
+                  <li><strong>Телята 3–4 месяца</strong> — первая вакцинация против пастереллёза, ревакцинация через 21 день.</li>
+                  <li><strong>Сухостойный период</strong> — вакцинация стельных коров для передачи антител с молозивом.</li>
+                </ul>
+                <p>Каждую процедуру записывайте в журнал: дата, серия препарата, срок годности, исполнитель.</p>
+              `,
+            },
           },
           {
             id: "les-2",
@@ -95,6 +123,18 @@ const courses: Course[] = [
             type: "article",
             durationMinutes: 10,
             isFreePreview: false,
+            summary: "Adapting the herd calendar to small ruminants.",
+            content: {
+              kind: "article",
+              body: `
+                <p>Мелкий рогатый скот вакцинируют по тем же принципам, но дозы и интервалы отличаются, а отара движется на джайлоо раньше крупного скота.</p>
+                <ul>
+                  <li><strong>Энтеротоксемия</strong> — за 3 недели до окота, затем ягнятам в 2 месяца.</li>
+                  <li><strong>Оспа овец</strong> — ежегодно, до перегона на летние пастбища.</li>
+                  <li><strong>Бруцеллёз</strong> — только по предписанию районной ветслужбы.</li>
+                </ul>
+              `,
+            },
           },
         ],
       },
@@ -110,6 +150,14 @@ const courses: Course[] = [
             type: "video",
             durationMinutes: 15,
             isFreePreview: false,
+            summary: "Holding +2…+8 °C from the district store to the pasture.",
+            content: {
+              kind: "video",
+              url: "https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4",
+              poster: "/img/homepage/course-soil.jpg",
+              transcript:
+                "Вакцина, побывавшая выше +8 °C, считается непригодной, даже если флакон выглядит нормально. В термоконтейнер укладывают охлаждённые, а не замороженные хладоэлементы, термометр кладут рядом с флаконами, а не у стенки.",
+            },
           },
         ],
       },
@@ -164,6 +212,39 @@ const courses: Course[] = [
             type: "article",
             durationMinutes: 10,
             isFreePreview: true,
+            summary:
+              "How particle size decides drainage, workability, and nutrient holding.",
+            content: {
+              kind: "article",
+              body: `
+                <p>Every soil is a mixture of three mineral particles — <strong>sand</strong>, <strong>silt</strong>, and <strong>clay</strong>. The proportion between them is called <em>soil texture</em>, and it is the single property you cannot change by management. Everything else — organic matter, pH, structure — is built on top of it.</p>
+                <h3>The three particles</h3>
+                <ul>
+                  <li><strong>Sand (0.05–2 mm)</strong> — gritty to the touch. Large pores drain fast, warm up early in spring, and hold very little nutrition.</li>
+                  <li><strong>Silt (0.002–0.05 mm)</strong> — smooth, like dry flour. Holds water well and is the most erodible fraction.</li>
+                  <li><strong>Clay (&lt; 0.002 mm)</strong> — sticky when wet, hard when dry. Enormous surface area, so it stores most of the soil's nutrients.</li>
+                </ul>
+                <h3>The ribbon test</h3>
+                <p>You do not need a laboratory to estimate texture. Take a walnut-sized ball of moist soil and press it between thumb and forefinger into a ribbon:</p>
+                <ul>
+                  <li>No ribbon forms — <strong>sandy</strong> soil.</li>
+                  <li>Ribbon breaks under 2.5 cm — <strong>loam</strong>.</li>
+                  <li>Ribbon reaches 5 cm or more — <strong>clay</strong>.</li>
+                </ul>
+                <blockquote>Loam — roughly 40% sand, 40% silt, 20% clay — is the target most Chui valley growers are managing toward. It drains without drying out and holds nutrients without waterlogging.</blockquote>
+                <h3>Why it matters in practice</h3>
+                <p>Texture sets your irrigation interval, your tillage window, and how much of an amendment you must apply. A sandy plot in Issyk-Kul may need water every second day; a clay plot two valleys over may need it once a week and will smear into a hardpan if you work it wet.</p>
+                <p>In the next lesson you will read an actual laboratory report and connect these numbers to a fertiliser decision.</p>
+              `,
+            },
+            resources: [
+              {
+                id: "res-les-1-texture-triangle",
+                label: "USDA soil texture triangle (printable)",
+                url: "/resources/soil-texture-triangle.pdf",
+                sizeKb: 480,
+              },
+            ],
           },
           {
             id: "les-2",
@@ -172,6 +253,24 @@ const courses: Course[] = [
             type: "pdf",
             durationMinutes: 12,
             isFreePreview: true,
+            summary:
+              "A worked example of a Kyrgyz laboratory report, line by line.",
+            content: {
+              kind: "pdf",
+              url: "/resources/soil-test-report-walkthrough.pdf",
+              fileName: "soil-test-report-walkthrough.pdf",
+              sizeKb: 1840,
+              summary:
+                "An annotated report from the Bishkek agrochemical laboratory: pH, humus percentage, mobile phosphorus and exchangeable potassium, with the recommended action beside each row.",
+            },
+            resources: [
+              {
+                id: "res-les-2-sampling",
+                label: "Field sampling checklist",
+                url: "/resources/soil-sampling-checklist.pdf",
+                sizeKb: 220,
+              },
+            ],
           },
         ],
       },
@@ -187,6 +286,23 @@ const courses: Course[] = [
             type: "video",
             durationMinutes: 18,
             isFreePreview: false,
+            summary:
+              "Building a thermophilic pile and knowing when manure is safe to apply.",
+            content: {
+              kind: "video",
+              url: "https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+              poster: "/img/homepage/course-soil.jpg",
+              transcript:
+                "A finished compost pile smells of forest floor, not of ammonia. In this lesson we build a 1.5 metre pile at a 25:1 carbon-to-nitrogen ratio, turn it on days 4, 8 and 14, and hold 55°C for three consecutive days to kill weed seed and pathogens. Fresh manure is never applied within 120 days of a harvested root crop.",
+            },
+            resources: [
+              {
+                id: "res-les-3-cn-table",
+                label: "Carbon-to-nitrogen ratio table",
+                url: "/resources/compost-cn-ratios.pdf",
+                sizeKb: 310,
+              },
+            ],
           },
           {
             id: "les-4",
@@ -195,6 +311,24 @@ const courses: Course[] = [
             type: "article",
             durationMinutes: 9,
             isFreePreview: false,
+            summary:
+              "Choosing a cover crop for the short Kyrgyz shoulder season.",
+            content: {
+              kind: "article",
+              body: `
+                <p>A cover crop is a crop you grow for the soil rather than for the market. It protects the surface from wind and water erosion, feeds soil biology with living roots, and — in the case of legumes — fixes atmospheric nitrogen into a form the next crop can use.</p>
+                <h3>Matching the crop to the gap</h3>
+                <ul>
+                  <li><strong>Winter rye</strong> — germinates down to 3°C, the safest choice after a late October harvest.</li>
+                  <li><strong>Hairy vetch</strong> — fixes 60–100 kg of nitrogen per hectare, but needs six weeks of growth before hard frost.</li>
+                  <li><strong>Oilseed radish</strong> — a deep taproot that breaks tillage pan, then winter-kills and needs no termination pass.</li>
+                  <li><strong>Buckwheat</strong> — a 35-day summer gap filler that smothers weeds and pulls phosphorus into the topsoil.</li>
+                </ul>
+                <h3>Termination</h3>
+                <p>Terminate two to three weeks before planting the cash crop. Roll or mow at flowering — before seed set — otherwise this year's cover crop becomes next year's weed problem.</p>
+                <blockquote>Rule of thumb: never leave soil bare over winter. Even a thin rye stand returns more organic matter than an empty field, and holds the topsoil through the spring melt.</blockquote>
+              `,
+            },
           },
           {
             id: "les-5",
@@ -203,6 +337,25 @@ const courses: Course[] = [
             type: "quiz",
             durationMinutes: 10,
             isFreePreview: false,
+            summary:
+              "Six questions covering texture, testing, and amendment strategy.",
+            content: { kind: "quiz", quizId: "quiz-soil-health-final" },
+          },
+          {
+            id: "les-6",
+            title: "FAO Soil Portal",
+            order: 4,
+            type: "external_link",
+            durationMinutes: 5,
+            isFreePreview: false,
+            summary:
+              "Optional reading: global soil maps and the Central Asian dataset.",
+            content: {
+              kind: "external_link",
+              url: "https://www.fao.org/soils-portal/en/",
+              summary:
+                "The FAO Soils Portal hosts the Harmonized World Soil Database. Open the Central Asia layer and locate your own oblast before returning here.",
+            },
           },
         ],
       },
@@ -293,6 +446,15 @@ const courses: Course[] = [
             type: "article",
             durationMinutes: 14,
             isFreePreview: true,
+            summary: "Ridge vents, side rollers, and the 20% opening rule.",
+            content: {
+              kind: "article",
+              body: `
+                <p>A tomato house that cannot vent 20% of its floor area will sit above 32°C on a clear July afternoon, and pollen becomes sterile above that point. Ventilation is not a comfort question — it is a yield question.</p>
+                <h3>Superseded content</h3>
+                <p>This edition is kept read-only for past graduates. The 2026 edition covers pest-resistant varieties and updated ridge-vent sizing.</p>
+              `,
+            },
           },
         ],
       },

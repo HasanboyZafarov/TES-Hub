@@ -3,6 +3,7 @@ import Category from "./category";
 import CoverImage from "./coverImage";
 import type { Category as CategoryType } from "@/types/category";
 import Title from "./title";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   title: string;
@@ -35,22 +36,24 @@ const ArticleSettings = ({
   tags,
   setTags,
 }: Props) => {
+  const { t } = useTranslation();
+
   return (
     <div className={className}>
       <header className="p-6 border border-[#C1C8C2]">
         <h3 className="text-[#191C1B] text-sm font-semibold">
-          Article Settings
+          {t("ui.articleSettings")}
         </h3>
         <p className="text-[#414844] text-xs mt-1">
-          Manage metadata and visibility
+          {t("ui.articleSettingsHint")}
         </p>
       </header>
       <div className="p-6 border border-[#c1c8c2]">
         <Title
           value={title}
           setValue={setTitle}
-          label="Title"
-          placeholder="Add title..."
+          label={t("ui.titleLabel")}
+          placeholder={t("ui.titlePlaceholder")}
           error={titleError}
         />
 

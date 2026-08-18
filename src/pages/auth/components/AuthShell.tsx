@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import background_img from "/img/login/section-right-bg.png";
 
@@ -8,6 +9,7 @@ interface Props {
 
 const AuthShell = ({ children }: Props) => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   return (
     <div className="flex min-h-screen">
@@ -16,7 +18,7 @@ const AuthShell = ({ children }: Props) => {
           className="text-[#012D1D] font-bold text-xl lg:text-2xl cursor-pointer w-fit"
           onClick={() => navigate("/")}
         >
-          TES Hub
+          {t("auth.brand")}
         </h1>
         <div className="flex items-center justify-center flex-1 py-8">
           <div className="w-full max-w-md">{children}</div>

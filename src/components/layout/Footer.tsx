@@ -1,76 +1,58 @@
+import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 
 interface FooterLink {
-  name: string;
+  /** Translation key under `footer`. */
+  key: string;
   url: string;
 }
 
 interface FooterSection {
-  title: string;
+  key: string;
   links: FooterLink[];
 }
 
-interface FooterLogo {
-  url: string;
-  src: string;
-  alt: string;
-  title: string;
-}
-
-interface FooterBasicProps {
-  logo?: FooterLogo;
-  description?: string;
+interface Props {
+  className?: string;
   sections?: FooterSection[];
   copyright?: string;
-  legalLinks?: FooterLink[];
-  className?: string;
 }
 
-interface Footer2Props extends FooterBasicProps {
-  logoClassName?: string;
-}
-type Props = Partial<Footer2Props>;
-
-const defaultProps: Footer2Props = {
-  description:
-    "© 2024 TES Knowledge Hub. Empowering Kyrgyz agriculture through traditional wisdom and modern science.",
-  sections: [
-    {
-      title: "Academy",
-      links: [
-        { name: "Articles", url: "/academy/articles" },
-        { name: "Courses", url: "/academy/courses" },
-      ],
-    },
-    {
-      title: "Coommunity",
-      links: [
-        { name: "Stories", url: "/community/stories" },
-        { name: "Questions", url: "/community/questions" },
-        { name: "Photos", url: "/community/photos" },
-      ],
-    },
-    {
-      title: "Support",
-      links: [
-        { name: "Contact", url: "/contact" },
-        { name: "Terms of Service", url: "/terms-of-service" },
-        { name: "Privacy Policy", url: "/privacy-policy" },
-      ],
-    },
-  ],
-  copyright: "Made with ❤️ by David",
-};
+const DEFAULT_SECTIONS: FooterSection[] = [
+  {
+    key: "academy",
+    links: [
+      { key: "articles", url: "/academy/articles" },
+      { key: "courses", url: "/academy/courses" },
+    ],
+  },
+  {
+    key: "community",
+    links: [
+      { key: "stories", url: "/community/stories" },
+      { key: "questions", url: "/community/questions" },
+      { key: "photos", url: "/community/photos" },
+    ],
+  },
+  {
+    key: "support",
+    links: [
+      { key: "contact", url: "/contact" },
+      { key: "terms", url: "/terms-of-service" },
+      { key: "privacy", url: "/privacy-policy" },
+    ],
+  },
+];
 
 const MAX_SECTIONS = 3;
 
-const Footer = (props: Props) => {
-  const { description, sections, copyright, className } = {
-    ...defaultProps,
-    ...props,
-  };
-
-  const visibleSections = (sections ?? []).slice(0, MAX_SECTIONS);
+const Footer = ({
+  className = "",
+  sections = DEFAULT_SECTIONS,
+  copyright = "Made with ❤️ by David",
+}: Props) => {
+  const { t } = useTranslation();
+  const visibleSections = sections.slice(0, MAX_SECTIONS);
 
   return (
     <footer
@@ -86,24 +68,26 @@ const Footer = (props: Props) => {
             </div>
 
             <p className="mt-4 text-sm font-medium text-muted-foreground">
-              {description}
+              {t("footer.description")}
             </p>
           </div>
-          {visibleSections.map((section, sectionIdx) => (
-            <div key={sectionIdx}>
+
+          {visibleSections.map((section) => (
+            <div key={section.key}>
               <h3 className="mb-4 text-sm font-semibold tracking-tight">
-                {section.title}
+                {t(`footer.${section.key}`)}
               </h3>
               <ul className="space-y-4 text-sm text-muted-foreground">
-                {section.links.map((link, linkIdx) => (
-                  <li key={linkIdx} className="font-medium hover:text-primary">
-                    <Link to={link.url}>{link.name}</Link>
+                {section.links.map((link) => (
+                  <li key={link.key} className="font-medium hover:text-primary">
+                    <Link to={link.url}>{t(`footer.${link.key}`)}</Link>
                   </li>
                 ))}
               </ul>
             </div>
           ))}
         </div>
+
         <div className="mt-8 flex flex-col justify-between gap-4 pt-8 text-xs font-medium text-muted-foreground md:flex-row md:items-center">
           <p>{copyright}</p>
         </div>

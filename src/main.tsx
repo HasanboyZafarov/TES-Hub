@@ -3,6 +3,7 @@ import ReactDOM from "react-dom/client";
 import { RouterProvider } from "react-router-dom";
 import routes from "./app/routes.tsx";
 import "./index.css";
+import "./i18n";
 
 async function enableMocking() {
   if (process.env.NODE_ENV !== "development") {

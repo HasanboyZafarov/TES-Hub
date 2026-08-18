@@ -1,13 +1,14 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { z } from "zod";
 import Button from "../../components/ui/button";
 import axiosInstance from "../../lib/api/apiClient";
 import { useAuthStore } from "../../store/authStore";
 import type User from "../../types/user";
-import CATEGORIES from "../../types/category";
+import CATEGORIES, { CATEGORY_KEYS } from "../../types/category";
 import AuthShell from "./components/AuthShell";
 
 const OBLASTS = [
@@ -22,35 +23,34 @@ const OBLASTS = [
   "Issyk-Kul",
 ];
 
-const LANGUAGES = [
-  { value: "ky", label: "Kyrgyz" },
-  { value: "ru", label: "Russian" },
-  { value: "en", label: "English" },
-] as const;
+const LANGUAGES = ["ky", "ru", "en"] as const;
 
 const INTERESTS = CATEGORIES;
 
-const Step1Schema = z.object({
-  displayName: z.string().min(2, "Display name must be at least 2 characters."),
-  username: z
-    .string()
-    .min(3, "Username must be at least 3 characters.")
-    .regex(/^[a-zA-Z0-9_]+$/, "Only letters, numbers, and underscores."),
-  bio: z.string().max(200, "Bio must be under 200 characters.").optional(),
-});
+const buildStep1Schema = (t: (key: string) => string) =>
+  z.object({
+    displayName: z.string().min(2, t("auth.errors.displayNameMin")),
+    username: z
+      .string()
+      .min(3, t("auth.errors.usernameMin"))
+      .regex(/^[a-zA-Z0-9_]+$/, t("auth.errors.usernamePattern")),
+    bio: z.string().max(200, t("auth.errors.bioMax")).optional(),
+  });
 
-const Step2Schema = z.object({
-  oblast: z.string().min(1, "Please select a region."),
-  languages: z
-    .array(z.enum(["ru", "ky", "en"]))
-    .min(1, "Select at least one language."),
-  interests: z.array(z.string()).optional(),
-});
+const buildStep2Schema = (t: (key: string) => string) =>
+  z.object({
+    oblast: z.string().min(1, t("auth.errors.regionRequired")),
+    languages: z
+      .array(z.enum(["ru", "ky", "en"]))
+      .min(1, t("auth.errors.languageRequired")),
+    interests: z.array(z.string()).optional(),
+  });
 
-type Step1Props = z.infer<typeof Step1Schema>;
-type Step2Props = z.infer<typeof Step2Schema>;
+type Step1Props = z.infer<ReturnType<typeof buildStep1Schema>>;
+type Step2Props = z.infer<ReturnType<typeof buildStep2Schema>>;
 
 const Onboarding = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { user, setAuth } = useAuthStore();
   const token = useAuthStore((s) => s.token);
@@ -58,9 +58,11 @@ const Onboarding = () => {
   const [step, setStep] = useState(1);
   const [step1Data, setStep1Data] = useState<Step1Props | null>(null);
   const [serverError, setServerError] = useState("");
+  const step1Schema = useMemo(() => buildStep1Schema(t), [t]);
+  const step2Schema = useMemo(() => buildStep2Schema(t), [t]);
 
   const form1 = useForm<Step1Props>({
-    resolver: zodResolver(Step1Schema),
+    resolver: zodResolver(step1Schema),
     defaultValues: {
       displayName: user?.displayName ?? "",
       username: user?.username ?? "",
@@ -69,7 +71,7 @@ const Onboarding = () => {
   });
 
   const form2 = useForm<Step2Props>({
-    resolver: zodResolver(Step2Schema),
+    resolver: zodResolver(step2Schema),
     defaultValues: {
       oblast: user?.region?.oblast ?? "",
       languages: (user?.languages as ("ru" | "ky" | "en")[]) ?? [],
@@ -98,8 +100,7 @@ const Onboarding = () => {
       navigate("/");
     } catch (err: any) {
       setServerError(
-        err.response?.data?.message ||
-          "Failed to save profile. Please try again.",
+        err.response?.data?.message || t("auth.onboarding.saveFailed"),
       );
     }
   };
@@ -114,27 +115,31 @@ const Onboarding = () => {
           className={`h-1 flex-1 rounded-full ${step >= 2 ? "bg-[#012D1D]" : "bg-[#C1C8C2]"}`}
         />
       </div>
-      <p className="text-[#717973] text-xs mb-6">Step {step} of 2</p>
+      <p className="text-[#717973] text-xs mb-6">
+        {t("auth.onboarding.step", { step })}
+      </p>
 
       <h2 className="text-[#012D1D] font-bold text-4xl">
-        {step === 1 ? "Your Profile" : "Your Preferences"}
+        {step === 1
+          ? t("auth.onboarding.profileTitle")
+          : t("auth.onboarding.preferencesTitle")}
       </h2>
       <p className="text-[#414844] text-base mt-2">
         {step === 1
-          ? "Let the community know who you are."
-          : "Help us personalize your experience."}
+          ? t("auth.onboarding.profileSubtitle")
+          : t("auth.onboarding.preferencesSubtitle")}
       </p>
 
       {step === 1 && (
         <form onSubmit={form1.handleSubmit(handleStep1)} className="mt-6">
           <div className="flex flex-col">
             <label htmlFor="displayName" className="text-[#414844]">
-              Display Name
+              {t("auth.onboarding.displayName")}
             </label>
             <input
               id="displayName"
               type="text"
-              placeholder="Ali Valiyev"
+              placeholder={t("auth.onboarding.displayNamePlaceholder")}
               {...form1.register("displayName")}
               className={`placeholder:text-[#6B7280] p-3 py-2 outline-none border mt-1 bg-white ${
                 form1.formState.errors.displayName
@@ -151,12 +156,12 @@ const Onboarding = () => {
 
           <div className="flex flex-col mt-5">
             <label htmlFor="username" className="text-[#414844]">
-              Username
+              {t("auth.username")}
             </label>
             <input
               id="username"
               type="text"
-              placeholder="ali_valiyev"
+              placeholder={t("auth.onboarding.usernamePlaceholder")}
               {...form1.register("username")}
               className={`placeholder:text-[#6B7280] p-3 py-2 outline-none border mt-1 bg-white ${
                 form1.formState.errors.username
@@ -174,7 +179,10 @@ const Onboarding = () => {
           <div className="flex flex-col mt-5">
             <div className="flex justify-between">
               <label htmlFor="bio" className="text-[#414844]">
-                Bio <span className="text-[#717973] text-sm">(optional)</span>
+                {t("auth.onboarding.bio")}{" "}
+                <span className="text-[#717973] text-sm">
+                  {t("auth.onboarding.optional")}
+                </span>
               </label>
               <span className="text-[#717973] text-xs">
                 {form1.watch("bio")?.length ?? 0}/200
@@ -183,7 +191,7 @@ const Onboarding = () => {
             <textarea
               id="bio"
               rows={3}
-              placeholder="Tell the community about yourself..."
+              placeholder={t("auth.onboarding.bioPlaceholder")}
               {...form1.register("bio")}
               className="placeholder:text-[#6B7280] p-3 py-2 outline-none border mt-1 bg-white border-[#6B7280] resize-none"
             />
@@ -195,7 +203,7 @@ const Onboarding = () => {
           </div>
 
           <Button type="submit" className="w-full mt-6" variant="filled">
-            Continue
+            {t("auth.onboarding.continue")}
           </Button>
         </form>
       )}
@@ -204,7 +212,7 @@ const Onboarding = () => {
         <form onSubmit={form2.handleSubmit(handleStep2)} className="mt-6">
           <div className="flex flex-col">
             <label htmlFor="oblast" className="text-[#414844]">
-              Region
+              {t("auth.onboarding.region")}
             </label>
             <select
               id="oblast"
@@ -215,10 +223,10 @@ const Onboarding = () => {
                   : "border-[#6B7280]"
               }`}
             >
-              <option value="">Select your region</option>
+              <option value="">{t("auth.onboarding.selectRegion")}</option>
               {OBLASTS.map((o) => (
                 <option key={o} value={o}>
-                  {o}
+                  {t(`auth.oblast.${o}`)}
                 </option>
               ))}
             </select>
@@ -230,9 +238,11 @@ const Onboarding = () => {
           </div>
 
           <div className="flex flex-col mt-5">
-            <label className="text-[#414844] mb-2">Languages</label>
+            <label className="text-[#414844] mb-2">
+              {t("auth.onboarding.languages")}
+            </label>
             <div className="flex gap-3">
-              {LANGUAGES.map(({ value, label }) => {
+              {LANGUAGES.map((value) => {
                 const checked = form2.watch("languages")?.includes(value);
                 return (
                   <label
@@ -249,7 +259,7 @@ const Onboarding = () => {
                       className="hidden"
                       {...form2.register("languages")}
                     />
-                    {label}
+                    {t(`auth.language.${value}`)}
                   </label>
                 );
               })}
@@ -263,8 +273,10 @@ const Onboarding = () => {
 
           <div className="flex flex-col mt-5">
             <label className="text-[#414844] mb-2">
-              Interests{" "}
-              <span className="text-[#717973] text-sm">(optional)</span>
+              {t("auth.onboarding.interests")}{" "}
+              <span className="text-[#717973] text-sm">
+                {t("auth.onboarding.optional")}
+              </span>
             </label>
             <div className="flex flex-wrap gap-2">
               {INTERESTS.map((interest) => {
@@ -284,7 +296,7 @@ const Onboarding = () => {
                       className="hidden"
                       {...form2.register("interests")}
                     />
-                    {interest}
+                    {t(CATEGORY_KEYS[interest])}
                   </label>
                 );
               })}
@@ -302,7 +314,7 @@ const Onboarding = () => {
               className="flex-1"
               onClick={() => setStep(1)}
             >
-              Back
+              {t("common.back")}
             </Button>
             <Button
               type="submit"
@@ -310,7 +322,9 @@ const Onboarding = () => {
               className="flex-1"
               disabled={form2.formState.isSubmitting}
             >
-              {form2.formState.isSubmitting ? "Saving..." : "Finish Setup"}
+              {form2.formState.isSubmitting
+                ? t("common.saving")
+                : t("auth.onboarding.finish")}
             </Button>
           </div>
         </form>

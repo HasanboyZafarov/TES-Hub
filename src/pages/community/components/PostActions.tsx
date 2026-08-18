@@ -3,6 +3,7 @@ import { formatCount } from "@/lib/utils/community";
 import type { CommunityPost } from "@/lib/hooks/useCommunityFeed";
 import { Bookmark, MessageSquare, Share2, ThumbsUp } from "lucide-react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   post: CommunityPost;
@@ -15,6 +16,7 @@ interface Props {
  * per-user engagement record, so the button state lives here.
  */
 const PostActions = ({ post, onCommentClick, className = "" }: Props) => {
+  const { t } = useTranslation();
   const [liked, setLiked] = useState(false);
   const [saved, setSaved] = useState(false);
   const [likes, setLikes] = useState(post.stats.likes);
@@ -31,7 +33,12 @@ const PostActions = ({ post, onCommentClick, className = "" }: Props) => {
     }
 
     try {
-      await setEngagement(post.type as "story" | "question", post.slug, metric, wasOn);
+      await setEngagement(
+        post.type as "story" | "question",
+        post.slug,
+        metric,
+        wasOn,
+      );
     } catch {
       if (metric === "like") {
         setLiked(wasOn);
@@ -76,7 +83,7 @@ const PostActions = ({ post, onCommentClick, className = "" }: Props) => {
           className={`${button} text-[#414844]`}
         >
           <MessageSquare size={18} />
-          {formatCount(post.stats.comments)} Comments
+          {formatCount(post.stats.comments)} {t("community.actions.comments")}
         </button>
       </div>
 
@@ -88,12 +95,18 @@ const PostActions = ({ post, onCommentClick, className = "" }: Props) => {
           className={`${button} ${saved ? "text-[#012D1D] font-semibold" : "text-[#414844]"}`}
         >
           <Bookmark size={18} fill={saved ? "currentColor" : "none"} />
-          {saved ? "Saved" : "Save"}
+          {saved ? t("community.actions.saved") : t("community.actions.save")}
         </button>
 
-        <button type="button" onClick={share} className={`${button} text-[#414844]`}>
+        <button
+          type="button"
+          onClick={share}
+          className={`${button} text-[#414844]`}
+        >
           <Share2 size={18} />
-          {copied ? "Link copied" : "Share"}
+          {copied
+            ? t("community.actions.linkCopied")
+            : t("community.actions.share")}
         </button>
       </div>
     </div>

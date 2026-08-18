@@ -1,15 +1,14 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMemo } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 import z from "zod";
 import Button from "./button";
 import { X } from "lucide-react";
 import type User from "../../types/user";
 
 export type ModalVariant =
-  | "edit_profile"
-  | "add_credentials"
-  | "delete_account"
-  | "share_profile";
+  "edit_profile" | "add_credentials" | "delete_account" | "share_profile";
 
 interface Props {
   variant: ModalVariant | null;
@@ -17,48 +16,56 @@ interface Props {
   onClose: () => void;
 }
 
-const EditProfileSchema = z
-  .object({
-    email: z.string().email("Invalid email format."),
-    displayName: z
-      .string()
-      .min(6, "Display name must be at least 6 characters."),
-    password: z
-      .string()
-      .min(8, "Password must be at least 8 characters")
-      .optional()
-      .or(z.literal("")),
-    confirmPassword: z.string().optional().or(z.literal("")),
-    region: z.object({
-      oblast: z.string().min(1, "This field is required."),
-      raion: z.string().optional(),
-      village: z.string().optional(),
-    }),
-  })
-  .refine((data) => !data.password || data.password === data.confirmPassword, {
-    message: "Password don't match.",
-    path: ["confirmPassword"],
+type Translate = (key: string) => string;
+
+const buildEditProfileSchema = (t: Translate) =>
+  z
+    .object({
+      email: z.string().email(t("modal.errors.email")),
+      displayName: z.string().min(6, t("modal.errors.displayName")),
+      password: z
+        .string()
+        .min(8, t("modal.errors.password"))
+        .optional()
+        .or(z.literal("")),
+      confirmPassword: z.string().optional().or(z.literal("")),
+      region: z.object({
+        oblast: z.string().min(1, t("modal.errors.requiredField")),
+        raion: z.string().optional(),
+        village: z.string().optional(),
+      }),
+    })
+    .refine(
+      (data) => !data.password || data.password === data.confirmPassword,
+      {
+        message: t("modal.errors.passwordMismatch"),
+        path: ["confirmPassword"],
+      },
+    );
+
+const buildAddCredentialsSchema = (t: Translate) =>
+  z.object({
+    title: z.string().min(4, t("modal.errors.title")),
+    date: z.string().date(t("modal.errors.date")),
+    url: z.string().url(t("modal.errors.url")),
   });
 
-const AddCredentialsSchema = z.object({
-  title: z.string().min(4, "Title must be at least 4 characters"),
-  date: z.string().date("Invalid date format."),
-  url: z.string().url("Invalid URL format."),
-});
-
-type EditProfileData = z.infer<typeof EditProfileSchema>;
-type AddCredentialsData = z.infer<typeof AddCredentialsSchema>;
+type EditProfileData = z.infer<ReturnType<typeof buildEditProfileSchema>>;
+type AddCredentialsData = z.infer<ReturnType<typeof buildAddCredentialsSchema>>;
 
 const inputClass = (hasError: boolean) =>
   `p-3 py-2 outline-none border mt-1 bg-white ${hasError ? "border-red-500" : "border-[#6B7280]"}`;
 
 const EditProfileForm = ({ user }: { user: User }) => {
+  const { t } = useTranslation();
+  const schema = useMemo(() => buildEditProfileSchema(t), [t]);
+
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<EditProfileData>({
-    resolver: zodResolver(EditProfileSchema),
+    resolver: zodResolver(schema),
     defaultValues: {
       email: user.email,
       displayName: user.displayName,
@@ -78,7 +85,7 @@ const EditProfileForm = ({ user }: { user: User }) => {
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
       <div className="flex flex-col">
         <label htmlFor="email" className="text-[#414844]">
-          Email
+          {t("modal.email")}
         </label>
         <input
           id="email"
@@ -95,7 +102,7 @@ const EditProfileForm = ({ user }: { user: User }) => {
 
       <div className="flex flex-col">
         <label htmlFor="displayName" className="text-[#414844]">
-          Display Name
+          {t("modal.displayName")}
         </label>
         <input
           id="displayName"
@@ -112,7 +119,7 @@ const EditProfileForm = ({ user }: { user: User }) => {
 
       <div className="flex flex-col">
         <label htmlFor="password" className="text-[#414844]">
-          Password (leave blank to keep current)
+          {t("modal.password")}
         </label>
         <input
           id="password"
@@ -129,7 +136,7 @@ const EditProfileForm = ({ user }: { user: User }) => {
 
       <div className="flex flex-col">
         <label htmlFor="confirmPassword" className="text-[#414844]">
-          Confirm Password
+          {t("modal.confirmPassword")}
         </label>
         <input
           id="confirmPassword"
@@ -146,7 +153,7 @@ const EditProfileForm = ({ user }: { user: User }) => {
 
       <div className="flex flex-col">
         <label htmlFor="oblast" className="text-[#414844]">
-          Oblast
+          {t("modal.oblast")}
         </label>
         <input
           id="oblast"
@@ -163,7 +170,7 @@ const EditProfileForm = ({ user }: { user: User }) => {
 
       <div className="flex flex-col">
         <label htmlFor="raion" className="text-[#414844]">
-          Raion (optional)
+          {t("modal.raion")}
         </label>
         <input
           id="raion"
@@ -175,7 +182,7 @@ const EditProfileForm = ({ user }: { user: User }) => {
 
       <div className="flex flex-col">
         <label htmlFor="village" className="text-[#414844]">
-          Village (optional)
+          {t("modal.village")}
         </label>
         <input
           id="village"
@@ -190,19 +197,22 @@ const EditProfileForm = ({ user }: { user: User }) => {
         disabled={isSubmitting}
         className="mt-2 p-2 bg-[#1F6D1A] text-white disabled:opacity-60"
       >
-        {isSubmitting ? "Saving..." : "Save Changes"}
+        {isSubmitting ? t("common.saving") : t("modal.saveChanges")}
       </Button>
     </form>
   );
 };
 
 const AddCredentialsForm = () => {
+  const { t } = useTranslation();
+  const schema = useMemo(() => buildAddCredentialsSchema(t), [t]);
+
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<AddCredentialsData>({
-    resolver: zodResolver(AddCredentialsSchema),
+    resolver: zodResolver(schema),
   });
 
   const onSubmit: SubmitHandler<AddCredentialsData> = async (data) => {
@@ -213,7 +223,7 @@ const AddCredentialsForm = () => {
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
       <div className="flex flex-col">
         <label htmlFor="title" className="text-[#414844]">
-          Title
+          {t("modal.title")}
         </label>
         <input
           id="title"
@@ -230,7 +240,7 @@ const AddCredentialsForm = () => {
 
       <div className="flex flex-col">
         <label htmlFor="date" className="text-[#414844]">
-          Date
+          {t("modal.date")}
         </label>
         <input
           id="date"
@@ -247,7 +257,7 @@ const AddCredentialsForm = () => {
 
       <div className="flex flex-col">
         <label htmlFor="url" className="text-[#414844]">
-          URL
+          {t("modal.url")}
         </label>
         <input
           id="url"
@@ -267,39 +277,44 @@ const AddCredentialsForm = () => {
         disabled={isSubmitting}
         className="mt-2 p-2 bg-[#1F6D1A] text-white disabled:opacity-60"
       >
-        {isSubmitting ? "Adding..." : "Add Credential"}
+        {isSubmitting ? t("modal.adding") : t("modal.addCredential")}
       </Button>
     </form>
   );
 };
 
-const ShareProfile = () => <div>Share</div>;
+const ShareProfile = () => {
+  const { t } = useTranslation();
+  return <div>{t("modal.share")}</div>;
+};
 
 const DeleteAccount = () => <div></div>;
 
 const VARIANT_REGISTRY: Record<
   ModalVariant,
-  { title: string; component: React.ComponentType<{ user: User }> }
+  { titleKey: string; component: React.ComponentType<{ user: User }> }
 > = {
   edit_profile: {
-    title: "Edit Profile",
+    titleKey: "modal.editProfile",
     component: EditProfileForm,
   },
   add_credentials: {
-    title: "Add Credentials",
+    titleKey: "modal.addCredentials",
     component: AddCredentialsForm,
   },
   share_profile: {
-    title: "Share Profile",
+    titleKey: "modal.shareProfile",
     component: ShareProfile,
   },
   delete_account: {
-    title: "Delete Account",
+    titleKey: "modal.deleteAccount",
     component: DeleteAccount,
   },
 };
 
 const Modal = ({ onClose, variant, user }: Props) => {
+  const { t } = useTranslation();
+
   if (!variant) return null;
 
   const currentConfig = VARIANT_REGISTRY[variant];
@@ -309,7 +324,7 @@ const Modal = ({ onClose, variant, user }: Props) => {
     <div className="fixed w-full h-full bg-black/50 top-0 left-0 z-999 flex items-center justify-center">
       <div className="bg-white p-6 min-w-100 max-h-[90vh] overflow-y-auto">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-lg font-semibold">{currentConfig.title}</h2>
+          <h2 className="text-lg font-semibold">{t(currentConfig.titleKey)}</h2>
           <X
             onClick={onClose}
             className="text-gray-500 hover:text-gray-800 cursor-pointer"

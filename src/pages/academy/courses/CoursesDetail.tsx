@@ -1,49 +1,30 @@
 import useCourse from "@/lib/service/useCourse";
-import { useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import {
   Award,
   ChevronDown,
   Clock4,
   Download,
-  ExternalLink,
-  FileDown,
-  FileQuestion,
-  FileText,
   Infinity as InfinityIcon,
   MonitorSmartphone,
   Play,
-  PlayCircle,
   Star,
   Video,
 } from "lucide-react";
 import { useState } from "react";
-import type Lesson from "@/types/lesson";
+import { useTranslation } from "react-i18next";
 import type Pricing from "@/types/pricing";
 import Button from "@/components/ui/button";
+import useEnrollment from "@/lib/hooks/useEnrollment";
+import { orderedSections, resumeLessonId } from "@/lib/utils/learning";
+import ProgressBar from "./components/ProgressBar";
+import { LESSON_ICONS, formatMinutes } from "./components/lessonMeta";
 
-const lessonIcons = {
-  video: PlayCircle,
-  article: FileText,
-  pdf: FileDown,
-  quiz: FileQuestion,
-  external_link: ExternalLink,
-};
-
-const lessonLabels = {
-  video: "Video",
-  article: "Reading",
-  pdf: "PDF",
-  quiz: "Quiz",
-  external_link: "Link",
-};
-
-const formatDuration = (lesson: Lesson) => {
-  if (lesson.type !== "video") return `${lesson.durationMinutes} min`;
-
-  const minutes = Math.floor(lesson.durationMinutes);
-  const seconds = Math.round((lesson.durationMinutes - minutes) * 60);
-  return `${minutes}:${String(seconds).padStart(2, "0")}`;
-};
+const LEVEL_STYLES = {
+  beginner: "bg-[#A4F792] text-[#012D1D]",
+  intermediate: "bg-[#FFDCC3] text-[#5E3000]",
+  advanced: "bg-[#5E3000] text-white",
+} as const;
 
 const currencySymbols = {
   KGS: "с",
@@ -55,13 +36,15 @@ const formatPrice = (amount: number, currency: Pricing["currency"]) =>
   `${currencySymbols[currency]}${Math.round(amount).toLocaleString()}`;
 
 const CoursesDetail = () => {
-  const { slug } = useParams();
-  const { course, error, isLoading } = useCourse(slug || "");
+  const { slug = "" } = useParams();
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+
+  const { course, error, isLoading } = useCourse(slug);
+  const { enrollment, isEnrolled, isMutating, enroll } = useEnrollment(slug);
   const [openSection, setOpenSection] = useState<string | null>(null);
 
-  const sections = [...(course?.sections || [])].sort(
-    (a, b) => a.order - b.order,
-  );
+  const sections = orderedSections(course);
   const activeSection = openSection ?? sections[0]?.id ?? null;
 
   const lessons = sections.flatMap((section) => section.lessons);
@@ -81,75 +64,125 @@ const CoursesDetail = () => {
     : 0;
   const finalPrice = listPrice * (1 - discountPercent / 100);
 
-  console.log(course);
-  console.log(error);
-  console.log(isLoading);
+  const handleEnroll = async () => {
+    if (!isEnrolled) {
+      const created = await enroll();
+      if (!created) return;
+    }
+    const target = resumeLessonId(course, enrollment);
+    navigate(
+      target
+        ? `/academy/courses/${slug}/learn/${target}`
+        : `/academy/courses/${slug}/learn`,
+    );
+  };
+
+  if (isLoading) {
+    return (
+      <div className="container mx-auto px-4 sm:px-6 lg:px-10 py-16">
+        <div className="h-96 animate-pulse rounded-xl bg-[#c1c8c280]" />
+      </div>
+    );
+  }
+
+  if (error || !course) {
+    return (
+      <div className="container mx-auto px-4 sm:px-6 lg:px-10 py-20 text-center">
+        <h1 className="text-2xl font-semibold text-[#191C1B]">
+          {t("learn.loadError")}
+        </h1>
+        {error && <p className="mt-2 text-[#414844]">{error}</p>}
+      </div>
+    );
+  }
 
   return (
-    <div className="container mx-auto flex gap-6 justify-between py-5 px-4 sm:px-6 lg:px-10 my-10">
-      <div className="flex flex-col gap-8 w-[70%]">
-        <div className="p-8 border border-[#C1C8C2] bg-[#FFFFFF] rounded-lg">
-          <header className="flex gap-2">
-            {course?.level === "beginner" && (
-              <div className="bg-[#A4F792] rounded-xl px-3 py-1 text-xs w-max capitalize">
-                {course.level}
-              </div>
-            )}
-            {course?.level === "intermediate" && (
-              <div className="bg-[#FFDCC3] rounded-xl px-3 py-1 text-xs w-max capitalize">
-                {course.level}
-              </div>
-            )}
-            {course?.level === "advanced" && (
-              <div className="bg-[#5E3000] rounded-xl px-3 py-1 text-xs w-max capitalize">
-                {course.level}
-              </div>
-            )}
+    <div className="container mx-auto flex flex-col lg:flex-row gap-6 justify-between py-5 px-4 sm:px-6 lg:px-10 my-10">
+      <div className="flex flex-col gap-8 w-full lg:w-[70%]">
+        <div className="p-6 sm:p-8 border border-[#C1C8C2] bg-[#FFFFFF] rounded-lg">
+          <header className="flex flex-wrap items-center gap-3">
+            <div
+              className={`rounded-xl px-3 py-1 text-xs w-max ${LEVEL_STYLES[course.level]}`}
+            >
+              {t(`course.level.${course.level}`)}
+            </div>
             <div className="text-[#414844] flex gap-1 items-center text-sm">
               <Clock4 size={17} />
               <p>
-                {course?.estimatedDurationHours}{" "}
-                {course?.estimatedDurationHours === 1 ? "Hour" : "Hours"}
+                {t("common.hourCount", {
+                  count: course.estimatedDurationHours,
+                })}
               </p>
             </div>
+            <div className="text-[#414844] text-sm">
+              {t("common.lessonCount", { count: lessons.length })}
+            </div>
           </header>
-          <h1 className="mt-4 text-5xl font-bold text-[#191C1B]">
-            {course?.title}
+
+          <h1 className="mt-4 text-3xl sm:text-4xl lg:text-5xl font-bold text-[#191C1B]">
+            {course.title}
           </h1>
           <p className="text-[#414844] text-lg my-4">
-            {course?.longDescription}
+            {course.longDescription}
           </p>
 
-          <div className="flex items-center gap-4">
+          <div className="flex flex-wrap items-center gap-4">
             <div className="flex items-center gap-2">
               <div className="flex text-[#1F6D1A]">
-                <Star size={18} />
-                <Star size={18} />
-                <Star size={18} />
-                <Star size={18} />
-                <Star size={18} />
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <Star
+                    key={i}
+                    size={18}
+                    fill={
+                      i < Math.round(course.rating) ? "currentColor" : "none"
+                    }
+                  />
+                ))}
               </div>
               <p className="text-[#191C1B] font-semibold text-sm">
-                {course?.rating} ({course?.reviewCount} reviews)
+                {t("course.reviews", {
+                  rating: course.rating,
+                  count: course.reviewCount,
+                })}
               </p>
             </div>
             <div className="text-[#C1C8C2] text-base">|</div>
             <p className="text-[#414844] text-sm">
-              {course?.enrollmentCount} students enrolled
+              {t("common.studentCount", { count: course.enrollmentCount })}
             </p>
           </div>
+
+          {isEnrolled && (
+            <div className="mt-6 rounded-lg border border-[#E1E6E1] bg-[#F7F9F7] p-5">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <p className="text-sm font-semibold text-[#012D1D]">
+                  {t("learn.percentComplete", {
+                    percent: enrollment?.progressPercent ?? 0,
+                  })}
+                </p>
+                <Link
+                  to={`/academy/courses/${slug}/learn`}
+                  className="text-sm font-semibold text-[#1F6D1A] hover:underline"
+                >
+                  {t("learn.overview")}
+                </Link>
+              </div>
+              <ProgressBar
+                percent={enrollment?.progressPercent ?? 0}
+                className="mt-3"
+              />
+            </div>
+          )}
         </div>
-        <div className="p-8 border border-[#C1C8C2] bg-[#FFFFFF] rounded-lg">
-          <h1 className="text-3xl font-semibold text-[#191C1B]">
-            Course Curriculum
-          </h1>
+
+        <div className="p-6 sm:p-8 border border-[#C1C8C2] bg-[#FFFFFF] rounded-lg">
+          <h2 className="text-2xl sm:text-3xl font-semibold text-[#191C1B]">
+            {t("course.curriculum")}
+          </h2>
 
           <div className="mt-6 flex flex-col gap-4">
             {sections.map((section, index) => {
               const isOpen = section.id === activeSection;
-              const lessons = [...section.lessons].sort(
-                (a, b) => a.order - b.order,
-              );
 
               return (
                 <div
@@ -160,7 +193,7 @@ const CoursesDetail = () => {
                     type="button"
                     aria-expanded={isOpen}
                     onClick={() => setOpenSection(isOpen ? null : section.id)}
-                    className={`w-full flex items-center gap-4 px-5 py-4 text-left ${
+                    className={`w-full flex items-center gap-4 px-5 py-4 text-left cursor-pointer ${
                       isOpen ? "bg-[#F4F7F4]" : "bg-[#FFFFFF]"
                     }`}
                   >
@@ -186,24 +219,48 @@ const CoursesDetail = () => {
 
                   {isOpen && (
                     <ul className="border-t border-[#C1C8C2] bg-[#FFFFFF]">
-                      {lessons.map((lesson) => {
-                        const Icon = lessonIcons[lesson.type];
+                      {section.lessons.map((lesson) => {
+                        const Icon = LESSON_ICONS[lesson.type];
+                        const openable = lesson.isFreePreview || isEnrolled;
 
-                        return (
-                          <li
-                            key={lesson.id}
-                            className="flex items-center gap-3 px-5 py-3 border-b border-[#E1E6E1] last:border-b-0"
-                          >
+                        const row = (
+                          <>
                             <Icon
                               size={18}
                               className="shrink-0 text-[#414844]"
                             />
                             <span className="flex-1 text-[#191C1B]">
-                              {lessonLabels[lesson.type]}: {lesson.title}
+                              {t(`course.lessonType.${lesson.type}`)}:{" "}
+                              {lesson.title}
                             </span>
+                            {lesson.isFreePreview && !isEnrolled && (
+                              <span className="shrink-0 rounded-sm bg-[#A4F792] px-2 py-0.5 text-[10px] font-semibold text-[#012D1D]">
+                                {t("course.freePreview")}
+                              </span>
+                            )}
                             <span className="shrink-0 text-sm text-[#414844]">
-                              {formatDuration(lesson)}
+                              {formatMinutes(lesson.durationMinutes)}
                             </span>
+                          </>
+                        );
+
+                        return (
+                          <li
+                            key={lesson.id}
+                            className="border-b border-[#E1E6E1] last:border-b-0"
+                          >
+                            {openable ? (
+                              <Link
+                                to={`/academy/courses/${slug}/learn/${lesson.id}`}
+                                className="flex items-center gap-3 px-5 py-3 hover:bg-[#F7F9F7]"
+                              >
+                                {row}
+                              </Link>
+                            ) : (
+                              <div className="flex items-center gap-3 px-5 py-3">
+                                {row}
+                              </div>
+                            )}
                           </li>
                         );
                       })}
@@ -215,28 +272,31 @@ const CoursesDetail = () => {
           </div>
         </div>
       </div>
-      <div className="flex flex-col gap-6 h-max sticky top-28 w-[30%]">
+
+      <div className="flex flex-col gap-6 h-max lg:sticky lg:top-28 w-full lg:w-[30%]">
         <div className="pb-6 border border-[#C1C8C2] bg-[#FFFFFF] rounded-lg overflow-hidden">
           <div className="relative">
             <img
-              src={course?.coverImage}
+              src={course.coverImage}
               alt=""
               className="w-full h-60 object-cover"
             />
             <button
               type="button"
-              aria-label="Play course preview"
+              aria-label={t("course.previewCourse")}
               className="absolute inset-0 m-auto flex items-center justify-center w-16 h-16 rounded-2xl bg-[#FFFFFF] shadow-lg cursor-pointer transition duration-100 active:scale-90"
             >
               <Play size={26} className="text-[#1F6D1A] ml-1" />
             </button>
           </div>
           <div className="p-6">
-            {course?.pricing.model === "free" ? (
+            {course.pricing.model === "free" ? (
               <div className="flex items-center justify-between">
-                <p className="text-[#267320] text-3xl font-bold">Free</p>
+                <p className="text-[#267320] text-3xl font-bold">
+                  {t("course.free")}
+                </p>
                 <div className="text-[#267320] bg-[#A4F792] py-1 px-2 w-max font-semibold rounded-xs">
-                  100% OFF
+                  {t("course.fullDiscount")}
                 </div>
               </div>
             ) : (
@@ -253,55 +313,68 @@ const CoursesDetail = () => {
                 </div>
                 {discountPercent > 0 && (
                   <div className="text-[#267320] bg-[#A4F792] py-1 px-2 w-max font-semibold rounded-xs">
-                    {discountPercent}% OFF
+                    {t("course.offBadge", { percent: discountPercent })}
                   </div>
                 )}
               </div>
             )}
-            <Button className="w-full rounded-sm! mt-6">Enroll now</Button>
-            {course?.pricing.isRefundable && course.pricing.refundDays && (
+
+            <Button
+              className="w-full rounded-sm! mt-6"
+              onClick={handleEnroll}
+              disabled={isMutating}
+            >
+              {isMutating
+                ? t("course.enrolling")
+                : isEnrolled
+                  ? t("course.continueLearning")
+                  : t("course.enrollNow")}
+            </Button>
+
+            {course.pricing.isRefundable && course.pricing.refundDays && (
               <p className="mt-4 text-center text-sm text-[#414844]">
-                {course.pricing.refundDays}-day money-back guarantee
+                {t("course.moneyBack", { count: course.pricing.refundDays })}
               </p>
             )}
           </div>
         </div>
+
         <div className="p-6 border border-[#C1C8C2] bg-[#FFFFFF] rounded-lg">
-          <h2 className="text-2xl font-bold text-[#191C1B]">Course Includes</h2>
+          <h2 className="text-2xl font-bold text-[#191C1B]">
+            {t("course.includes")}
+          </h2>
           <ul className="mt-5 flex flex-col gap-4">
             {videoHours > 0 && (
               <li className="flex items-center gap-3 text-[#191C1B]">
                 <Video size={20} className="shrink-0 text-[#414844]" />
-                <span>
-                  {videoHours} {videoHours === 1 ? "hour" : "hours"} on-demand
-                  video
-                </span>
+                <span>{t("course.onDemandVideo", { count: videoHours })}</span>
               </li>
             )}
             {downloadableCount > 0 && (
               <li className="flex items-center gap-3 text-[#191C1B]">
                 <Download size={20} className="shrink-0 text-[#414844]" />
                 <span>
-                  {downloadableCount} downloadable{" "}
-                  {downloadableCount === 1 ? "resource" : "resources"}
+                  {t("course.downloadableResources", {
+                    count: downloadableCount,
+                  })}
                 </span>
               </li>
             )}
             <li className="flex items-center gap-3 text-[#191C1B]">
               <InfinityIcon size={20} className="shrink-0 text-[#414844]" />
-              <span>Full lifetime access</span>
+              <span>{t("course.lifetimeAccess")}</span>
             </li>
             <li className="flex items-center gap-3 text-[#191C1B]">
               <MonitorSmartphone
                 size={20}
                 className="shrink-0 text-[#414844]"
               />
-              <span>Access on mobile and TV</span>
+              <span>{t("course.mobileAccess")}</span>
             </li>
-            {course?.certificateTemplate && (
+            {course.certificateTemplate && (
               <li className="flex items-center gap-3 text-[#191C1B]">
                 <Award size={20} className="shrink-0 text-[#414844]" />
-                <span>Official TES Certificate of Completion</span>
+                <span>{t("course.certificateIncluded")}</span>
               </li>
             )}
           </ul>

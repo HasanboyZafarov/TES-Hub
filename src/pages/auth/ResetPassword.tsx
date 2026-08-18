@@ -1,6 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
 import { z } from "zod";
 import Button from "../../components/ui/button";
@@ -12,31 +13,34 @@ interface LocationState {
   code: string;
 }
 
-const ResetSchema = z
-  .object({
-    password: z.string().min(8, "Password must be at least 8 characters."),
-    confirmPassword: z.string().min(1, "Confirm password is required."),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords don't match.",
-    path: ["confirmPassword"],
-  });
+const buildSchema = (t: (key: string) => string) =>
+  z
+    .object({
+      password: z.string().min(8, t("auth.errors.passwordMin")),
+      confirmPassword: z.string().min(1, t("auth.errors.confirmRequired")),
+    })
+    .refine((data) => data.password === data.confirmPassword, {
+      message: t("auth.errors.passwordMismatch"),
+      path: ["confirmPassword"],
+    });
 
-type SchemaProps = z.infer<typeof ResetSchema>;
+type SchemaProps = z.infer<ReturnType<typeof buildSchema>>;
 
 const ResetPassword = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const state = location.state as LocationState | null;
   const [serverError, setServerError] = useState("");
   const [success, setSuccess] = useState(false);
+  const schema = useMemo(() => buildSchema(t), [t]);
 
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<SchemaProps>({
-    resolver: zodResolver(ResetSchema),
+    resolver: zodResolver(schema),
   });
 
   const onSubmit: SubmitHandler<SchemaProps> = async (data) => {
@@ -50,30 +54,30 @@ const ResetPassword = () => {
       setSuccess(true);
       setTimeout(() => navigate("/auth"), 2000);
     } catch (err: any) {
-      setServerError(
-        err.response?.data?.message || "Reset failed. Please try again.",
-      );
+      setServerError(err.response?.data?.message || t("auth.reset.failed"));
     }
   };
 
   return (
     <AuthShell>
-      <h2 className="text-[#012D1D] font-bold text-4xl">New Password</h2>
+      <h2 className="text-[#012D1D] font-bold text-4xl">
+        {t("auth.reset.title")}
+      </h2>
       <p className="text-[#414844] text-base mt-3">
-        Choose a strong password for your account.
+        {t("auth.reset.subtitle")}
       </p>
 
       {success ? (
         <div className="mt-8 p-4 bg-[#E8F5E2] border border-[#1F6D1A] rounded-sm">
           <p className="text-[#1F6D1A] font-semibold">
-            Password reset successful! Redirecting to login...
+            {t("auth.reset.success")}
           </p>
         </div>
       ) : (
         <form onSubmit={handleSubmit(onSubmit)} className="mt-8">
           <div className="flex flex-col">
             <label htmlFor="password" className="text-[#414844]">
-              New Password
+              {t("auth.reset.newPassword")}
             </label>
             <input
               id="password"
@@ -93,7 +97,7 @@ const ResetPassword = () => {
 
           <div className="flex flex-col mt-5">
             <label htmlFor="confirmPassword" className="text-[#414844]">
-              Confirm New Password
+              {t("auth.reset.confirmNewPassword")}
             </label>
             <input
               id="confirmPassword"
@@ -121,7 +125,7 @@ const ResetPassword = () => {
             variant="filled"
             disabled={isSubmitting}
           >
-            {isSubmitting ? "Resetting..." : "Reset Password"}
+            {isSubmitting ? t("auth.reset.resetting") : t("auth.reset.submit")}
           </Button>
         </form>
       )}

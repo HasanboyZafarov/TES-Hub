@@ -1,6 +1,7 @@
 import { ChevronDownIcon } from "lucide-react";
 import { DropdownMenu } from "radix-ui";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import ReactQuill from "react-quill-new";
 import "react-quill-new/dist/quill.snow.css";
 
@@ -14,11 +15,11 @@ interface Props {
 
 type HeaderLevel = false | 1 | 2 | 3;
 
-const BLOCK_OPTIONS: { label: string; value: HeaderLevel }[] = [
-  { label: "Normal Text", value: false },
-  { label: "Heading 1", value: 1 },
-  { label: "Heading 2", value: 2 },
-  { label: "Heading 3", value: 3 },
+const BLOCK_OPTIONS: { labelKey: string; value: HeaderLevel }[] = [
+  { labelKey: "editor.normalText", value: false },
+  { labelKey: "editor.heading1", value: 1 },
+  { labelKey: "editor.heading2", value: 2 },
+  { labelKey: "editor.heading3", value: 3 },
 ];
 
 function ToolbarDivider() {
@@ -32,6 +33,7 @@ export default function Editor({
   error,
   className,
 }: Props) {
+  const { t } = useTranslation();
   const quillRef = useRef<ReactQuill>(null);
   const [blockFormat, setBlockFormat] = useState<HeaderLevel>(false);
 
@@ -72,9 +74,9 @@ export default function Editor({
     editor.focus();
   };
 
-  const currentBlockLabel =
-    BLOCK_OPTIONS.find((option) => option.value === blockFormat)?.label ??
-    "Normal";
+  const currentBlockKey =
+    BLOCK_OPTIONS.find((option) => option.value === blockFormat)?.labelKey ??
+    "editor.normalText";
 
   return (
     <div
@@ -124,7 +126,7 @@ export default function Editor({
         <DropdownMenu.Root>
           <DropdownMenu.Trigger asChild>
             <button type="button" className="w-auto! gap-1! px-3! font-medium!">
-              {currentBlockLabel}
+              {t(currentBlockKey)}
               <ChevronDownIcon className="size-4" />
             </button>
           </DropdownMenu.Trigger>
@@ -136,7 +138,7 @@ export default function Editor({
             >
               {BLOCK_OPTIONS.map((option) => (
                 <DropdownMenu.Item
-                  key={option.label}
+                  key={option.labelKey}
                   onSelect={() => applyBlockFormat(option.value)}
                   className={`cursor-pointer rounded px-3 py-2 text-sm outline-none hover:bg-accent ${
                     blockFormat === option.value
@@ -144,7 +146,7 @@ export default function Editor({
                       : "text-muted-foreground"
                   }`}
                 >
-                  {option.label}
+                  {t(option.labelKey)}
                 </DropdownMenu.Item>
               ))}
             </DropdownMenu.Content>
@@ -174,7 +176,7 @@ export default function Editor({
         value={value}
         onChange={onChange}
         modules={modules}
-        placeholder={placeholder ?? "Write your article..."}
+        placeholder={placeholder ?? t("editor.placeholder")}
       />
 
       {error && (

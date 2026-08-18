@@ -6,3 +6,7 @@ export { default as sessions } from "./sessions";
 export { default as articles } from "./articles";
 export { default as comments } from "./comments";
 export { default as flags, getVisibleFlags } from "./flags";
+export { default as quizzes, findQuizById } from "./quizzes";
+export { default as enrollments, findEnrollment } from "./enrollments";
+export { default as certificates, findCertificateByCode } from "./certificates";
+export { default as resources } from "./resources";

@@ -1,6 +1,7 @@
 import SearchInput from "@/components/ui/searchInput";
 import useArticles from "@/lib/hooks/useArticles";
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 
 import {
@@ -14,6 +15,7 @@ import {
 const PAGE_SIZE = 6;
 
 const AcademyArticles = () => {
+  const { t } = useTranslation();
   const { published, error, isLoading } = useArticles();
 
   const [search, setSearch] = useState<string>("");
@@ -59,7 +61,9 @@ const AcademyArticles = () => {
   const navigate = useNavigate();
 
   function formatStatus(status: string): string {
-    return status.replace(/-/g, " ").replace(/^./, (char) => char.toUpperCase());
+    return status
+      .replace(/-/g, " ")
+      .replace(/^./, (char) => char.toUpperCase());
   }
 
   function toHashtag(tag: string): string {
@@ -83,7 +87,7 @@ const AcademyArticles = () => {
     return (
       <div className="container mx-auto px-4 sm:px-6 lg:px-10 pt-5">
         <h1 className="text-[#191C1B] text-3xl font-semibold">
-          Error occurred: {error}
+          {t("articles.errorOccurred", { error })}
         </h1>
       </div>
     );
@@ -94,12 +98,9 @@ const AcademyArticles = () => {
         <header className="mb-10 flex flex-col md:flex-row md:justify-between md:items-start gap-6">
           <div>
             <h1 className="text-[#012D1D] text-3xl sm:text-4xl lg:text-5xl font-bold">
-              Academy Articles
+              {t("articles.title")}
             </h1>
-            <h3 className="mt-3">
-              Explore articles bridging traditional wisdom with modern
-              agricultural science.
-            </h3>
+            <h3 className="mt-3">{t("articles.subtitle")}</h3>
           </div>
           <div className="w-full md:w-auto md:min-w-70">
             <SearchInput
@@ -107,7 +108,7 @@ const AcademyArticles = () => {
                 setSearch(e);
                 setPage(1);
               }}
-              placeholder="Search articles..."
+              placeholder={t("articles.searchPlaceholder")}
             />
           </div>
         </header>
@@ -122,7 +123,7 @@ const AcademyArticles = () => {
                 }}
                 className={`${tab === "latest" ? "text-[#012D1D] border-b-3 border-[#012D1D] " : "text-[#414844] border-none"} text-sm font-semibold pb-1 cursor-pointer`}
               >
-                Latest
+                {t("articles.latest")}
               </button>
               <button
                 onClick={() => {
@@ -131,7 +132,7 @@ const AcademyArticles = () => {
                 }}
                 className={`${tab === "popular" ? "text-[#012D1D] border-b-3 border-[#012D1D] " : "text-[#414844] border-none"} text-sm font-semibold pb-1 cursor-pointer`}
               >
-                Popular
+                {t("articles.popular")}
               </button>
             </div>
 
@@ -160,7 +161,7 @@ const AcademyArticles = () => {
               ))}
 
             {!isLoading && pageItems.length === 0 && (
-              <p className="text-[#414844] mt-6">No articles found.</p>
+              <p className="text-[#414844] mt-6">{t("articles.empty")}</p>
             )}
 
             {!isLoading &&
@@ -205,12 +206,16 @@ const AcademyArticles = () => {
                       </div>
                       <div className="flex items-center gap-1 text-[#414844] text-sm">
                         <MessageSquare size={18} />
-                        <p>{formatNumbers(article.stats.comments)} comments</p>
+                        <p>
+                          {t("articles.commentCount", {
+                            count: formatNumbers(article.stats.comments),
+                          })}
+                        </p>
                       </div>
                     </div>
                     <button
                       type="button"
-                      aria-label="Save article"
+                      aria-label={t("articles.saveArticle")}
                       onClick={(e) => e.stopPropagation()}
                       className="cursor-pointer"
                     >
@@ -255,11 +260,13 @@ const AcademyArticles = () => {
           <aside className="w-full lg:w-[25%]">
             <div className="p-6 rounded-xl border border-[#C1C8C2] mt-6">
               <h3 className="text-2xl text-[#012D1D] font-semibold">
-                Trending Topics
+                {t("articles.trendingTopics")}
               </h3>
 
               {trending.length === 0 && (
-                <p className="text-[#414844] text-sm mt-4">No topics yet.</p>
+                <p className="text-[#414844] text-sm mt-4">
+                  {t("articles.noTopics")}
+                </p>
               )}
 
               {trending.map(({ tag, count }) => (
@@ -276,7 +283,7 @@ const AcademyArticles = () => {
                     {toHashtag(tag)}
                   </p>
                   <p className="text-[#414844] text-xs">
-                    {count} {count === 1 ? "post" : "posts"}
+                    {t("community.widgets.postCount", { count })}
                   </p>
                 </div>
               ))}

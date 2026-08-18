@@ -2,6 +2,8 @@
 
 import { Download } from "lucide-react";
 
+import { useTranslation } from "react-i18next";
+
 import { cn } from "@/lib/utils";
 
 import {
@@ -43,6 +45,8 @@ const LogoBrandDownload = ({
   files,
   className,
 }: LogoBrandDownloadProps) => {
+  const { t } = useTranslation();
+
   const handleDownload = async (file: LogoBrandDownloadProps["files"][0]) => {
     try {
       const response = await fetch(file.path);
@@ -75,7 +79,7 @@ const LogoBrandDownload = ({
             className="cursor-pointer"
           >
             <Download className="mr-2 h-4 w-4" />
-            Download {file.format.toUpperCase()}
+            {t("common.download")} {file.format.toUpperCase()}
           </ContextMenuItem>
         ))}
       </ContextMenuContent>

@@ -5,7 +5,7 @@ import useCourses from "@/lib/hooks/useCourses";
 import { usePermissions } from "@/lib/hooks/usePermissions";
 import { useUser } from "@/lib/hooks/useUser";
 import { deleteCourse, setCourseStatus } from "@/lib/service/coursesApi";
-import CATEGORIES, { type Category } from "@/types/category";
+import CATEGORIES, { CATEGORY_KEYS, type Category } from "@/types/category";
 import type Course from "@/types/course";
 import status, { type EntityStatus } from "@/types/status";
 import {
@@ -27,8 +27,9 @@ import {
   X,
 } from "lucide-react";
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import { formatDuration, LEVEL_LABELS, totalLessons } from "./courseDraft";
+import { formatDuration, LEVEL_KEYS, totalLessons } from "./courseDraft";
 
 const PAGE_SIZE = 8;
 
@@ -73,6 +74,7 @@ const StatCard = ({
 );
 
 const StatCards = ({ courses }: { courses: Course[] }) => {
+  const { t } = useTranslation();
   // Read the clock once, outside render, so the stats stay a pure derivation.
   const [thirtyDaysAgo] = useState(() => Date.now() - 30 * 24 * 60 * 60 * 1000);
 
@@ -101,20 +103,24 @@ const StatCards = ({ courses }: { courses: Course[] }) => {
   return (
     <div className="flex flex-col md:flex-row gap-6 mt-8">
       <StatCard
-        label="Total Courses"
+        label={t("manage.courses.totalCourses")}
         value={String(stats.total)}
-        hint={`+${stats.createdRecently} from last month`}
+        hint={t("manage.courses.fromLastMonth", {
+          count: stats.createdRecently,
+        })}
         hintIcon={TrendingUp}
         icon={BookOpen}
         iconClass="bg-[#DCFCE7] text-[#15803D]"
       />
       <StatCard
-        label="Total Enrollments"
+        label={t("manage.courses.totalEnrollments")}
         value={stats.enrollments.toLocaleString()}
         hint={
           stats.rating
-            ? `${stats.rating.toFixed(1)} average rating`
-            : "No ratings yet"
+            ? t("manage.courses.averageRating", {
+                rating: stats.rating.toFixed(1),
+              })
+            : t("manage.courses.noRatings")
         }
         hintIcon={Star}
         hintClass="text-[#414844]"
@@ -122,12 +128,14 @@ const StatCards = ({ courses }: { courses: Course[] }) => {
         iconClass="bg-[#DCFCE7] text-[#15803D]"
       />
       <StatCard
-        label="Awaiting Review"
+        label={t("manage.courses.awaitingReview")}
         value={String(stats.awaiting.length)}
         hint={
           stats.awaiting.length
-            ? `Next: ${stats.awaiting[0].title}`
-            : "Nothing in the review queue"
+            ? t("manage.courses.nextInQueue", {
+                title: stats.awaiting[0].title,
+              })
+            : t("manage.courses.queueEmpty")
         }
         hintIcon={Clock}
         hintClass="text-[#B45309]"
@@ -157,9 +165,7 @@ const AdvancedFilters = ({
   categoryFilter,
   onCategory,
 }: FiltersProps) => {
-  function formatStatus(s: string) {
-    return s.replace(/_/g, " ").replace(/^./, (c) => c.toUpperCase());
-  }
+  const { t } = useTranslation();
 
   return (
     <div className="flex flex-col lg:flex-row gap-3 px-6 pb-5 border-b border-[#E5E7EB]">
@@ -170,7 +176,7 @@ const AdvancedFilters = ({
           onChange={(e) => onSearch(e.target.value)}
           type="text"
           className="outline-none w-full text-sm"
-          placeholder="Search courses"
+          placeholder={t("manage.courses.searchPlaceholder")}
         />
       </div>
       <select
@@ -178,10 +184,10 @@ const AdvancedFilters = ({
         onChange={(e) => onStatus(e.target.value as EntityStatus | "all")}
         className="px-4 h-11 outline-none border border-[#C1C8C2] bg-white text-[#191C1B] rounded-md text-sm"
       >
-        <option value="all">All Status</option>
+        <option value="all">{t("manage.courses.allStatus")}</option>
         {status.map((s) => (
           <option key={s} value={s}>
-            {formatStatus(s)}
+            {t(`status.${s}`)}
           </option>
         ))}
       </select>
@@ -190,10 +196,10 @@ const AdvancedFilters = ({
         onChange={(e) => onCategory(e.target.value as Category | "all")}
         className="px-4 h-11 outline-none border border-[#C1C8C2] bg-white text-[#191C1B] rounded-md text-sm"
       >
-        <option value="all">All Categories</option>
+        <option value="all">{t("manage.courses.allCategories")}</option>
         {CATEGORIES.map((c) => (
           <option key={c} value={c}>
-            {c}
+            {t(CATEGORY_KEYS[c])}
           </option>
         ))}
       </select>
@@ -205,7 +211,7 @@ const AdvancedFilters = ({
 
 interface ActionDef {
   icon: typeof Send;
-  label: string;
+  labelKey: string;
   next: EntityStatus;
   className: string;
 }
@@ -214,7 +220,7 @@ const WORKFLOW: Partial<Record<EntityStatus, ActionDef[]>> = {
   draft: [
     {
       icon: Send,
-      label: "Submit for review",
+      labelKey: "manage.courses.workflow.submit",
       next: "pending_review",
       className: "text-[#2563EB] hover:bg-[#EFF6FF]",
     },
@@ -222,13 +228,13 @@ const WORKFLOW: Partial<Record<EntityStatus, ActionDef[]>> = {
   pending_review: [
     {
       icon: Check,
-      label: "Approve & publish",
+      labelKey: "manage.courses.workflow.approve",
       next: "published",
       className: "text-[#15803D] hover:bg-[#DCFCE7]",
     },
     {
       icon: X,
-      label: "Reject",
+      labelKey: "manage.courses.workflow.reject",
       next: "rejected",
       className: "text-[#DC2626] hover:bg-[#FEE2E2]",
     },
@@ -236,7 +242,7 @@ const WORKFLOW: Partial<Record<EntityStatus, ActionDef[]>> = {
   rejected: [
     {
       icon: Send,
-      label: "Resubmit for review",
+      labelKey: "manage.courses.workflow.resubmit",
       next: "pending_review",
       className: "text-[#2563EB] hover:bg-[#EFF6FF]",
     },
@@ -244,7 +250,7 @@ const WORKFLOW: Partial<Record<EntityStatus, ActionDef[]>> = {
   published: [
     {
       icon: Archive,
-      label: "Archive",
+      labelKey: "manage.courses.workflow.archive",
       next: "archived",
       className: "text-[#B45309] hover:bg-[#FEF3C7]",
     },
@@ -252,7 +258,7 @@ const WORKFLOW: Partial<Record<EntityStatus, ActionDef[]>> = {
   archived: [
     {
       icon: Send,
-      label: "Restore to review",
+      labelKey: "manage.courses.workflow.restore",
       next: "pending_review",
       className: "text-[#2563EB] hover:bg-[#EFF6FF]",
     },
@@ -307,6 +313,7 @@ const AuthorCell = ({ authorId }: { authorId: string }) => {
 };
 
 const StatusBadge = ({ status }: { status: EntityStatus }) => {
+  const { t } = useTranslation();
   const style = MODERATION_STYLES[status];
 
   return (
@@ -314,7 +321,7 @@ const StatusBadge = ({ status }: { status: EntityStatus }) => {
       className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ${style.bg} ${style.text}`}
     >
       <span className={`h-1.5 w-1.5 rounded-full ${style.dot}`} />
-      {style.label}
+      {t(style.labelKey)}
     </span>
   );
 };
@@ -327,6 +334,7 @@ interface RowProps {
 }
 
 const TableRow = ({ course, canModerate, onStatus, onDelete }: RowProps) => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const lessons = totalLessons(course.sections);
   const moderation = canModerate ? (WORKFLOW[course.status] ?? []) : [];
@@ -341,16 +349,16 @@ const TableRow = ({ course, canModerate, onStatus, onDelete }: RowProps) => {
           {course.title}
         </span>
         <span className="text-[#414844] text-xs mt-1 block">
-          {course.category} • {LEVEL_LABELS[course.level]}
+          {t(CATEGORY_KEYS[course.category])} • {t(LEVEL_KEYS[course.level])}
         </span>
       </td>
       <td className="px-6 py-5 align-top whitespace-nowrap">
         <AuthorCell authorId={course.authorId} />
       </td>
       <td className="px-6 py-5 align-top text-[#191C1B] text-sm whitespace-nowrap">
-        {course.sections.length} module{course.sections.length === 1 ? "" : "s"}
+        {t("manage.courses.moduleCount", { count: course.sections.length })}
         <span className="block text-[#414844] text-xs mt-0.5">
-          {lessons} lesson{lessons === 1 ? "" : "s"} •{" "}
+          {t("manage.courses.lessonCount", { count: lessons })} •{" "}
           {formatDuration(Math.round(course.estimatedDurationHours * 60))}
         </span>
       </td>
@@ -361,7 +369,7 @@ const TableRow = ({ course, canModerate, onStatus, onDelete }: RowProps) => {
         {course.enrollmentCount.toLocaleString()}
         <span className="block text-[#414844] text-xs mt-0.5">
           {course.pricing.model === "free"
-            ? "Free"
+            ? t("course.free")
             : `${course.pricing.currency} ${course.pricing.amount ?? 0}`}
         </span>
       </td>
@@ -369,13 +377,13 @@ const TableRow = ({ course, canModerate, onStatus, onDelete }: RowProps) => {
         <div className="flex items-center gap-1">
           <IconButton
             icon={Pencil}
-            label="Edit course"
+            label={t("manage.courses.editCourse")}
             className="text-[#414844] hover:bg-[#F2F4F2]"
             onClick={() => navigate(`/manage/courses/${course.slug}`)}
           />
           <IconButton
             icon={Eye}
-            label="View public page"
+            label={t("manage.courses.viewPublic")}
             className="text-[#414844] hover:bg-[#F2F4F2]"
             onClick={() => navigate(`/academy/courses/${course.slug}`)}
           />
@@ -383,14 +391,14 @@ const TableRow = ({ course, canModerate, onStatus, onDelete }: RowProps) => {
             <IconButton
               key={a.next}
               icon={a.icon}
-              label={a.label}
+              label={t(a.labelKey)}
               className={a.className}
               onClick={() => onStatus(course, a.next)}
             />
           ))}
           <IconButton
             icon={Trash2}
-            label="Delete course"
+            label={t("manage.courses.deleteCourse")}
             className="text-[#DC2626] hover:bg-[#FEE2E2]"
             onClick={() => onDelete(course)}
           />
@@ -409,6 +417,7 @@ interface PaginationProps {
 }
 
 const Pagination = ({ page, totalPages, onPage }: PaginationProps) => {
+  const { t } = useTranslation();
   const pages: (number | "...")[] = [];
   for (let i = 1; i <= totalPages; i++) {
     if (i <= 3 || i === totalPages || Math.abs(i - page) <= 1) {
@@ -425,7 +434,7 @@ const Pagination = ({ page, totalPages, onPage }: PaginationProps) => {
         disabled={page === 1}
         className="px-4 py-2 rounded-md border border-[#E5E7EB] text-sm text-[#414844] disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#F9FAFB]"
       >
-        Prev
+        {t("manage.pagination.prev")}
       </button>
       {pages.map((p, i) =>
         p === "..." ? (
@@ -451,7 +460,7 @@ const Pagination = ({ page, totalPages, onPage }: PaginationProps) => {
         disabled={page === totalPages}
         className="px-4 py-2 rounded-md border border-[#E5E7EB] text-sm text-[#414844] disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#F9FAFB]"
       >
-        Next
+        {t("manage.pagination.next")}
       </button>
     </div>
   );
@@ -460,6 +469,7 @@ const Pagination = ({ page, totalPages, onPage }: PaginationProps) => {
 /* ---------------------------------- page ---------------------------------- */
 
 const ManageCourses = () => {
+  const { t } = useTranslation();
   const { courses, isLoading, error } = useCourses();
   const { can } = usePermissions();
   const canModerate = can("moderateContent");
@@ -541,11 +551,13 @@ const ManageCourses = () => {
       <header className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
         <div>
           <nav className="text-sm text-[#6B7280]">
-            Content Management <span className="mx-1">/</span>
-            <span className="text-[#012D1D] font-semibold">Courses</span>
+            {t("manage.contentManagement")} <span className="mx-1">/</span>
+            <span className="text-[#012D1D] font-semibold">
+              {t("manage.courses.breadcrumb")}
+            </span>
           </nav>
           <h1 className="text-[#012D1D] text-4xl lg:text-5xl font-bold mt-2">
-            Course Management
+            {t("manage.courses.title")}
           </h1>
         </div>
         {canCreate && (
@@ -554,7 +566,7 @@ const ManageCourses = () => {
             onClick={() => navigate("/manage/courses/new")}
           >
             <CirclePlus size={20} />
-            Create New Course
+            {t("manage.courses.create")}
           </Button>
         )}
       </header>
@@ -563,13 +575,15 @@ const ManageCourses = () => {
 
       <div className="mt-8 border border-[#C1C8C2] rounded-xl overflow-hidden bg-white">
         <div className="flex flex-wrap items-center justify-between gap-3 px-6 py-5">
-          <h3 className="text-[#012D1D] text-lg font-semibold">All Courses</h3>
+          <h3 className="text-[#012D1D] text-lg font-semibold">
+            {t("manage.courses.allCourses")}
+          </h3>
           <button
             onClick={() => setShowFilters((v) => !v)}
             className="flex items-center gap-2 text-sm text-[#414844] hover:text-[#012D1D] cursor-pointer"
           >
             <ListFilter size={16} />
-            Advanced Filters
+            {t("manage.courses.advancedFilters")}
           </button>
         </div>
 
@@ -588,12 +602,16 @@ const ManageCourses = () => {
           <table className="w-full border-collapse min-w-[900px]">
             <thead className="bg-[#F9FAFB] border-y border-[#E5E7EB]">
               <tr className="text-left text-xs font-semibold tracking-wider text-[#6B7280]">
-                <th className="px-6 py-4">Course &amp; Category</th>
-                <th className="px-6 py-4">Expert / Author</th>
-                <th className="px-6 py-4">Curriculum</th>
-                <th className="px-6 py-4">Status</th>
-                <th className="px-6 py-4">Enrollments</th>
-                <th className="px-6 py-4">Actions</th>
+                <th className="px-6 py-4">{t("manage.courses.colCourse")}</th>
+                <th className="px-6 py-4">{t("manage.courses.colAuthor")}</th>
+                <th className="px-6 py-4">
+                  {t("manage.courses.colCurriculum")}
+                </th>
+                <th className="px-6 py-4">{t("manage.courses.colStatus")}</th>
+                <th className="px-6 py-4">
+                  {t("manage.courses.colEnrollments")}
+                </th>
+                <th className="px-6 py-4">{t("manage.courses.colActions")}</th>
               </tr>
             </thead>
             <tbody>
@@ -613,10 +631,10 @@ const ManageCourses = () => {
                     className="px-6 py-12 text-center text-[#6B7280] text-sm"
                   >
                     {isLoading
-                      ? "Loading courses…"
+                      ? t("manage.courses.loading")
                       : error
-                        ? `Could not load courses: ${error}`
-                        : "No courses match these filters."}
+                        ? t("manage.courses.loadError", { error })
+                        : t("manage.courses.noMatches")}
                   </td>
                 </tr>
               )}
@@ -627,11 +645,12 @@ const ManageCourses = () => {
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-6 py-4 border-t border-[#E5E7EB] bg-white">
           <p className="text-sm text-[#414844]">
             {filtered.length === 0
-              ? "No entries"
-              : `Showing ${start + 1}-${Math.min(
-                  start + PAGE_SIZE,
-                  filtered.length,
-                )} of ${filtered.length} courses`}
+              ? t("manage.courses.noEntries")
+              : t("manage.courses.showing", {
+                  from: start + 1,
+                  to: Math.min(start + PAGE_SIZE, filtered.length),
+                  total: filtered.length,
+                })}
           </p>
           <Pagination
             page={currentPage}
@@ -643,10 +662,12 @@ const ManageCourses = () => {
 
       <ConfirmDialog
         open={Boolean(pendingDelete)}
-        title="Delete course"
-        message={`"${pendingDelete?.title}" will be removed permanently, along with its curriculum. This cannot be undone.`}
-        confirmLabel="Delete course"
-        cancelLabel="Keep it"
+        title={t("manage.courses.deleteCourse")}
+        message={t("manage.courses.deleteMessage", {
+          title: pendingDelete?.title,
+        })}
+        confirmLabel={t("manage.courses.deleteCourse")}
+        cancelLabel={t("manage.courses.keepIt")}
         onConfirm={confirmDelete}
         onCancel={() => setPendingDelete(null)}
       />

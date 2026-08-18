@@ -1,4 +1,5 @@
 import { MapPin, Pencil, Share2, CirclePlus } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
 import Alert from "../../components/ui/alert";
 import Button from "../../components/ui/button";
@@ -13,12 +14,13 @@ import StyledContainer from "../../components/layout/StyledContainer";
 
 const Profile = () => {
   const { id } = useParams();
+  const { t } = useTranslation();
   const { user, loading } = useUser(id || "me");
   const [variant, setVariant] = useState<ModalVariant | null>(null);
 
-  if (!user) return <div>User not found</div>;
+  if (!user) return <div>{t("common.userNotFound")}</div>;
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <div>{t("common.loading")}</div>;
 
   const closeModal = () => setVariant(null);
 
@@ -52,7 +54,7 @@ const Profile = () => {
               Icon={Pencil}
               onClick={() => setVariant("edit_profile")}
             >
-              Edit Profile
+              {t("profile.editProfile")}
             </Button>
           )}
           <Button
@@ -61,7 +63,7 @@ const Profile = () => {
             Icon={Share2}
             onClick={() => setVariant("share_profile")}
           >
-            Share Profile
+            {t("profile.shareProfile")}
           </Button>
         </div>
       </div>
@@ -70,7 +72,9 @@ const Profile = () => {
         <div className="w-full">
           <div className="outline-1 p-5 md:p-8 h-fit py-5 md:py-7 rounded-lg w-full outline-[#E2E8F0] bg-[#FFFFFF]">
             <h1 className="text-xl md:text-2xl font-semibold text-[#012D1D]">
-              {id == "me" ? "My Activities" : `${user.displayName} Activities`}
+              {id == "me"
+                ? t("profile.myActivities")
+                : t("profile.userActivities", { name: user.displayName })}
             </h1>
             {user.stats.postsPublished.map((post) => (
               <PostsPublished key={post.id} {...post} />
@@ -81,7 +85,7 @@ const Profile = () => {
         <div className="flex flex-col gap-5">
           <div className="outline-1 p-5 md:p-8 h-fit py-5 md:py-7 rounded-lg outline-[#E2E8F0] bg-[#FFFFFF]">
             <h1 className="text-xl md:text-2xl mb-5 font-semibold text-[#012D1D]">
-              Skills & Interests
+              {t("profile.skillsInterests")}
             </h1>
             <div className="flex flex-wrap gap-3">
               {user.interests.map((int, idx) => (
@@ -92,9 +96,11 @@ const Profile = () => {
 
           <div className="outline-1 p-5 md:p-8 h-fit py-5 md:py-7 rounded-lg outline-[#E2E8F0] bg-[#FFFFFF]">
             <h1 className="text-xl md:text-2xl flex items-center justify-between mb-5 font-semibold text-[#012D1D]">
-              Certificates
+              {t("profile.certificates")}
               <span className="text-[#1F6D1A] text-sm">
-                {user.stats.certificatesEarned.length} Earned
+                {t("profile.earned", {
+                  count: user.stats.certificatesEarned.length,
+                })}
               </span>
             </h1>
             <div className="flex flex-wrap gap-3">
@@ -109,7 +115,7 @@ const Profile = () => {
                 className="mt-5 gap-3 w-full border-dashed hover:border-solid border-[#717973] hover:border-[#012D1D] transition duration-100 active:scale-90"
                 onClick={() => setVariant("add_credentials")}
               >
-                Add Credentials
+                {t("profile.addCredentials")}
               </Button>
             )}
           </div>

@@ -10,12 +10,14 @@ import {
   MapPin,
 } from "lucide-react";
 import moment from "moment";
+import { useTranslation } from "react-i18next";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import Avatar from "../components/Avatar";
 import Discussion from "../components/Discussion";
 import PostActions from "../components/PostActions";
 
 const QuestionDetail = () => {
+  const { t } = useTranslation();
   const { slug } = useParams();
   const navigate = useNavigate();
 
@@ -37,17 +39,17 @@ const QuestionDetail = () => {
     return (
       <div className="container mx-auto px-4 sm:px-10 py-5 pt-12">
         <h1 className="text-[#191C1B] text-3xl font-semibold">
-          Question not found
+          {t("community.question.notFound")}
         </h1>
         <p className="text-[#414844] mt-2">
-          {error ?? "This question may have been removed or merged."}
+          {error ?? t("community.question.notFoundText")}
         </p>
         <button
           type="button"
           onClick={() => navigate("/community/questions")}
           className="border border-[#717973] mt-6 text-[#191C1B] py-2 px-5 text-sm rounded-xs cursor-pointer hover:shadow"
         >
-          Back to questions
+          {t("community.question.backToQuestions")}
         </button>
       </div>
     );
@@ -62,7 +64,7 @@ const QuestionDetail = () => {
         to="/community/questions"
         className="inline-flex items-center gap-1 text-[#414844] text-sm hover:text-[#012D1D]"
       >
-        <ChevronLeft size={16} /> Questions
+        <ChevronLeft size={16} /> {t("community.question.questions")}
       </Link>
 
       <div className="flex flex-col lg:flex-row gap-8 mt-4">
@@ -70,15 +72,19 @@ const QuestionDetail = () => {
           <div className="flex flex-wrap items-center gap-3 text-xs">
             {question.isSolved ? (
               <span className="flex items-center gap-1 text-[#267320] bg-[#E7F6E4] font-semibold py-1 px-2 rounded-full">
-                <CheckCircle2 size={13} /> Solved
+                <CheckCircle2 size={13} /> {t("community.question.solved")}
               </span>
             ) : (
               <span className="flex items-center gap-1 text-[#1E3A8A] bg-[#DBEAFE] font-semibold py-1 px-2 rounded-full">
-                <HelpCircle size={13} /> Open question
+                <HelpCircle size={13} /> {t("community.question.open")}
               </span>
             )}
             <span className="text-[#414844]">
-              Asked {moment(question.publishedAt ?? question.createdAt).fromNow()}
+              {t("community.question.asked", {
+                time: moment(
+                  question.publishedAt ?? question.createdAt,
+                ).fromNow(),
+              })}
             </span>
             {question.region?.oblast && (
               <span className="flex items-center gap-1 text-[#414844] ml-auto">
@@ -104,22 +110,31 @@ const QuestionDetail = () => {
               }
               className="flex items-center gap-3 group"
             >
-              <Avatar name={author?.displayName} src={author?.avatar} size={40} />
+              <Avatar
+                name={author?.displayName}
+                src={author?.avatar}
+                size={40}
+              />
               <span>
                 <span className="flex items-center gap-1 text-[#191C1B] font-semibold text-sm group-hover:underline">
-                  {author?.displayName ?? "Community member"}
+                  {author?.displayName ?? t("community.post.communityMember")}
                   {isVerified && (
                     <BadgeCheck size={15} className="text-[#1F6D1A]" />
                   )}
                 </span>
                 <span className="block text-[#414844] text-xs">
-                  Asked {moment(question.createdAt).format("LL")}
+                  {t("community.question.askedOn", {
+                    date: moment(question.createdAt).format("LL"),
+                  })}
                 </span>
               </span>
             </Link>
 
             <span className="flex items-center gap-1 text-[#414844] text-sm">
-              <Eye size={16} /> {formatCount(question.stats.views)} views
+              <Eye size={16} />{" "}
+              {t("community.question.views", {
+                count: formatCount(question.stats.views),
+              })}
             </span>
           </div>
 
@@ -149,7 +164,7 @@ const QuestionDetail = () => {
         <aside className="w-full lg:w-[30%]" id="answers">
           <Discussion
             contentId={question.id}
-            title="Answers"
+            title={t("community.discussion.answers")}
             variant="answers"
             className="lg:sticky lg:top-28"
           />

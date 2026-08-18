@@ -1,5 +1,6 @@
 import { ImagePlus } from "lucide-react";
 import { useRef } from "react";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   coverImage: File | null;
@@ -14,11 +15,14 @@ const CoverImage = ({
   existingUrl,
   error,
 }: Props) => {
+  const { t } = useTranslation();
   const inputRef = useRef<HTMLInputElement>(null);
 
   return (
     <div className="mt-8">
-      <h3 className="text-[#191C1B] text-sm font-semibold">Cover Image</h3>
+      <h3 className="text-[#191C1B] text-sm font-semibold">
+        {t("ui.coverImage")}
+      </h3>
       <input
         ref={inputRef}
         type="file"
@@ -35,7 +39,7 @@ const CoverImage = ({
         {!coverImage && existingUrl ? (
           <img
             src={existingUrl}
-            alt="Current cover"
+            alt={t("ui.currentCover")}
             className="w-full max-h-40 object-cover rounded-md"
           />
         ) : (
@@ -47,12 +51,14 @@ const CoverImage = ({
           {coverImage
             ? coverImage.name
             : existingUrl
-              ? "Click to replace"
-              : "Click to upload"}
+              ? t("ui.clickToReplace")
+              : t("ui.clickToUpload")}
         </h3>
-        <p className="text-[#414844] text-xs mt-1">PNG, JPG up to 5MB</p>
+        <p className="text-[#414844] text-xs mt-1">{t("ui.imageHint")}</p>
       </div>
-      {error && <span className="mt-2 text-red-500 text-sm block">{error}</span>}
+      {error && (
+        <span className="mt-2 text-red-500 text-sm block">{error}</span>
+      )}
     </div>
   );
 };
