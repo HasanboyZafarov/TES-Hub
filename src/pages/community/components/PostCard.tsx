@@ -50,14 +50,14 @@ const PostCard = ({ post }: Props) => {
       onClick={() => navigate(href)}
       className="p-6 rounded-xl border border-[#C1C8C2] bg-white hover:shadow-lg transition-all cursor-pointer"
     >
-      <div className="flex items-start justify-between gap-4">
-        <div className="flex items-center gap-3">
+      <div className="flex flex-wrap items-start justify-between gap-3 min-w-0">
+        <div className="flex items-center gap-3 min-w-0">
           <Avatar name={authorName} src={authorAvatar} size={40} />
           <div>
-            <div className="flex items-center gap-1 text-[#191C1B] text-sm font-semibold">
-              {authorName}
+            <div className="flex items-center gap-1 text-[#191C1B] text-sm font-semibold min-w-0">
+              <span className="truncate">{authorName}</span>
               {isVerified && (
-                <BadgeCheck size={15} className="text-[#1F6D1A]" />
+                <BadgeCheck size={15} className="text-[#1F6D1A] shrink-0" />
               )}
             </div>
             <p className="text-[#414844] text-xs">
@@ -67,7 +67,7 @@ const PostCard = ({ post }: Props) => {
           </div>
         </div>
 
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex flex-wrap items-center gap-2">
           {question ? (
             post.isSolved ? (
               <span className="flex items-center gap-1 text-[#267320] bg-[#E7F6E4] text-xs font-semibold py-1 px-2 rounded-full">

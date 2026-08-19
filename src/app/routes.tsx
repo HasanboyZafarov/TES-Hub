@@ -50,6 +50,8 @@ import Profile from "../pages/profile";
 
 import Manage from "../pages/manage";
 import ManageRoutes from "./ManageRoutes";
+import AdminRoutes from "./AdminRoutes";
+import Admin from "../pages/admin";
 import Articles from "@/pages/manage/articles/Articles";
 import ArticlesCRUD from "@/pages/manage/articles/ArticlesCRUD";
 
@@ -144,6 +146,13 @@ const PRIVATE_ROUTES = [
   },
 ];
 
+const ADMIN_ROUTES = [
+  {
+    element: <AdminRoutes />,
+    children: [{ path: "/admin", element: <Admin /> }],
+  },
+];
+
 const MANAGE_ROUTES = [
   {
     element: <ManageRoutes />,
@@ -171,6 +180,7 @@ const routes = createBrowserRouter([
       ...SESSION_ROUTES,
       ...PRIVATE_ROUTES,
       ...MANAGE_ROUTES,
+      ...ADMIN_ROUTES,
     ],
   },
   ...AUTH_ROUTES.map((route) => ({ ...route, errorElement: <RouteError /> })),

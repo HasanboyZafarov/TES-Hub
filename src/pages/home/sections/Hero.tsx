@@ -8,13 +8,17 @@ const Hero = () => {
   const { t } = useTranslation();
   return (
     <div
-      className={`flex items-center h-120 w-full bg-no-repeat bg-cover bg-center`}
+      className="flex min-h-[26rem] w-full items-center bg-cover bg-center bg-no-repeat py-12 sm:min-h-[30rem] lg:h-120 lg:py-0"
       style={{ backgroundImage: `url("${hero}")` }}
     >
-      <div className="container mx-auto px-10 flex flex-col gap-7">
-        <p className="text-base text-[#012D1D]">{t("home.hero.eyebrow")}</p>
-        <p className="text-base text-[#414844]">{t("home.hero.description")}</p>
-        <div className="flex gap-5">
+      <div className="container mx-auto flex flex-col gap-5 px-4 sm:gap-7 sm:px-6 lg:px-10">
+        <p className="max-w-xl text-base text-[#012D1D]">
+          {t("home.hero.eyebrow")}
+        </p>
+        <p className="max-w-xl text-base text-[#414844]">
+          {t("home.hero.description")}
+        </p>
+        <div className="flex flex-wrap gap-3 sm:gap-5">
           <Button onClick={() => navigate("/auth")}>
             {t("home.hero.signUp")}
           </Button>

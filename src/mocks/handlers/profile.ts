@@ -11,13 +11,17 @@ const fallbackUser = () => users[Math.floor(Math.random() * users.length)];
 export const profile_handlers = [
   http.patch(`${endPoint}/profile/me`, async ({ request }) => {
     const body = (await request.json()) as Partial<User>;
-    const base = fallbackUser();
+    // The mock backend has no session, so the client sends the id it is editing.
+    const base = (body.id && findUserById(body.id)) || fallbackUser();
 
     return HttpResponse.json<User>({
       ...base,
       username: body.username ?? base.username,
       displayName: body.displayName ?? base.displayName,
       bio: body.bio ?? base.bio,
+      avatar: body.avatar ?? base.avatar,
+      interests: body.interests ?? base.interests,
+      region: body.region ?? base.region,
       languages: (body.languages as User["languages"]) ?? base.languages,
     });
   }),

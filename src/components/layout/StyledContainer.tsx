@@ -10,7 +10,10 @@ const StyledContainer = ({ children, className }: Props) => {
     margin: 0 auto;
     max-width: 1440px;
     height: auto;
-    padding: 0 1rem;
+    /* Side padding only: a shorthand here would override any py-* class
+       callers pass through className. */
+    padding-left: 1rem;
+    padding-right: 1rem;
   `;
 
   return <Container className={className}>{children}</Container>;
