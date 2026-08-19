@@ -36,6 +36,7 @@ const DEFAULT_SECTIONS: FooterSection[] = [
   {
     key: "support",
     links: [
+      { key: "about", url: "/about" },
       { key: "contact", url: "/contact" },
       { key: "terms", url: "/terms-of-service" },
       { key: "privacy", url: "/privacy-policy" },

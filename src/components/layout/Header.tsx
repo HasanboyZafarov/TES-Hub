@@ -1,8 +1,17 @@
-import { Bell, Menu, X } from "lucide-react";
-import { useEffect, useState } from "react";
+import {
+  Bell,
+  LogOut,
+  Menu,
+  Settings,
+  ShieldCheck,
+  User as UserIcon,
+  X,
+} from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import useAuth from "../../lib/hooks/useAuth";
+import usePermissions from "../../lib/hooks/usePermissions";
 import { useAuthStore } from "../../store/authStore";
 import Button from "../ui/button";
 import LanguageSwitcher from "./LanguageSwitcher";
@@ -18,44 +27,100 @@ const NAVIGATION = [
 const Header = () => {
   const user = useAuth();
   const { clearAuth } = useAuthStore();
+  const { can } = usePermissions();
   const { t } = useTranslation();
 
   const [isOpen, setOpen] = useState(false);
-  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  const [isMenuOpen, setMenuOpen] = useState(false);
+  const [avatarFailed, setAvatarFailed] = useState(false);
+  const accountMenu = useRef<HTMLDivElement>(null);
 
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const handleResize = () => {
-      const width = window.innerWidth;
-      setWindowWidth(width);
-      if (width >= 1024) setOpen(false);
-    };
-    window.addEventListener("resize", handleResize);
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  }, []);
-
   const { pathname } = useLocation();
 
-  const baseStyles = "text-[#414844] font-semibold text-sm cursor-pointer";
+  // Close the mobile drawer once the viewport reaches the desktop breakpoint.
+  useEffect(() => {
+    const media = window.matchMedia("(min-width: 1024px)");
+    const handleChange = () => {
+      if (media.matches) setOpen(false);
+    };
+    media.addEventListener("change", handleChange);
+    return () => media.removeEventListener("change", handleChange);
+  }, []);
 
-  const sidebarStyles =
-    "fixed top-[90px] right-0 flex flex-col w-[60%] md:w-[50%] pt-8 h-screen gap-5 bg-[#F8FAF8] pl-10 transition-transform duration-300 z-999 border";
+  useEffect(() => {
+    if (!isMenuOpen) return;
+    const onClickOutside = (event: MouseEvent) => {
+      if (!accountMenu.current?.contains(event.target as Node))
+        setMenuOpen(false);
+    };
+    document.addEventListener("mousedown", onClickOutside);
+    return () => document.removeEventListener("mousedown", onClickOutside);
+  }, [isMenuOpen]);
+
+  const baseStyles = "text-[#414844] font-semibold text-sm cursor-pointer";
 
   const linkClass = (url: string) =>
     pathname.startsWith(url) ? `${baseStyles} opacity-80` : baseStyles;
 
+  const logOut = () => {
+    clearAuth();
+    setOpen(false);
+    setMenuOpen(false);
+    navigate("/");
+  };
+
+  const avatar =
+    user && user.avatar && !avatarFailed ? (
+      <img
+        src={user.avatar}
+        alt={t("nav.myProfile")}
+        className="h-9 w-9 shrink-0 rounded-full object-cover outline-2 outline-[#012D1D]"
+        onError={() => setAvatarFailed(true)}
+      />
+    ) : (
+      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#012D1D] font-semibold text-white">
+        {user?.displayName?.charAt(0) ?? "?"}
+      </span>
+    );
+
+  const accountLinks = [
+    {
+      key: "profile",
+      to: "/profile/me",
+      label: t("nav.myProfile"),
+      Icon: UserIcon,
+    },
+    {
+      key: "settings",
+      to: "/settings",
+      label: t("settings.title"),
+      Icon: Settings,
+    },
+  ];
+
+  // Staff-only entry; the route itself is guarded by AdminRoutes.
+  if (can("manageUsers")) {
+    accountLinks.push({
+      key: "admin",
+      to: "/admin",
+      label: t("admin.title"),
+      Icon: ShieldCheck,
+    });
+  }
+
   return (
-    <div className="fixed top-0 left-0 w-screen border-b bg-[#F8FAF8] z-999">
+    <header className="fixed top-0 left-0 w-full border-b bg-[#F8FAF8] z-999">
       <StyledContainer>
-        <div className="flex justify-between items-center h-22.5">
-          <Link to={"/"} className="text-2xl font-bold text-[#012D1D]">
+        <div className="flex h-22.5 items-center justify-between gap-2">
+          <Link
+            to={"/"}
+            className="shrink-0 text-xl font-bold text-[#012D1D] sm:text-2xl"
+          >
             TES Hub
           </Link>
 
-          <nav className="hidden gap-10 lg:flex">
+          <nav className="hidden gap-6 lg:flex xl:gap-10">
             {NAVIGATION.map(({ id, key, url }) => (
               <Link key={id} to={url} className={linkClass(url)}>
                 {t(`nav.${key}`)}
@@ -63,72 +128,137 @@ const Header = () => {
             ))}
           </nav>
 
-          {windowWidth < 1024 && (
-            <nav
-              className={`${sidebarStyles} ${isOpen ? "translate-x-0" : "translate-x-full"}`}
-            >
-              {NAVIGATION.map(({ id, key, url }) => (
-                <Link
-                  key={id}
-                  to={url}
-                  className={linkClass(url)}
-                  onClick={() => setOpen(false)}
-                >
-                  {t(`nav.${key}`)}
-                </Link>
-              ))}
-              {user && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    clearAuth();
-                    setOpen(false);
-                  }}
-                  className={`${baseStyles} text-left`}
-                >
-                  {t("common.logOut")}
-                </button>
-              )}
-            </nav>
-          )}
-
-          <div className="flex items-center justify-center gap-3 z-999">
+          <div className="flex shrink-0 items-center justify-center gap-2 sm:gap-3">
             <LanguageSwitcher />
 
-            <Link to={"/notifications"} aria-label={t("nav.notifications")}>
-              <Bell />
+            <Link
+              to={"/notifications"}
+              aria-label={t("nav.notifications")}
+              className="hidden shrink-0 sm:block"
+            >
+              <Bell size={22} />
             </Link>
 
             {user ? (
-              <img
-                src={user.avatar}
-                alt={t("nav.myProfile")}
-                className="w-9 rounded-full shadow-2xl shadow-black outline-2 cursor-pointer object-fill"
-                onClick={() => navigate(`/profile/me`)}
-              />
+              <div className="relative" ref={accountMenu}>
+                <button
+                  type="button"
+                  aria-haspopup="menu"
+                  aria-expanded={isMenuOpen}
+                  aria-label={t("nav.myProfile")}
+                  onClick={() => setMenuOpen((value) => !value)}
+                  className="flex cursor-pointer items-center rounded-full"
+                >
+                  {avatar}
+                </button>
+
+                {isMenuOpen && (
+                  <div
+                    role="menu"
+                    className="absolute right-0 top-full z-[1000] mt-2 w-52 overflow-hidden rounded-lg border border-[#C1C8C2] bg-white shadow-lg"
+                  >
+                    <p className="truncate border-b border-[#ECEEEC] px-4 py-3 text-sm font-semibold text-[#191C1B]">
+                      {user.displayName}
+                    </p>
+                    {accountLinks.map(({ key, to, label, Icon }) => (
+                      <Link
+                        key={key}
+                        to={to}
+                        role="menuitem"
+                        onClick={() => setMenuOpen(false)}
+                        className="flex items-center gap-2 px-4 py-2.5 text-sm text-[#414844] hover:bg-[#F2F4F2]"
+                      >
+                        <Icon size={16} /> {label}
+                      </Link>
+                    ))}
+                    <button
+                      type="button"
+                      role="menuitem"
+                      onClick={logOut}
+                      className="flex w-full cursor-pointer items-center gap-2 border-t border-[#ECEEEC] px-4 py-2.5 text-left text-sm font-semibold text-[#C1292E] hover:bg-[#F2F4F2]"
+                    >
+                      <LogOut size={16} /> {t("common.logOut")}
+                    </button>
+                  </div>
+                )}
+              </div>
             ) : (
-              <Button className="p-2" onClick={() => navigate("/auth")}>
+              <Button
+                className="px-3 py-2 text-sm whitespace-nowrap sm:px-5"
+                onClick={() => navigate("/auth")}
+              >
                 {t("common.signUp")}
               </Button>
             )}
 
-            {isOpen ? (
-              <X
-                size={30}
-                className="cursor-pointer block lg:hidden"
-                onClick={() => setOpen(!isOpen)}
-              />
-            ) : (
-              <Menu
-                size={30}
-                className="cursor-pointer block lg:hidden"
-                onClick={() => setOpen(!isOpen)}
-              />
-            )}
+            <button
+              type="button"
+              aria-label={t("nav.menu")}
+              aria-expanded={isOpen}
+              onClick={() => setOpen((value) => !value)}
+              className="cursor-pointer lg:hidden"
+            >
+              {isOpen ? <X size={28} /> : <Menu size={28} />}
+            </button>
           </div>
         </div>
       </StyledContainer>
-    </div>
+
+      {isOpen && (
+        <>
+          <div
+            className="fixed inset-0 top-22.5 z-998 bg-black/30 lg:hidden"
+            onClick={() => setOpen(false)}
+          />
+          <nav className="fixed top-22.5 right-0 bottom-0 z-999 flex w-64 max-w-[80%] flex-col gap-5 overflow-y-auto border-l bg-[#F8FAF8] px-6 pt-8 pb-10 lg:hidden">
+            {NAVIGATION.map(({ id, key, url }) => (
+              <Link
+                key={id}
+                to={url}
+                className={linkClass(url)}
+                onClick={() => setOpen(false)}
+              >
+                {t(`nav.${key}`)}
+              </Link>
+            ))}
+
+            <Link
+              to="/notifications"
+              className={`${baseStyles} sm:hidden`}
+              onClick={() => setOpen(false)}
+            >
+              {t("nav.notifications")}
+            </Link>
+
+            {user && (
+              <>
+                <Link
+                  to="/profile/me"
+                  className={baseStyles}
+                  onClick={() => setOpen(false)}
+                >
+                  {t("nav.myProfile")}
+                </Link>
+                <Link
+                  to="/settings"
+                  className={baseStyles}
+                  onClick={() => setOpen(false)}
+                >
+                  {t("settings.title")}
+                </Link>
+                <button
+                  type="button"
+                  onClick={logOut}
+                  className={`${baseStyles} text-left text-[#C1292E]`}
+                >
+                  {t("common.logOut")}
+                </button>
+              </>
+            )}
+          </nav>
+        </>
+      )}
+    </header>
   );
 };
 

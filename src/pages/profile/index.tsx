@@ -82,7 +82,7 @@ const Profile = () => {
           </div>
         </div>
 
-        <div className="flex flex-col gap-5">
+        <div className="flex flex-col gap-5 pb-10">
           <div className="outline-1 p-5 md:p-8 h-fit py-5 md:py-7 rounded-lg outline-[#E2E8F0] bg-[#FFFFFF]">
             <h1 className="text-xl md:text-2xl mb-5 font-semibold text-[#012D1D]">
               {t("profile.skillsInterests")}

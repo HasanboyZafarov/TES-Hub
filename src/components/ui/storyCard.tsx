@@ -15,11 +15,11 @@ const StoryCard = ({ story: s }: Props) => {
 
   return (
     <div
-      className="rounded-lg border border-[#C1C8C2] cursor-pointer hover:shadow-lg p-6 flex flex-col gap-4 bg-white transition-all delay-0 duration-200"
+      className="rounded-lg border border-[#C1C8C2] cursor-pointer hover:shadow-lg p-5 sm:p-6 flex flex-col gap-4 bg-white transition-all delay-0 duration-200 min-w-0"
       onClick={() => navigate(`/community/stories/${s.slug}`)}
     >
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
+      <div className="flex items-center justify-between gap-2 min-w-0">
+        <div className="flex items-center gap-3 min-w-0">
           {s.author.avatar && !avatarFailed ? (
             <img
               src={s.author.avatar}
@@ -32,29 +32,29 @@ const StoryCard = ({ story: s }: Props) => {
               {s.author.name.charAt(0)}
             </div>
           )}
-          <div>
-            <div className="flex items-center gap-1 text-[#191C1B] font-semibold">
-              {s.author.name}
+          <div className="min-w-0">
+            <div className="flex items-center gap-1 text-[#191C1B] font-semibold min-w-0">
+              <span className="truncate">{s.author.name}</span>
               {s.author.isVerified && (
-                <BadgeCheck size={16} className="text-[#1F6D1A]" />
+                <BadgeCheck size={16} className="text-[#1F6D1A] shrink-0" />
               )}
             </div>
             {s.region?.oblast && (
-              <p className="text-[#414844] text-xs">
+              <p className="text-[#414844] text-xs truncate">
                 {t("ui.oblast", { name: s.region.oblast })}
               </p>
             )}
           </div>
         </div>
         {s.isPremium && (
-          <div className="flex items-center gap-1 text-[#B45309] bg-[#FEF3E2] text-xs font-semibold py-1 px-2 rounded-full">
+          <div className="flex items-center gap-1 text-[#B45309] bg-[#FEF3E2] text-xs font-semibold py-1 px-2 rounded-full shrink-0 whitespace-nowrap">
             <Lock size={12} /> {t("ui.premium")}
           </div>
         )}
       </div>
 
       <div>
-        <h3 className="text-[#191C1B] text-base">{s.title}</h3>
+        <h3 className="text-[#191C1B] text-base break-words">{s.title}</h3>
         <p className="text-[#414844] text-sm mt-1">{s.excerpt}</p>
       </div>
 
