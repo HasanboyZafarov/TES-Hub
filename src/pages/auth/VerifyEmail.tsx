@@ -6,6 +6,7 @@ import axiosInstance from "../../lib/api/apiClient";
 import { useAuthStore } from "../../store/authStore";
 import type User from "../../types/user";
 import AuthShell from "./components/AuthShell";
+import { messageOf } from "@/lib/utils/errors";
 
 interface LocationState {
   flow: "signup" | "forgot";
@@ -96,8 +97,8 @@ const VerifyEmail = () => {
           state: { email: state?.email, code: fullCode },
         });
       }
-    } catch (err: any) {
-      setError(err.response?.data?.message || t("auth.verify.invalid"));
+    } catch (err) {
+      setError(messageOf(err, t("auth.verify.invalid")));
     } finally {
       setLoading(false);
     }
@@ -112,8 +113,8 @@ const VerifyEmail = () => {
           : "/auth/forgot-password";
       await axiosInstance.post(endpoint, { email: state?.email });
       setResendCooldown(60);
-    } catch (err: any) {
-      setError(err.response?.data?.message || t("auth.verify.resendFailed"));
+    } catch (err) {
+      setError(messageOf(err, t("auth.verify.resendFailed")));
     }
   };
 

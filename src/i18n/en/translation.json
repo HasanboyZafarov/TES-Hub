@@ -1056,7 +1056,103 @@
         "full": "Session full",
         "closed": "Registration closed",
         "guest": "Sign up to register",
-        "open": "Register Now"
+        "open": "Register Now",
+        "registered": "You're registered",
+        "completePayment": "Complete payment"
+      }
+    },
+    "spotsLeftShort_one": "{{count}} spot left",
+    "spotsLeftShort_other": "{{count}} spots left",
+    "register": {
+      "title": "Complete your registration",
+      "subtitle": "Confirm your details and we'll save your spot for this session.",
+      "backToSession": "Back to session",
+      "fullName": "Full name",
+      "email": "Email",
+      "phone": "Phone number",
+      "notes": "Anything the host should know",
+      "consent": "I agree that TES Hub may share my details with the session host and contact me about this session.",
+      "total": "Total",
+      "confirmSpot": "Confirm my spot",
+      "continueToPayment": "Continue to payment",
+      "submitting": "Saving your spot…",
+      "browseOthers": "Browse other sessions",
+      "errors": {
+        "fullName": "Please enter your full name.",
+        "email": "Please enter a valid email address.",
+        "phone": "Please enter a valid phone number.",
+        "notes": "Please keep this under 500 characters.",
+        "consent": "Please accept this to continue."
+      },
+      "blocked": {
+        "canceled": "The host canceled this session, so registration is closed.",
+        "ended": "This session has already finished.",
+        "closed": "Registration for this session has closed.",
+        "full": "Every spot for this session has been taken."
+      },
+      "toast": {
+        "successTitle": "You're registered for {{title}}",
+        "successBody": "We sent the details to your inbox.",
+        "heldTitle": "Spot held for you",
+        "heldBody": "Complete the payment to confirm your seat.",
+        "errorTitle": "Registration failed",
+        "errorBody": "Please check your details and try again."
+      }
+    },
+    "checkout": {
+      "title": "Payment",
+      "subtitle": "Your spot is held while you complete the payment.",
+      "paymentMethod": "Payment method",
+      "orderSummary": "Order summary",
+      "payNow": "Pay {{amount}}",
+      "processing": "Processing…",
+      "demoNotice": "This is a demo checkout — no card is charged and no real payment is taken.",
+      "methods": {
+        "card": {
+          "label": "Bank card",
+          "hint": "Visa, Mastercard or Elcart"
+        },
+        "elsom": {
+          "label": "Elsom wallet",
+          "hint": "Pay from your mobile wallet"
+        },
+        "invoice": {
+          "label": "Invoice",
+          "hint": "For organisations paying by transfer"
+        }
+      },
+      "toast": {
+        "successTitle": "Payment confirmed",
+        "successBody": "Your seat for {{title}} is confirmed.",
+        "errorTitle": "Payment failed",
+        "errorBody": "Nothing was charged. Please try again."
+      }
+    },
+    "confirmation": {
+      "title": "You're all set!",
+      "subtitle": "We sent a confirmation to {{email}}.",
+      "joinLink": "Open the joining link",
+      "reference": "Registration reference: {{id}}",
+      "whatNext": "What happens next",
+      "step1": "We'll remind you a day before the session starts.",
+      "step2": "Session materials unlock for registered attendees.",
+      "step3": "Updates from the host arrive in your notifications.",
+      "viewNotifications": "View notifications",
+      "browseMore": "Browse more sessions",
+      "cancelRegistration": "Cancel registration",
+      "cancelTitle": "Cancel your registration?",
+      "cancelText": "Your spot for {{title}} will be released and someone else can take it.",
+      "status": {
+        "free": "Confirmed",
+        "paid": "Paid",
+        "pending": "Awaiting payment",
+        "refunded": "Refunded"
+      },
+      "toast": {
+        "canceledTitle": "Registration canceled",
+        "canceledBody": "Your spot for {{title}} has been released.",
+        "cancelErrorTitle": "Could not cancel",
+        "cancelErrorBody": "Please try again in a moment."
       }
     }
   },
@@ -1556,6 +1652,28 @@
       "moduleTitleRequired": "Every module needs a title.",
       "moduleLessonRequired": "Every module needs at least one lesson.",
       "lessonTitleRequired": "Every lesson needs a title."
+    }
+  },
+  "notifications": {
+    "title": "Notifications",
+    "unread": "Unread",
+    "unreadCount_one": "{{count}} unread notification",
+    "unreadCount_other": "{{count}} unread notifications",
+    "allCaughtUp": "You're all caught up.",
+    "markRead": "Mark as read",
+    "markUnread": "Mark as unread",
+    "markAllRead": "Mark all as read",
+    "remove": "Remove notification",
+    "emptyTitle": "Nothing here yet",
+    "emptyText": "Replies, session updates and new courses will show up in this inbox.",
+    "browseSessions": "Browse sessions",
+    "filter": {
+      "all": "All",
+      "unread": "Unread",
+      "content": "Content",
+      "social": "Community",
+      "commerce": "Sessions",
+      "system": "System"
     }
   }
 }

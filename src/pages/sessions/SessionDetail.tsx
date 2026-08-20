@@ -1,12 +1,15 @@
 import { useUser } from "@/lib/hooks/useUser";
 import usePermissions from "@/lib/hooks/usePermissions";
 import useSession from "@/lib/service/useSession";
+import useSessionRegistration from "@/lib/hooks/useSessionRegistration";
 import {
   capacityPercent,
-  getLifecycle,
   MATERIAL_KIND_KEYS,
   priceLabel,
+  registrationBlock,
+  REGISTRATION_BLOCK_KEYS,
   SESSION_TYPE_KEYS,
+  spotsLeft as spotsLeftOf,
 } from "@/lib/utils/session";
 import type Session from "@/types/session";
 import type { SessionMaterial } from "@/types/session";
@@ -243,6 +246,7 @@ const SessionDetail = () => {
   const navigate = useNavigate();
   const { isGuest } = usePermissions();
   const { session, isLoading, error } = useSession(slug ?? "");
+  const { isRegistered, needsPayment } = useSessionRegistration(slug ?? "");
 
   if (isLoading) {
     return (
@@ -272,31 +276,44 @@ const SessionDetail = () => {
     );
   }
 
-  const lifecycle = getLifecycle(session);
   const percent = capacityPercent(session.registeredCount, session.capacity);
-  const isFull = percent >= 100;
-  const spotsLeft = Math.max(0, session.capacity - session.registeredCount);
-  const closed =
-    Boolean(session.isCanceled) ||
-    lifecycle === "completed" ||
-    (session.registrationClosesAt
-      ? new Date(session.registrationClosesAt).getTime() < Date.now()
-      : false);
+  const spotsLeft = spotsLeftOf(session);
 
-  const registerLabel = session.isCanceled
-    ? t("session.detail.register.canceled")
-    : lifecycle === "completed"
-      ? t("session.detail.register.ended")
-      : isFull
-        ? t("session.detail.register.full")
-        : closed
-          ? t("session.detail.register.closed")
-          : isGuest
-            ? t("session.detail.register.guest")
-            : t("session.detail.register.open");
+  // One shared guard for the button state and the API, so they can never
+  // disagree about whether a seat is still available.
+  const block = registrationBlock(session);
+  const isFull = block === "full";
 
-  const goRegister = () =>
-    navigate(isGuest ? "/auth" : `/sessions/${session.slug}/register`);
+  // An existing registration always wins: a registered user must still be able
+  // to reach their confirmation even once the session has filled up or closed.
+  const registerLabel = isRegistered
+    ? needsPayment
+      ? t("session.detail.register.completePayment")
+      : t("session.detail.register.registered")
+    : block
+      ? t(REGISTRATION_BLOCK_KEYS[block])
+      : isGuest
+        ? t("session.detail.register.guest")
+        : t("session.detail.register.open");
+
+  const registerDisabled = !isRegistered && Boolean(block);
+
+  const goRegister = () => {
+    if (isRegistered) {
+      navigate(
+        needsPayment
+          ? `/sessions/${session.slug}/checkout`
+          : `/sessions/${session.slug}/confirmation`,
+      );
+      return;
+    }
+
+    const target = `/sessions/${session.slug}/register`;
+    // Guests sign in first, then land back on the registration form.
+    navigate(
+      isGuest ? `/auth?next=${encodeURIComponent(target)}` : target,
+    );
+  };
 
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-10 pt-6 pb-20">
@@ -335,7 +352,7 @@ const SessionDetail = () => {
           <div className="flex flex-wrap gap-3 mt-6">
             <button
               onClick={goRegister}
-              disabled={closed || isFull}
+              disabled={registerDisabled}
               className="flex items-center gap-2 bg-[#012D1D] text-white px-6 py-3 rounded-md font-semibold cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed hover:opacity-90"
             >
               <UserPlus size={18} />
@@ -407,7 +424,7 @@ const SessionDetail = () => {
             </div>
             <button
               onClick={goRegister}
-              disabled={closed || isFull}
+              disabled={registerDisabled}
               className="w-full bg-[#1F7A4D] text-white py-3 rounded-md font-semibold mt-4 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed hover:opacity-90"
             >
               {registerLabel}

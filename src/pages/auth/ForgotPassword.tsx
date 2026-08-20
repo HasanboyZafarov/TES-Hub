@@ -7,6 +7,7 @@ import { z } from "zod";
 import Button from "../../components/ui/button";
 import axiosInstance from "../../lib/api/apiClient";
 import AuthShell from "./components/AuthShell";
+import { messageOf } from "@/lib/utils/errors";
 
 const buildSchema = (t: (key: string) => string) =>
   z.object({
@@ -36,8 +37,8 @@ const ForgotPassword = () => {
       navigate("/auth/verify-email", {
         state: { flow: "forgot", email: data.email },
       });
-    } catch (err: any) {
-      setServerError(err.response?.data?.message || t("auth.genericError"));
+    } catch (err) {
+      setServerError(messageOf(err, t("auth.genericError")));
     }
   };
 

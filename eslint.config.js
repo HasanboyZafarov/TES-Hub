@@ -18,5 +18,18 @@ export default defineConfig([
     languageOptions: {
       globals: globals.browser,
     },
+    rules: {
+      // `_`-prefixed names mark values that are intentionally discarded, such as
+      // stripping answer keys off a quiz via destructuring rest.
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          caughtErrorsIgnorePattern: '^_',
+          ignoreRestSiblings: true,
+        },
+      ],
+    },
   },
 ])

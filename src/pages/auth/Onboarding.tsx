@@ -10,6 +10,7 @@ import { useAuthStore } from "../../store/authStore";
 import type User from "../../types/user";
 import CATEGORIES, { CATEGORY_KEYS } from "../../types/category";
 import AuthShell from "./components/AuthShell";
+import { messageOf } from "@/lib/utils/errors";
 
 const OBLASTS = [
   "Bishkek",
@@ -98,10 +99,8 @@ const Onboarding = () => {
       });
       if (token) setAuth(token, res.data);
       navigate("/");
-    } catch (err: any) {
-      setServerError(
-        err.response?.data?.message || t("auth.onboarding.saveFailed"),
-      );
+    } catch (err) {
+      setServerError(messageOf(err, t("auth.onboarding.saveFailed")));
     }
   };
 
