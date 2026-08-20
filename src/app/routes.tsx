@@ -46,6 +46,7 @@ import SessionDetail from "../pages/sessions/SessionDetail";
 import SessionRegister from "../pages/sessions/SessionRegister";
 import SessionRegisterConfirmation from "../pages/sessions/SessionRegisterConfirmation";
 import TopicDetail from "../pages/community/topic/TopicDetail";
+import Notifications from "../pages/notifications";
 import Profile from "../pages/profile";
 
 import Manage from "../pages/manage";
@@ -142,6 +143,7 @@ const PRIVATE_ROUTES = [
     element: <PrivateRoutes />,
     children: [
       { path: "/settings", element: <Settings /> },
+      { path: "/notifications", element: <Notifications /> },
     ],
   },
 ];

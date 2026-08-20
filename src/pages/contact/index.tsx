@@ -8,6 +8,7 @@ import { z } from "zod";
 
 import Button from "../../components/ui/button";
 import axiosInstance from "../../lib/api/apiClient";
+import { messageOf } from "@/lib/utils/errors";
 
 const SUBJECTS = [
   "general",
@@ -76,8 +77,8 @@ const Contact = () => {
       await axiosInstance.post("/contact", data);
       reset();
       setIsSent(true);
-    } catch (err: any) {
-      setServerError(err.response?.data?.message || t("contact.genericError"));
+    } catch (err) {
+      setServerError(messageOf(err, t("contact.genericError")));
     }
   };
 

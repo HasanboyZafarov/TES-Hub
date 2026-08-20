@@ -11,8 +11,10 @@ import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import useAuth from "../../lib/hooks/useAuth";
+import useNotifications from "../../lib/hooks/useNotifications";
 import usePermissions from "../../lib/hooks/usePermissions";
 import { useAuthStore } from "../../store/authStore";
+import { useNotificationStore } from "../../store/notificationStore";
 import Button from "../ui/button";
 import LanguageSwitcher from "./LanguageSwitcher";
 import StyledContainer from "./StyledContainer";
@@ -29,6 +31,8 @@ const Header = () => {
   const { clearAuth } = useAuthStore();
   const { can } = usePermissions();
   const { t } = useTranslation();
+  const { unreadCount } = useNotifications();
+  const resetNotifications = useNotificationStore((state) => state.reset);
 
   const [isOpen, setOpen] = useState(false);
   const [isMenuOpen, setMenuOpen] = useState(false);
@@ -65,10 +69,14 @@ const Header = () => {
 
   const logOut = () => {
     clearAuth();
+    // The inbox is per-account: drop it so the next user never sees it.
+    resetNotifications();
     setOpen(false);
     setMenuOpen(false);
     navigate("/");
   };
+
+  const unreadLabel = unreadCount > 9 ? "9+" : String(unreadCount);
 
   const avatar =
     user && user.avatar && !avatarFailed ? (
@@ -131,13 +139,25 @@ const Header = () => {
           <div className="flex shrink-0 items-center justify-center gap-2 sm:gap-3">
             <LanguageSwitcher />
 
-            <Link
-              to={"/notifications"}
-              aria-label={t("nav.notifications")}
-              className="hidden shrink-0 sm:block"
-            >
-              <Bell size={22} />
-            </Link>
+            {/* The inbox is account-scoped, so it is only offered once signed in. */}
+            {user && (
+              <Link
+                to={"/notifications"}
+                aria-label={
+                  unreadCount > 0
+                    ? t("notifications.unreadCount", { count: unreadCount })
+                    : t("nav.notifications")
+                }
+                className="relative hidden shrink-0 sm:block"
+              >
+                <Bell size={22} />
+                {unreadCount > 0 && (
+                  <span className="absolute -top-1.5 -right-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#BA1A1A] px-1 text-[10px] font-bold text-white">
+                    {unreadLabel}
+                  </span>
+                )}
+              </Link>
+            )}
 
             {user ? (
               <div className="relative" ref={accountMenu}>
@@ -222,16 +242,20 @@ const Header = () => {
               </Link>
             ))}
 
-            <Link
-              to="/notifications"
-              className={`${baseStyles} sm:hidden`}
-              onClick={() => setOpen(false)}
-            >
-              {t("nav.notifications")}
-            </Link>
-
             {user && (
               <>
+                <Link
+                  to="/notifications"
+                  className={`${baseStyles} flex items-center gap-2 sm:hidden`}
+                  onClick={() => setOpen(false)}
+                >
+                  {t("nav.notifications")}
+                  {unreadCount > 0 && (
+                    <span className="flex h-4 min-w-4 items-center justify-center rounded-full bg-[#BA1A1A] px-1 text-[10px] font-bold text-white">
+                      {unreadLabel}
+                    </span>
+                  )}
+                </Link>
                 <Link
                   to="/profile/me"
                   className={baseStyles}

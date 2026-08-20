@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import axiosInstance from "../api/apiClient";
+import { messageOf } from "../utils/errors";
 import type { Status } from "@/types/status";
 
 const useData = <T extends Status>(route: string) => {
@@ -8,17 +9,28 @@ const useData = <T extends Status>(route: string) => {
   const [isLoading, setLoading] = useState(true);
 
   useEffect(() => {
+    let active = true;
+    setLoading(true);
+    setError(null);
+
     axiosInstance
       .get<T[]>(route)
-      .then((res) => setData(Array.isArray(res.data) ? res.data : []))
-      .catch((err) => {
-        if (err instanceof Error) {
-          setError(err.message);
-        } else {
-          setError("An unexpected error occurred.");
-        }
+      .then((res) => {
+        if (!active) return;
+        setData(Array.isArray(res.data) ? res.data : []);
       })
-      .finally(() => setLoading(false));
+      .catch((err) => {
+        if (!active) return;
+        setError(messageOf(err, "An unexpected error occurred."));
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+
+    // Stops a stale response for a previous route from landing in state.
+    return () => {
+      active = false;
+    };
   }, [route]);
 
   const published = data?.filter((d) => d.status === "published");

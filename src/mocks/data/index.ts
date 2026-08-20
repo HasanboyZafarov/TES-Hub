@@ -10,3 +10,13 @@ export { default as quizzes, findQuizById } from "./quizzes";
 export { default as enrollments, findEnrollment } from "./enrollments";
 export { default as certificates, findCertificateByCode } from "./certificates";
 export { default as resources } from "./resources";
+export {
+  default as notifications,
+  notificationsFor,
+  addNotification,
+} from "./notifications";
+export {
+  default as registrations,
+  findRegistration,
+  registrationsFor,
+} from "./registrations";

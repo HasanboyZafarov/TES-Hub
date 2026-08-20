@@ -43,6 +43,12 @@ const LANGUAGES = ["ru", "ky", "en"] as const;
 const SORTS = ["newest", "popular", "title"] as const;
 type Sort = (typeof SORTS)[number];
 
+const SORT_LABEL_KEYS: Record<Sort, string> = {
+  newest: "resources.sortNewest",
+  popular: "resources.sortPopular",
+  title: "resources.sortTitle",
+};
+
 const selectClass =
   "rounded-lg border border-[#C1C8C2] bg-white px-3 py-2 text-sm text-[#191C1B] outline-none focus:border-[#1F6D1A] cursor-pointer";
 
@@ -213,9 +219,11 @@ const Resources = () => {
               value={sort}
               onChange={(e) => setSort(e.target.value as Sort)}
             >
-              <option value="newest">{t("resources.sortNewest")}</option>
-              <option value="popular">{t("resources.sortPopular")}</option>
-              <option value="title">{t("resources.sortTitle")}</option>
+              {SORTS.map((value) => (
+                <option key={value} value={value}>
+                  {t(SORT_LABEL_KEYS[value])}
+                </option>
+              ))}
             </select>
           </div>
         </div>

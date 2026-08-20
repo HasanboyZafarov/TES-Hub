@@ -2,6 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { RouterProvider } from "react-router-dom";
 import routes from "./app/routes.tsx";
+import Toaster from "./components/ui/toast.tsx";
 import "./index.css";
 import "./i18n";
 
@@ -24,6 +25,9 @@ function render() {
   ReactDOM.createRoot(document.getElementById("root")!).render(
     <React.StrictMode>
       <RouterProvider router={routes} />
+      {/* Outside the router so toasts survive navigation and also show on
+          the standalone auth screens, which render outside <Layout />. */}
+      <Toaster />
     </React.StrictMode>,
   );
 }

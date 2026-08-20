@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { z } from "zod";
 import Button from "../../../components/ui/button";
 import axiosInstance from "../../../lib/api/apiClient";
+import { messageOf } from "@/lib/utils/errors";
 
 const buildSchema = (t: (key: string) => string) =>
   z
@@ -49,8 +50,8 @@ const SignupForm = () => {
       navigate("/auth/verify-email", {
         state: { flow: "signup", email: data.email },
       });
-    } catch (err: any) {
-      setServerError(err.response?.data?.message || t("auth.signupFailed"));
+    } catch (err) {
+      setServerError(messageOf(err, t("auth.signupFailed")));
     }
   };
 

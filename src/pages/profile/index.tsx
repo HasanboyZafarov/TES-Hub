@@ -18,9 +18,11 @@ const Profile = () => {
   const { user, loading } = useUser(id || "me");
   const [variant, setVariant] = useState<ModalVariant | null>(null);
 
-  if (!user) return <div>{t("common.userNotFound")}</div>;
+  // Loading must be checked first: while the request is in flight `user` is
+  // still null, and the old order flashed "user not found" on every visit.
+  if (loading) return <div className="p-10">{t("common.loading")}</div>;
 
-  if (loading) return <div>{t("common.loading")}</div>;
+  if (!user) return <div className="p-10">{t("common.userNotFound")}</div>;
 
   const closeModal = () => setVariant(null);
 
